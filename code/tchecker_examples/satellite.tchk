@@ -1,0 +1,43 @@
+# This file is a part of the TChecker project.
+#
+# See files AUTHORS and LICENSE for copyright details.
+
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+# event:n0 Dummy event
+# event:sr sunrise
+# event:sd sundown
+# event:tr transmission
+# Added by translation: dT for timepassing
+# state n: night
+# state d: day
+# state s: sending
+system:satellite1
+
+clock:1:x
+
+event:n0
+event:sr
+event:sd
+event:tr
+
+process:P
+location:P:n{initial::labels:-10,Init:invariant:x<=35}
+location:P:s{labels:-20:invariant:x<=5}
+location:P:d{labels:+40:invariant:x<=55}
+
+edge:P:n:s:n0{do:x=0}
+edge:P:s:n:tr{provided:x>=5&&x<=5}
+
+# Can not handle == for the time being :/
+edge:P:n:d:sr{provided:x>=35&&x<=35:do:x=0}
+edge:P:d:n:sd{provided:x>=55&&x<=55:do:x=0}
