@@ -1,0 +1,1 @@
+FROM elfuius/wspot:0.1
