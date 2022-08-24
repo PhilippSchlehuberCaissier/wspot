@@ -110,7 +110,7 @@ class mod_BF_iter:
         self.E_ = array('q', self.N_*[-1]) #today integer inf?; 0 is currently lower bound so ok I guess
         self.Pred_ = array('Q', self.N_*[0])
         self.isWaiting_ = array('b', self.N_*[False])
-        self.Waiting_ = array('B')
+        self.Waiting_ = array('L')
         # For Loop searching
         #-1: Postfix of a loop, 0: "Free", 1: the current loop, 2: old loop or postfix
         self.onLoop_ = array('b', self.N_*[0])
@@ -273,7 +273,7 @@ class mod_BF_iter:
         """
 
         isWaiting2_ = array('b', self.N_ * [False])
-        Waiting2_ = array('B')
+        Waiting2_ = array('L')
         #Swap
         #self.isWaiting_, isWaiting2_ = isWaiting2_, self.isWaiting_
         #self.Waiting_, Waiting2_ = Waiting2_, self.Waiting_
