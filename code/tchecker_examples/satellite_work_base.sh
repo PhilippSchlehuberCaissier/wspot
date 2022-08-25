@@ -6,7 +6,6 @@ NMODULES=${1:-1}
 WNIGHT=-10
 WDAY=40
 WENER=-20
-WTIME=10
 
 cat << EOF
 # This file is a part of the TChecker project.
@@ -55,7 +54,7 @@ cat << EOF
 # Work module $i
 event:tr$i
 
-location:P:w$i{labels:0,Init:invariant:x<=$i}
+location:P:w$i{labels:$WENER,Init:invariant:x<=$i}
 
 edge:P:n:w$i:n0{do:x=0}
 edge:P:w$i:n:tr$i{provided:x>=$i&&x<=$i}
