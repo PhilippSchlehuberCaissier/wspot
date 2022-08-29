@@ -11,11 +11,13 @@ import simple_1CTA
 
 import os, sys
 
-def translate(tcheckerFile:"tchecker Input file"):
+def translate(tcheckerFile:"tchecker Input file",
+              bddDict:"Dict for AP" = None):
     """_summary_
         Create the corner point astraction of a given (1-clock) timed system
     Args:
         tcheckerFile (tchecker Input file): Tchecker input file with one clock called "x"
+        bddDict ("Dict for AP"): spot.bdd_dict or None
     """
 
 
@@ -29,7 +31,7 @@ def translate(tcheckerFile:"tchecker Input file"):
 
     sCTA = simple_1CTA.simple_1CTA(tcheckerFile)
 
-    cpaAbstr = simple_1CTA.ZG2HOABuilder(sCTA, zgFile)
+    cpaAbstr = simple_1CTA.ZG2HOABuilder(sCTA, zgFile, bddDict)
 
     names = []
     for locE, scpas in cpaAbstr.locE2scpa.items():
@@ -45,7 +47,7 @@ def translate(tcheckerFile:"tchecker Input file"):
     with open(namedHoaFile, "w") as f:
         f.write(cpaAbstr.wTWA.to_str("hoa"))
 
-    return
+    return cpaAbstr.wTWA
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Translates a "weighted" one clock TA to HOA')

@@ -6,7 +6,15 @@
 from dataclasses import dataclass
 import spot, buddy
 
+__bench_stats__ = {"n_backedges":0, "n_bf_iter":0, "n_scc":0,
+                   "n_pump_loop":0}
 
+def reset_stats():
+    for k in __bench_stats__.keys():
+        __bench_stats__[k] = 0
+
+def get_stats():
+    return __bench_stats__
 
 # The basic counting degeneralization, as described in
 # subsection "Degeneralization"
@@ -88,7 +96,6 @@ def degen_counting(aut, ssi, idx):
     for si in get_entering_states(aut, ssi, idx):
         aut_degen.set_init_state(rename[si]) # This is only one of possibly several
         break
-    print(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
     return aut_degen, acc_edge, rename
 
 
@@ -188,6 +195,7 @@ class mod_BF_iter:
         Helper to pump the simple positive loop containing s
         :param s: initial state
         """
+        __bench_stats__["n_pump_loop"] += 1
 
         for (sprime, _) in self.loop_(s):
             self.E_[sprime] = -1
@@ -267,10 +275,13 @@ class mod_BF_iter:
                 self.checkLoop(dst)
 
     def BF1(self):
+
         """
         Perform one round of modified, optimised Bellman-Ford
         :return:
         """
+
+        __bench_stats__["n_bf_iter"] += 1
 
         isWaiting2_ = array('b', self.N_ * [False])
         Waiting2_ = array('L')
@@ -383,8 +394,11 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
     for i in range(ssi.scc_count()):
         if not ssi.is_accepting_scc(i):
             continue
+        __bench_stats__["n_scc"] += 1
         print_c("Checking SCC", i)
         aut_degen, acc_edge, rename = degen_counting(aut, ssi, i)
+        print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
+
         revrename = {v: k for k, v in rename.items()}
 
         # renaming of states
@@ -406,6 +420,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
         # Loop over each (accepting) backedge
         # of the degeneralized current SCC
         for be_num in acc_edge:
+            __bench_stats__["n_backedges"] += 1
             be = aut_degen.edge_storage(be_num)
             print_c("Analysing backedge "+ names[be.src],"->", names[be.dst]+".")
 

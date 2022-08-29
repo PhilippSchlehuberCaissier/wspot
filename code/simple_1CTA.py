@@ -99,6 +99,11 @@ class simple_1CTA:
                 elif line.startswith("edge"):
                     e = edge(line)
                     # "deterministic"
+                    try:
+                        dummy = self.edges[e.proc][e.src][e.cond]
+                        raise RuntimeError(f"Not event deterministic: {e.proc}, {e.src},{e.cond}")
+                    except KeyError:
+                        pass
                     self.edges.setdefault(e.proc, {}).setdefault(e.src, {})[e.cond] = e
 
         all_lims = set()
@@ -170,9 +175,11 @@ class zg_state:
 
 
 class ZG2HOABuilder:
-    def __init__(self, sCTA:simple_1CTA, zg_file:str):
+    def __init__(self, sCTA:simple_1CTA, zg_file:str, bddDict:spot.bdd_dict):
         self.sCTA = sCTA
-        self.wTWA = spot.make_twa_graph(spot.make_bdd_dict())
+        if bddDict is None:
+            bddDict = spot.make_bdd_dict()
+        self.wTWA = spot.make_twa_graph(bddDict)
 
         # Register all the proposition
         self.propDict = dict()

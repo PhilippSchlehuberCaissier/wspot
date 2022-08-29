@@ -1,13 +1,3 @@
-#!/bin/bash
-
-NMODULES=${1:-1}
-
-# How much time and energy it takes to send
-WNIGHT=-10
-WDAY=40
-WENER=-20
-
-cat << EOF
 # This file is a part of the TChecker project.
 #
 # See files AUTHORS and LICENSE for copyright details.
@@ -29,9 +19,9 @@ cat << EOF
 # Added by translation: dT for timepassing
 # state n: night
 # state d: day
-# state p$i: idle state of i-th module
-# state s$i: sending state of i-th module
-system:satellite_work_${NMODULES}
+# state p: idle state of i-th module
+# state s: sending state of i-th module
+system:satellite_work_1_unfeas
 
 clock:1:x
 
@@ -39,28 +29,18 @@ event:n0
 
 # Process controlling night and day
 process:P
-location:P:n{initial::labels:$WNIGHT,Init:invariant:x<=35}
-location:P:d{labels:$WDAY:invariant:x<=55}
+location:P:n{initial::labels:-10,Init:invariant:x<=35}
+location:P:d{labels:40:invariant:x<=55}
 
 edge:P:n:d:n0{provided:x>=35&&x<=35:do:x=0}
 edge:P:d:n:n0{provided:x>=55&&x<=55:do:x=0}
-EOF
 
-for i in $(seq $NMODULES)
-do
+# Work module 1
+event:str1
+event:tr1
 
-cat << EOF
+location:P:w1{labels:-20,Init:invariant:x<=10}
 
-# Work module $i
-event:str$i
-event:tr$i
-
-location:P:w$i{labels:$WENER,Init:invariant:x<=$i}
-
-edge:P:n:w$i:str$i{do:x=0}
-edge:P:w$i:n:tr$i{provided:x>=$i&&x<=$i}
-
-EOF
-
-done
+edge:P:n:w1:str1{do:x=0}
+edge:P:w1:n:tr1{provided:x>=10&&x<=10}
 
