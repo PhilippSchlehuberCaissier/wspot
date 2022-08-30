@@ -1,3 +1,4 @@
+import argparse
 import spot
 import WBA_utils
 import to_weighted_twa
@@ -16,12 +17,23 @@ def n_states(zgFile:str):
             c += 1
     return c
 
-if __name__ == "__main__":
-    assert(len(sys.argv) == 4)
+parser = argparse.ArgumentParser(description="Run one instance given as tcheckerfile and ltl spec")
 
-    tchkFile = sys.argv[1]
-    spec_ltl = sys.argv[2]
-    benchfile = sys.argv[3]
+parser.add_argument("tchkFile", help="Name of the tchecker file", type=str)
+parser.add_argument("spec", help="Specification given in ltl", type=str)
+parser.add_argument("file", help="CSV output file", type=str)
+parser.add_argument('initial', help="Starting energy", type=int)
+parser.add_argument('wup', help="Weak upper bound for energy", type=int)
+parser.add_argument('nMod', help="Number of work modules", type=int)
+
+
+
+if __name__ == "__main__":
+    args = parser.parse_args()
+
+    tchkFile = args.tchkFile
+    spec_ltl = args.spec
+    benchfile = args.file
 
     WBA_utils.reset_stats()
 
@@ -39,17 +51,20 @@ if __name__ == "__main__":
     prodtime = time.time() - t
     prodstates = tot_wba.num_states()
 
-    # A energy wup of 650 ensures that the problem is feasible
-    # till i > 20
+    # for the base model we need at least
+    # 350 + 10*#N modules wup
     t = time.time()
-    feas = WBA_utils.BuechiEnergy(tot_wba, 0, 650, 350, 0)
+    feas = WBA_utils.BuechiEnergy(tot_wba,
+                                  tot_wba.get_init_state_number(),
+                                  args.wup,
+                                  args.initial, 0)
     solvetime = time.time() - t
 
     det_bench = deepcopy(WBA_utils.get_stats())
 
     if not os.path.isfile(benchfile):
         with open(benchfile, "w") as f:
-            f.write("file,spec,tchk2cpatime,zgStates,cpaStates,spectranstime,prodtime,prodstates,feas,solvetime,n_backedges,n_bf_iter,n_scc,n_pump_loop\n")
+            f.write("file,spec,numModules,tchk2cpatime,zgStates,cpaStates,spectranstime,prodtime,prodstates,feas,solvetime,n_backedges,n_bf_iter,n_scc,n_pump_loop\n")
     with open(benchfile, "a") as f:
-        f.write(f'{tchkFile},{spec_ltl},{tchk2cpatime},{zgStates},{wba.num_states()},{spectranstime},{prodtime},{prodstates},{1 * feas},{solvetime},{det_bench["n_backedges"]},{det_bench["n_bf_iter"]},{det_bench["n_scc"]},{det_bench["n_pump_loop"]}\n')
+        f.write(f'{tchkFile},{spec_ltl},{args.nMod:d},{tchk2cpatime},{zgStates},{wba.num_states()},{spectranstime},{prodtime},{prodstates},{1 * feas},{solvetime},{det_bench["n_backedges"]},{det_bench["n_bf_iter"]},{det_bench["n_scc"]},{det_bench["n_pump_loop"]}\n')
     print("Done")

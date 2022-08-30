@@ -77,9 +77,12 @@ RUN RUNLEVEL=1 DEBIAN_FRONTEND=noninteractive \
 RUN RUNLEVEL=1 DEBIAN_FRONTEND=noninteractive \
     apt-get install -y pdf2svg
 
+RUN RUNLEVEL=1 DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y clang++-13
+
 RUN mkdir ${HOME}/code
 COPY build_all.sh ${HOME}/code/build_all.sh
-RUN cd ${HOME}/code && ./build_all.sh
+RUN cd ${HOME}/code && ./build_all.sh "-DCMAKE_CXX_COMPILER=clang++-13" "CXX=clang++-13"
 ##
 COPY install1.sh /tmp/install1.sh
 COPY custom.css ${HOME}/.jupyter/custom/custom.css
@@ -103,7 +106,7 @@ RUN pip install --no-cache-dir jupyterhub
 
 #todo put this in build_all
 USER root
-RUN cd ${HOME}/code/spot && sudo make install -j 8
+#RUN cd ${HOME}/code/spot && sudo make install -j 8
 
 #mhh
 #RUN echo "export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.10/site-packages" >> ${HOME}/.profile
@@ -113,15 +116,22 @@ RUN cd ${HOME}/code/spot && sudo make install -j 8
 #RUN echo "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH" >> ${HOME}/.bashrc
 
 #Ei
-RUN cp -r --symbolic-link /usr/local/lib/python3.10/site-packages/* /usr/local/lib/python3.10/dist-packages/ 
-RUN cp -r --symbolic-link /usr/local/lib/* /usr/lib/ 
+RUN cp -r --symbolic-link /usr/local/lib/python3.10/site-packages/* /usr/local/lib/python3.10/dist-packages/
+RUN cp -r --symbolic-link /usr/local/lib/* /usr/lib/
+
+RUN RUNLEVEL=1 DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y python3-matplotlib
 
 USER root
 ADD tchecker_examples ${HOME}/code/tchecker_examples
 COPY simple_1CTA.py ${HOME}/code/simple_1CTA.py
 COPY to_weighted_twa.py ${HOME}/code/to_weighted_twa.py
 COPY WBA_utils.py ${HOME}/code/WBA_utils.py
+COPY one_exec.py ${HOME}/code/one_exec.py
+COPY run_bench.py ${HOME}/code/run_bench.py
 COPY energy_buechi.ipynb ${HOME}/code/energy_buechi.ipynb
+COPY energy_buechi_bench.ipynb ${HOME}/code/energy_buechi_bench.ipynb
+
 RUN chown -R ${NB_UID} ${HOME}
 
 RUN python3 -m pip install parse
@@ -134,4 +144,3 @@ USER ${NB_USER}
 RUN echo "Extensions"
 RUN jupyter nbextension enable --py widgetsnbextension
 RUN echo "DONE!"
-

@@ -16,5 +16,5 @@ git checkout sven/weighted
 autoreconf -vfi
 ./configure $2
 make -j 8
-
+make install -j 8
 
