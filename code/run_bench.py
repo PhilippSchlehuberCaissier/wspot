@@ -24,9 +24,6 @@ if __name__ == "__main__":
     print(f"Benchmarking for # modules:\n{Nall}")
     spec_ltl_base = "GF(dT)"
 
-    print(os.getcwd())
-    os.chdir("/media/philipp/cc069263-05da-48d7-bc4c-5fa6918260464/git/wspot/code")
-
     try:
         os.remove(args.file)
     except FileNotFoundError:
