@@ -6,7 +6,15 @@
 from dataclasses import dataclass
 import spot, buddy
 
+__bench_stats__ = {"n_backedges":0, "n_bf_iter":0, "n_scc":0,
+                   "n_pump_loop":0}
 
+def reset_stats():
+    for k in __bench_stats__.keys():
+        __bench_stats__[k] = 0
+
+def get_stats():
+    return __bench_stats__
 
 # The basic counting degeneralization, as described in
 # subsection "Degeneralization"
@@ -88,7 +96,6 @@ def degen_counting(aut, ssi, idx):
     for si in get_entering_states(aut, ssi, idx):
         aut_degen.set_init_state(rename[si]) # This is only one of possibly several
         break
-    print(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
     return aut_degen, acc_edge, rename
 
 
@@ -110,7 +117,7 @@ class mod_BF_iter:
         self.E_ = array('q', self.N_*[-1]) #today integer inf?; 0 is currently lower bound so ok I guess
         self.Pred_ = array('Q', self.N_*[0])
         self.isWaiting_ = array('b', self.N_*[False])
-        self.Waiting_ = array('B')
+        self.Waiting_ = array('L')
         # For Loop searching
         #-1: Postfix of a loop, 0: "Free", 1: the current loop, 2: old loop or postfix
         self.onLoop_ = array('b', self.N_*[0])
@@ -188,6 +195,7 @@ class mod_BF_iter:
         Helper to pump the simple positive loop containing s
         :param s: initial state
         """
+        __bench_stats__["n_pump_loop"] += 1
 
         for (sprime, _) in self.loop_(s):
             self.E_[sprime] = -1
@@ -267,13 +275,16 @@ class mod_BF_iter:
                 self.checkLoop(dst)
 
     def BF1(self):
+
         """
         Perform one round of modified, optimised Bellman-Ford
         :return:
         """
 
+        __bench_stats__["n_bf_iter"] += 1
+
         isWaiting2_ = array('b', self.N_ * [False])
-        Waiting2_ = array('B')
+        Waiting2_ = array('L')
         #Swap
         #self.isWaiting_, isWaiting2_ = isWaiting2_, self.isWaiting_
         #self.Waiting_, Waiting2_ = Waiting2_, self.Waiting_
@@ -333,7 +344,7 @@ class mod_BF_iter:
 # Whole picture
 # This is algorithm 1
 
-def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations"=False):
+def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations and info"=0):
     """_summary_
 
     Args:
@@ -341,34 +352,53 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
         s0 (state): initial state
         wup (weak upper bound):
         c0 (initial credit):
+        do_display: 0 No information is displayed at all
+                    1 Only text is shown
+                    2 The (sub)-graphs are shown as well, only works from jupyter
     """
+
+    def print_c(*args, **kwargs):
+        if do_display > 0:
+            print(*args, **kwargs)
+        return
+    def display_c(aut, opt=""):
+        if do_display > 1:
+            display(aut.show(opt))
+        return
+
+    def highlight_c(aut, pred, opt=""):
+        if do_display > 1:
+            aut.highlight_edges([i for i in pred if i != 0], 1)
+        display_c(aut, opt)
 
     if isinstance(hoa, str):
         aut = spot.automaton(hoa)
     else:
         aut = hoa
-    if do_display:
-        print("Original automaton")
-        display(aut.show("tsbrg"))
+
+    print_c("Original automaton")
+    display_c(aut, "tsbrg")
+
     bf = mod_BF_iter(aut)
     # whole automaton
     # Finds optimal prefix energy for each
     # state, disregarding the colors
     en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
-    if do_display:
-        print(f"Prefix energy per state\n{en}\nCurrent optimal predescessor\n{pred}")
-        print("""State names are: "state number, max energy"\nOptimal predescessor is highlighted in pink""");
-        aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-        aut.highlight_edges([i for i in pred if i!=0], 1)
-        display(aut.show("tsbrg"))
+    print_c(f"Prefix energy per state\n{en}\nCurrent optimal predescessor\n{pred}")
+    print_c("""State names are: "state number, max energy"\nOptimal predescessor is highlighted in pink""");
+    aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
+    highlight_c(aut, pred, "tsbrg")
 
     ssi = spot.scc_info(aut)
     # Loop over all SCCs
     for i in range(ssi.scc_count()):
         if not ssi.is_accepting_scc(i):
             continue
-        print("Checking SCC", i)
+        __bench_stats__["n_scc"] += 1
+        print_c("Checking SCC", i)
         aut_degen, acc_edge, rename = degen_counting(aut, ssi, i)
+        print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
+
         revrename = {v: k for k, v in rename.items()}
 
         # renaming of states
@@ -379,10 +409,10 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
         for i in range(len(names)):
             names[i] = names[i]+":"+str(i//len(rename))
         aut_degen.set_state_names(names)
-        if do_display:
-            print(f"Current SCC with: {aut_degen.num_states()} states and {len(acc_edge)} back-edges")
-            print(rename)
-            display(aut_degen.show("tsbrg"))
+
+        print_c(f"Current SCC with: {aut_degen.num_states()} states and {len(acc_edge)} back-edges")
+        print_c(rename)
+        display_c(aut_degen, "tsbrg")
 
         # current degeneralized SCC
         bf2 = mod_BF_iter(aut_degen)
@@ -390,41 +420,44 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
         # Loop over each (accepting) backedge
         # of the degeneralized current SCC
         for be_num in acc_edge:
+            __bench_stats__["n_backedges"] += 1
             be = aut_degen.edge_storage(be_num)
-            print("Analysing backedge "+ names[be.src],"->", names[be.dst]+".")
+            print_c("Analysing backedge "+ names[be.src],"->", names[be.dst]+".")
 
             start_energy = en[revrename[be.dst]]
             if start_energy < 0:
                 continue
-            print("We start with "+ str(start_energy) + " energy in state "+names[be.dst] + ".")
+            print_c("We start with "+ str(start_energy) + " energy in state "+names[be.dst] + ".")
 
             # look from backedge->destination
             (en3, pred3) = bf2.FindMaxEnergy(be.dst, wup, start_energy)
-            print(en3, pred3)
+            print_c(en3, pred3)
             if en3[be.src] >= 0:
                 new_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
             else:
                 new_energy = -1
             if new_energy >= start_energy:
-                print("We found a non-negative loop using edge", names[be.src],
-                      "->", names[be.dst]+" directly.")
+                print_c("We found a non-negative loop using edge", names[be.src],
+                        "->", names[be.dst]+" directly.")
+                highlight_c(aut_degen, pred3, "tsbrg")
                 return True
             else:
                 #restart with the new energy
                 if new_energy < 0:
                     continue
-                print("We restart with "+ str(new_energy) + " energy in state "+names[be.dst] + ".")
+                print_c("We restart with "+ str(new_energy) + " energy in state "+names[be.dst] + ".")
 
                 # look again from backedge->destination but with lower start energy
                 en3, pred3 = bf2.FindMaxEnergy(be.dst, wup, new_energy)
-                print(en3, pred3)
+                print_c(en3, pred3)
                 if en3[be.src] >= 0:
                     even_newer_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
                 else:
                     even_newer_energy = -1
                 if  even_newer_energy >= new_energy:
-                    print("We found a non-negative loop using edge", names[be.src],
-                          "->", names[be.dst]+" in the second iteration.")
+                    print_c("We found a non-negative loop using edge", names[be.src],
+                            "->", names[be.dst]+" in the second iteration.")
+                    highlight_c(aut_degen, pred3, "tsbrg")
                     return True
-    print("No feasible Büchi run detected!")
+    print_c("No feasible Büchi run detected!")
     return False
