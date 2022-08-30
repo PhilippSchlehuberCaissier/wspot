@@ -1,0 +1,46 @@
+# This file is a part of the TChecker project.
+#
+# See files AUTHORS and LICENSE for copyright details.
+
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+# event:n0 Dummy event
+# event:sr sunrise
+# event:sd sundown
+# Added by translation: dT for timepassing
+# state n: night
+# state d: day
+# state p: idle state of i-th module
+# state s: sending state of i-th module
+system:satellite_work_1_unfeas
+
+clock:1:x
+
+event:n0
+
+# Process controlling night and day
+process:P
+location:P:n{initial::labels:-10,Init:invariant:x<=35}
+location:P:d{labels:40:invariant:x<=55}
+
+edge:P:n:d:n0{provided:x>=35&&x<=35:do:x=0}
+edge:P:d:n:n0{provided:x>=55&&x<=55:do:x=0}
+
+# Work module 1
+event:str1
+event:tr1
+
+location:P:w1{labels:-20,Init:invariant:x<=10}
+
+edge:P:n:w1:str1{do:x=0}
+edge:P:w1:n:tr1{provided:x>=10&&x<=10}
+

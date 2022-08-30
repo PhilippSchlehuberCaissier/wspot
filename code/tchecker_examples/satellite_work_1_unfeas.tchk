@@ -1,0 +1,56 @@
+# This file is a part of the TChecker project.
+#
+# See files AUTHORS and LICENSE for copyright details.
+
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+# event:n0 Dummy
+# event:wp starting work is currently possible
+# event:tr transmission of i-th work module complete
+# Added by translation: dT for timepassing
+# state n: night
+# state d: day
+# state p: idle state of i-th module
+# state s: sending state of i-th module
+system:satellite_work_1_unfeas
+
+clock:1:x
+
+event:n0
+event:wp0
+event:wp1
+
+# Process controlling night and day
+process:P
+location:P:n{initial::labels:-10,Init:invariant:x<=35}
+location:P:d{labels:40:invariant:x<=55}
+
+edge:P:n:n:wp0{}
+edge:P:n:d:wp1{provided:x>=35&&x<=35:do:x=0}
+edge:P:n:d:n0{provided:x>=35&&x<=35:do:x=0}
+edge:P:d:n:wp0{provided:x>=55&&x<=55:do:x=0}
+edge:P:d:n:n0{provided:x>=55&&x<=55:do:x=0}
+
+# Work module 1
+event:tr1
+
+process:W1
+
+location:W1:p1{initial::labels:0,Init}
+location:W1:s1{labels:-45:invariant:x<=55}
+
+edge:W1:p1:s1:wp0{do:x=0}
+edge:W1:p1:s1:wp1{do:x=0}
+edge:W1:s1:p1:tr1{provided:x>=55&&x<=55}
+
+sync:P@wp0:W1@wp0
+sync:P@wp1:W1@wp1
