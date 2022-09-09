@@ -99,23 +99,8 @@ RUN ln -s /usr/share/fonts/truetype/lato/Lato-Regular.ttf ${HOME}/.jupyter/custo
 RUN python3 -m pip install --no-cache-dir notebook jupyterlab
 RUN pip install --no-cache-dir jupyterhub
 
-#COPY ./README* ${HOME}/README
-#COPY ./exercices/* ${HOME}/
-#COPY ./AAA_utils/__init__.py ${HOME}/AAA_utils/__init__.py
-#COPY ./AAA_utils/lift_demo.py ${HOME}/AAA_utils/lift_demo.py
-
 #todo put this in build_all
 USER root
-#RUN cd ${HOME}/code/spot && sudo make install -j 8
-
-#mhh
-#RUN echo "export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.10/site-packages" >> ${HOME}/.profile
-#RUN echo "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH" >> ${HOME}/.profile
-
-#RUN echo "export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.10/site-packages" >> ${HOME}/.bashrc
-#RUN echo "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH" >> ${HOME}/.bashrc
-
-#Ei
 RUN cp -r --symbolic-link /usr/local/lib/python3.10/site-packages/* /usr/local/lib/python3.10/dist-packages/
 RUN cp -r --symbolic-link /usr/local/lib/* /usr/lib/
 
@@ -137,8 +122,6 @@ RUN chown -R ${NB_UID} ${HOME}
 RUN python3 -m pip install parse
 
 WORKDIR ${HOME}/code
-USER ${NB_USER}
-
 USER ${NB_USER}
 
 RUN echo "Extensions"
