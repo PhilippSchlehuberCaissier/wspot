@@ -5,6 +5,7 @@
 
 from dataclasses import dataclass
 import spot, buddy
+from copy import deepcopy as deepcopy
 
 __bench_stats__ = {"n_backedges":0, "n_bf_iter":0, "n_scc":0,
                    "n_pump_loop":0}
@@ -117,6 +118,9 @@ class mod_BF_iter:
         self.E_ = array('q', self.N_*[-1]) #today integer inf?; 0 is currently lower bound so ok I guess
         self.Pred_ = array('Q', self.N_*[0])
         self.isWaiting_ = array('b', self.N_*[False])
+        # Whether the last "action" changed the energy of the node
+        # Also used to detect the fixpoint
+        self.changedE_ = array('b', self.N_ * [True])
         self.Waiting_ = array('L')
         # For Loop searching
         #-1: Postfix of a loop, 0: "Free", 1: the current loop, 2: old loop or postfix
@@ -125,8 +129,6 @@ class mod_BF_iter:
         self.E_[self.s0_] = self.c0_
         self.isWaiting_[self.s0_] = True
         self.Waiting_.append(self.s0_)
-        # Fixpoint attained?
-        self.isFixPoint_ = False
 
     # Propagate the energy along e
     # Returns if energy of dst was changed
@@ -198,11 +200,11 @@ class mod_BF_iter:
         __bench_stats__["n_pump_loop"] += 1
 
         for (sprime, _) in self.loop_(s):
-            self.E_[sprime] = -1
+            self.E_[sprime] = -2 # Special marker
             self.onLoop_[sprime] = 2 #Mark it as old
             # All of these might get their values changed
             self.mark_(sprime)
-        self.E_[self.g_.edge_storage(self.Pred_[s]).src] = self.wup_
+        self.E_[s] = self.wup_
 
         counter = 0;
         while True:
@@ -249,7 +251,7 @@ class mod_BF_iter:
 
         # Check for each state if loop candidate
         for s in range(self.N_):
-            if not self.isWaiting_[s]:
+            if not self.changedE_[s]:
                 continue
             if self.onLoop_[s] != 0:
                 continue # State belongs to some other loop or postfix
@@ -289,10 +291,9 @@ class mod_BF_iter:
         #self.isWaiting_, isWaiting2_ = isWaiting2_, self.isWaiting_
         #self.Waiting_, Waiting2_ = Waiting2_, self.Waiting_
 
-        for _ in range(self.N_ - 1):
+        for _ in range(self.N_):
             if not self.isWaiting_:
                 break  # Early exit
-            self.isFixPoint_ = True
 
             isWaiting2_ = array('b', self.N_ * [False])  #There is no "fill" for a base array
             while self.Waiting_:
@@ -301,7 +302,6 @@ class mod_BF_iter:
                     en = self.g_.edge_number(e)
                     changed = self.prop_(en, True)
                     if changed:
-                        self.isFixPoint_ = False
                         if not isWaiting2_[e.dst]:
                             isWaiting2_[e.dst] = True
                             Waiting2_.append(e.dst)
@@ -325,11 +325,22 @@ class mod_BF_iter:
 
         self.init()
 
-        while not self.isFixPoint_:
-            self.isFixPoint_ = True
+        def compE(oldE, newE):
+            for i in range(self.N_):
+                self.changedE_[i] = newE[i] != oldE[i]
+
+        hasChanged = True
+        while hasChanged:
+            hasChanged = False
+            oldE = deepcopy(self.E_)
             self.BF1()  # One round of (modified) Bellman-Ford
+            compE(oldE, self.E_)
+            hasChanged = hasChanged or any(self.changedE_)
+            oldE = deepcopy(self.E_)
             yield self.E_, self.Pred_
             self.pumpAll()  # Who have got to pump it up!
+            compE(oldE, self.E_)
+            hasChanged = hasChanged or any(self.changedE_)
             yield self.E_, self.Pred_
 
     def FindMaxEnergyGen(self, s0:"state", wup:"weak upper bound", c0:"Initial credit"):
