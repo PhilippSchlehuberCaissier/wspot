@@ -52,7 +52,7 @@ RUN cd ${HOME} && git clone https://github.com/catchorg/Catch2.git && cd Catch2 
 
 RUN mkdir ${HOME}/code
 COPY build_all.sh ${HOME}/code/build_all.sh
-RUN cd ${HOME}/code && ./build_all.sh "-DCMAKE_CXX_COMPILER=clang++-13" "CXX=clang++-13"
+RUN cd ${HOME}/code && ./build_all.sh "-DCMAKE_CXX_COMPILER=clang++-13" "CXX=clang++-13" "Yes"
 ##
 COPY install1.sh /tmp/install1.sh
 COPY custom/* ${HOME}/.jupyter/custom/
