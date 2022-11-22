@@ -1,1 +1,1 @@
-FROM elfuius/wspot:0.2
+FROM elfuius/wspot:0.3

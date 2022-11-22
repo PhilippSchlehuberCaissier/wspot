@@ -37,7 +37,7 @@ The benchmarks can be found in energy_buechi_bench.ipynb
 ### Dockerfile
 
 If you have docker installed, simply use
-docker run -it --rm -p 8888:8888 elfuius/wspot:0.2 jupyter notebook --NotebookApp.default_url=/lab/ --ip=0.0.0.0 --port=8888
+docker run -it --rm -p 8888:8888 elfuius/wspot:0.3 jupyter notebook --NotebookApp.default_url=/lab/ --ip=0.0.0.0 --port=8888
 to download and launch the latest "stable" image.
 This will give you a jupyterlab interface to the project.
 Note that wspot:0.2 is build using code/Dockerfile.
