@@ -6,9 +6,10 @@
 from dataclasses import dataclass
 import spot, buddy
 from copy import deepcopy as deepcopy
+import array
 
 __bench_stats__ = {"n_backedges":0, "n_bf_iter":0, "n_scc":0,
-                   "n_pump_loop":0}
+                   "n_pump_loop":0, "n_propagate":0}
 
 def reset_stats():
     for k in __bench_stats__.keys():
@@ -139,6 +140,7 @@ class mod_BF_iter:
         :param opt: Whether the optimal energy for dst is chosen or energy is always propagated
         :return: Whether the energy of dst changed
         """
+        __bench_stats__["n_propagate"] += 1
         e = self.g_.edge_storage(en)
         src = e.src
         dst = e.dst

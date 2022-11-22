@@ -13,6 +13,7 @@ parser.add_argument('--initial', default=350, help="Starting energy", type=int)
 parser.add_argument('--wup', default=650, help="Weak upper bound for energy", type=int)
 parser.add_argument('--Nrep', default=3, help="How often to repeat each instance", type=int)
 parser.add_argument('--file', default="bench.csv", help="Name of the csv output file", type=str)
+parser.add_argument('--verbose', default=0, help="verbosity", type=int)
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -37,4 +38,6 @@ if __name__ == "__main__":
 
         for tchkFile in tchkFiles:
             for _ in range(args.Nrep):
+                if (args.verbose):
+                    print("Treating:\n" + f"""./spot/tests/run one_exec.py {tchkFile} "{spec_ltl}" {args.file} {args.initial} {args.wup} {i}""")
                 subprocess.call(f"""./spot/tests/run one_exec.py {tchkFile} "{spec_ltl}" {args.file} {args.initial} {args.wup} {i}""", shell=True)

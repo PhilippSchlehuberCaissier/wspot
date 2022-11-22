@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     if not os.path.isfile(benchfile):
         with open(benchfile, "w") as f:
-            f.write("file,spec,numModules,tchk2cpatime,zgStates,cpaStates,spectranstime,prodtime,prodstates,feas,solvetime,n_backedges,n_bf_iter,n_scc,n_pump_loop\n")
+            f.write("file,spec,numModules,tchk2cpatime,zgStates,cpaStates,spectranstime,prodtime,prodstates,feas,solvetime,n_backedges,n_bf_iter,n_scc,n_pump_loop,n_propagate\n")
     with open(benchfile, "a") as f:
-        f.write(f'{tchkFile},{spec_ltl},{args.nMod:d},{tchk2cpatime},{zgStates},{wba.num_states()},{spectranstime},{prodtime},{prodstates},{1 * feas},{solvetime},{det_bench["n_backedges"]},{det_bench["n_bf_iter"]},{det_bench["n_scc"]},{det_bench["n_pump_loop"]}\n')
+        f.write(f'{tchkFile},{spec_ltl},{args.nMod:d},{tchk2cpatime},{zgStates},{wba.num_states()},{spectranstime},{prodtime},{prodstates},{1 * feas},{solvetime},{det_bench["n_backedges"]},{det_bench["n_bf_iter"]},{det_bench["n_scc"]},{det_bench["n_pump_loop"]},{det_bench["n_propagate"]}\n')
     print("Done")
