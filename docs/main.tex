@@ -4,6 +4,8 @@
 \usepackage{xcolor}
 \title{Rapport UCL - Template} %Titre du fichier
 
+\newcommand{\pscrep}[1]{\textcolor{green}{#1}}
+
 \begin{document}
 
 %----------- Informations du rapport ---------
@@ -17,7 +19,7 @@
 
 
 %----------- Initialisation -------------------
-        
+
 \fairemarges %Afficher les marges
 \fairepagedegarde %Créer la page de garde
 \tabledematieres %Créer la table de matières
@@ -25,11 +27,15 @@
 %------------ Corps du rapport ----------------
 
 
-\section{The functions} 
+\section{The functions}
 
 \textcolor{blue}{get_entering_states} \\
 \textcolor[HTML]{006400}{the graph, spot SCC info, SCC index} \\
 \textcolor{brown}{all the entering states by number without the looping edges} \\
+\pscrep{I'm not sure what you mean, in any case, the entering states
+are the states of an scc which can be attained from another SCC.
+So if $S$ is a state in SCC $X$, then there is a transition $Sp\rightarrow S$
+with $Sp$ being part of the SCC $Xp \neq X$.}
 
 \textcolor{blue}{degen_counting}\\
 \textcolor[HTML]{006400}{the graph, spot SCC info, SCC index}\\
@@ -37,14 +43,27 @@
 \begin{itemize}
     \item creates the rename() dictionary, index in the original graph, index in SCC
     \item retrieves the number of states
-    \item gets the maximum acceptance set index \textcolor{red}{(number of colors?)}
-    \item copies the automata, adds just one Bushi condition
-    \item creates "number of colors \textcolor{red}{(so levels?)} * number of states" states
+    \item gets the maximum acceptance set index \textcolor{red}{(number of colors?)} \pscrep{Yes}
+    \item copies the automata, adds just one Buchi condition \pscrep{Buchi cond -> one color; Generalized Buchi cond -> multiple colors}
+    \item creates "number of colors \textcolor{red}{(so levels?)} * number of states" states \pscrep{Yes, one level per color, order is arbitrary}
     \item for each edge in SCC, then for each color :
     \begin{itemize}
-        \item creates an edge between (color (level) * states + local source) and (color (level) * states + local destination) and marks the edge if the next color is 0 
+        \item creates an edge between (color (level) * states + local source) and (color (level) * states + local destination) and marks the edge if the next color is 0
         \item all marked edges are added to backedges \textcolor{red}{(don’t we just need one?)}
         \item sets the first entering state encountered to the starting state of the new graph
+    \end{itemize}
+    \pscrep{Here I'm not sure, I'll rephase}
+    \begin{itemize}
+        \item Make a large automaton with original number of states times number of original colors many states
+        \item They can be addressed by tuples (color level, original state number) however
+        \item In spot all states are simply numbers. We construct the large automaton such that
+              the state (color level i, original state number s) has the number (i * number of original states + s)
+        \item Then in the ith level, copy all transitions s -> sp in the original automaton to
+              to (i, s) -> (i, sp) except
+        \item if the transition has the ith color, then we go to the next level (i, s) -> (i+1, sp)
+              [All transitions added so far are colorless] except
+        \item if i is already the last level. Then we loop back to the 0 lvl: (i, s)-> (0, sp)
+              and only these transition get the (new and only) color
     \end{itemize}
 \end{itemize}
 
@@ -55,10 +74,11 @@
 \textcolor{brown}{propagates energy along the edge, returns whether destination changed or not}
 \begin{itemize}
     \item e’ = calculates bounded energy min(weak upper bound, state energy + weight)
-    \item if e’ is positive and higher than destination energy, updates destination energy to e’ and add the edge to optimal predecessors 
+    \item if e’ is positive and higher than destination energy, updates destination energy to e’ and add the edge to optimal predecessors
     \item if e’ is positive and opt is false, update destination energy to e’ and add the edge to optimal predecessors \textcolor{red}{(just using the weights when running BF1 and using the weak upper bound when running pump)}
     \item returns true if energy destination changes, false otherwise
 \end{itemize}
+\pscrep{Correct in general, I'm not sure if I understand the question correctly. The upper bound is always enforced; opt only determines whether the energy is updated when smaller than before or not}
 
 \vspace{12pt}
 
@@ -68,8 +88,8 @@
 
 \textcolor{blue}{loop_}\\
 \textcolor[HTML]{006400}{the graph, the initial state}\\
-\textcolor{brown}{iterates over loops starting from the initial state and returns its contents}\\ 
-\_rotate(1) is used to bring the initial state to the start\\ 
+\textcolor{brown}{iterates over loops starting from the initial state and returns its contents}\\
+\_rotate(1) is used to bring the initial state to the start\\
 
 \newpage
 
@@ -79,7 +99,7 @@
 \begin{itemize}
     \item sets all the states’ energy on the loop to -2 \textcolor{red}{(special marker? why -2)}
     \item marks all the states with 2 (mark for an old loop)
-    \item pumps the initial state with the weak upper bound 
+    \item pumps the initial state with the weak upper bound
     \item sets a counter for iterations, launches loop\_ on each state until unchanged (reached the fixed point)
     \item if the counter is higher than 2, it reached the fixed point too late
 \end{itemize}
@@ -111,11 +131,11 @@
 \vspace{12pt}
 
 \textcolor{blue}{BF1}\\
-\textcolor[HTML]{006400}{the graph}\\ 
+\textcolor[HTML]{006400}{the graph}\\
 \textcolor{brown}{modified Bellman-Ford}
 \begin{itemize}
-    \item the main loop does N number of states iterations 
-    \item we pop the states that are waiting (initially the initial state is on that list), pump, then add the destination states that got modified as a result to the list of states that are waiting 
+    \item the main loop does N number of states iterations
+    \item we pop the states that are waiting (initially the initial state is on that list), pump, then add the destination states that got modified as a result to the list of states that are waiting
 \end{itemize}
 
 \vspace{12pt}
@@ -123,23 +143,23 @@
 \newpage
 
 \textcolor{blue}{FindMaxEnergy_}\\
-\textcolor[HTML]{006400}{the graph, the initial state, the weak upper bound, the initial credit}\\ 
+\textcolor[HTML]{006400}{the graph, the initial state, the weak upper bound, the initial credit}\\
 \textcolor{brown}{for each state, calculates the maximum energy reached from the initial state with the initial credit}
 \begin{itemize}
     \item the function modifies self.changedE_ as it’s running and updating energies
     \item saves old energy states, runs BF1, checks for changes
     \item saves old energy states, runs pumpAll, checks for changes
-    \item stops when no more changes can be made 
+    \item stops when no more changes can be made
 \end{itemize}
 
 \vspace{12pt}
 
-\textcolor{blue}{FindMaxEnergyGen}\\ 
-\textcolor[HTML]{006400}{the graph, the initial state, the weak upper bound, the initial credit}\\ 
-\textcolor{brown}{returns the generator resulting from the yields of the previous function}\\ 
+\textcolor{blue}{FindMaxEnergyGen}\\
+\textcolor[HTML]{006400}{the graph, the initial state, the weak upper bound, the initial credit}\\
+\textcolor{brown}{returns the generator resulting from the yields of the previous function}\\
 
-\textcolor{blue}{FindMaxEnergy}\\ 
-\textcolor[HTML]{006400}{the graph, the initial state, the weak upper bound, the initial credit}\\ 
+\textcolor{blue}{FindMaxEnergy}\\
+\textcolor[HTML]{006400}{the graph, the initial state, the weak upper bound, the initial credit}\\
 \textcolor{brown}{consumes the generator and returns the last couple of (best predecessor, energy) which represents the fixed point}\\
 
 \textcolor{blue}{BuechiEnergy}\\
@@ -152,10 +172,10 @@
         \item loop over backedges :
         \begin{itemize}
             \item start from the destination of the backedge (the start energy is the optimal energy of that destination) and find the fixed point (best predecessor and maximum energy)
-            \item if said energy is positive, calculate the dest energy with respect to the weak upper bound 
+            \item if said energy is positive, calculate the dest energy with respect to the weak upper bound
             \item if said energy is negative, set it to -1 \textcolor{red}{(why -1?)}
             \item if the new dest energy is higher than the old one, we found the non negative loop and we return true
-            \item otherwise, we restart the whole process by replacing the state energy with the new energy, and again if dest energy is positive and  higher we found the loop, else we move on to the next edge until there are potentially none. \textcolor{red}{(why does this work?)} 
+            \item otherwise, we restart the whole process by replacing the state energy with the new energy, and again if dest energy is positive and  higher we found the loop, else we move on to the next edge until there are potentially none. \textcolor{red}{(why does this work?)}
         \end{itemize}
     \end{itemize}
 \end{enumerate}
@@ -189,13 +209,13 @@
     \begin{itemize}
         \item some loops on the graph would already be marked with 2 (explored), others with 0 (not explored)
         \item on the original graph, each state would have an optimal energy set by FindMaxEnergy run on the original graph
-        \item the degeneralized graph could be potentially only partially set in terms of markings and energy 
+        \item the degeneralized graph could be potentially only partially set in terms of markings and energy
     \end{itemize}
 \end{itemize}
 
 \vspace{12pt}
 
-\textcolor{blue}{To return the path :}\\ 
+\textcolor{blue}{To return the path :}\\
 \begin{itemize}
     \item We start from the lasso, then its predecessor
     \item We continue by taking all possible entering edges
