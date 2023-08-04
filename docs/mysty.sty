@@ -1,0 +1,299 @@
+\usepackage{microtype}
+\usepackage{xspace,amsmath,amsfonts,amssymb,bbm,ifthen,mathtools}
+\usepackage[heavycircles]{stmaryrd}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bbold}
+%\usepackage[OT4]{fontenc}
+\usepackage{enumerate}
+\usepackage[sort, noadjust]{cite}
+%\usepackage[pst-pdf=md5]{gastex}
+%\usepackage{subfigure}
+%\usepackage{rotating}
+%\usepackage{enumitem}
+\usepackage{paralist}
+
+% \usepackage{eurosym}
+% \renewcommand*\euro{\text{\small\officialeuro}}
+% \newcommand*\dollar{\$}
+
+% \usepackage{tabularx}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{float}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,shapes,calc,decorations.markings,positioning}
+\tikzset{%
+  ->, >=stealth', auto, initial text=,
+  state/.style={%
+    inner sep=.5mm, minimum size=3.5mm, draw=black, circle
+  }
+  state with output/.style={%
+    shape=rectangle split, rectangle split parts=2, draw, fill=white,
+    initial text=, inner sep=1mm
+  }
+}
+
+%% Smaller indent in algorithmicx
+% \newlength{\ALG@my@lessindent}
+% \setlength{\ALG@my@lessindent}{1.5ex}
+\usepackage[noend]{algpseudocode}
+\renewcommand\ALG@beginblock[1]% #1 - indentation
+{%
+  \ALG@thistlm\ALG@tlm%
+  \addtolength\ALG@tlm{#1}%
+  \addtolength\ALG@tlm{-1.2ex}%
+  \addtocounter{ALG@nested}{1}%
+  \setlength\ALG@tmplength{#1}%
+  \expandafter\edef\csname ALG@ind@\theALG@nested\endcsname{\the\ALG@tmplength}%
+}%
+\renewcommand\ALG@endblock%
+{%
+  \addtolength\ALG@tlm{-\csname ALG@ind@\theALG@nested\endcsname}%
+  \addtolength\ALG@tlm{1.2ex}%
+  \addtocounter{ALG@nested}{-1}%
+  \ALG@thistlm\ALG@tlm%
+}%
+
+\usepackage{algorithm}
+% \usepackage[indLines=true,noEnd=true,beginComment=//~,beginLComment=/*~, endLComment=~*/]{algpseudocodex}
+% \tikzset{algpxIndentLine/.style={draw=gray,very thin,-}}
+\usepackage{caption}
+% \usepackage{placeins} % FloatBarrier
+
+%\usepackage[scaled=.89]{helvet}
+
+%\def\longrightarrowtriangle{\relbar\joinrel\rightarrowtriangle}
+
+% standard amsmath cases are sometimes ugly because the left column is
+% not centered.  Now you can say \begin{cases}[c] to fix this.
+\renewenvironment{cases}[1][l]{%
+  \matrix@check\cases\env@cases#1
+}{%
+  \endarray\right.%
+}
+\def\env@cases#1{%
+  \let\@ifnextchar\new@ifnextchar
+  \left\lbrace
+  \def\arraystretch{1.2}%
+  \array{@{}#1@{\quad}l@{}}%
+}
+
+% \to and \leadsto with stuff on top
+\newcommand*\tto[1]{\ensuremath{\xrightarrow{#1}}}
+% \newcommand*\tto[1]{\to_{#1}}
+\newcommand*\ttto[2]{\to_{#1}^{#2}}
+\newcommand*\leadstto[1]{\ensuremath{\underset{#1}{\rightsquigarrow}}}
+
+% sets of numbers
+\newcommand*\Int{\mathbbm{Z}}
+\newcommand*\Nat{\mathbbm{N}}
+\newcommand*\Rat{\mathbbm{Q}}
+\newcommand*\Natp{\Nat_+}
+\newcommand*\Real{\mathbbm{R}}
+\newcommand*\Realp{\Real_{>0}}
+\newcommand*\Realnn{\Real_{\ge 0}}
+\newcommand*\Realbot{\Realnn^\bot}
+
+% \cup with plus on top (disjoint union?)
+\newcommand*\cupplus{\overset{\scriptscriptstyle+}{\cup}}
+
+% identity function
+\newcommand*\id{\textup{\textsf{id}}}
+
+% bigger \mid for set abstraction
+\newcommand*\bigmid{\mathrel{\big|}}
+
+% minus with dot on top
+\newcommand*\dotminus{\buildrel\textstyle.\over{%
+    \hbox{\vrule height3pt depth0pt width0pt}{\smash-}}}
+
+\let\oldepsilon\epsilon
+\renewcommand*\epsilon{\varepsilon}
+\let\oldphi\phi
+\renewcommand*\phi{\varphi}
+
+% common abbreviations
+\newcommand*\ie{\textit{i.e.,}\xspace}
+\newcommand*\cf{\textit{cf.}\xspace}
+\newcommand*\eg{\textit{e.g.,}\xspace}
+\newcommand*\etal{\textit{et~al.}\xspace}
+\newcommand*\viceversa{\textit{vice versa}\xspace}
+
+% for running examples
+\newcounter{ex@mples@ve}
+\newenvironment{runningexstart}{%
+  \newcounter{runningex@}
+  \setcounter{runningex@}{\value{example}}
+  \begin{example}}{%
+  \end{example}}
+\newenvironment{runningex}{%
+  \setcounter{ex@mples@ve}{\value{example}}
+  \setcounter{example}{\value{runningex@}}
+  \begin{example}[contd]}{%
+  \end{example}
+  \setcounter{example}{\value{ex@mples@ve}}}
+% alternative
+\spn@wtheorem{rexample}{Running example}{\itshape}{\rmfamily}
+
+% zero and one in a semiring
+\newcommand*\snul{\mathbb{0}}
+\newcommand*\sone{\mathbb{1}}
+
+% restriction of a function
+\newcommand*\rest[1]{_{\upharpoonleft #1}}
+
+% set of fixed points of a function
+\newcommand{\fix}{\textup{\textsf{fix}}}
+
+% first and last state in a run
+\newcommand{\first}[1]{\textup{\textsf{first}}(#1)}
+\newcommand{\last}[1]{\textup{\textsf{last}}(#1)}
+
+% energy functions
+\newcommand*\F{\mathcal F}
+\newcommand*\E{\mathcal E}
+% left-continuous
+\newcommand*\Ec{\E_\textup{\textsf{c}}}
+% integer update
+\newcommand*\Eint{\E_\textup{\textsf{int}}}
+% flat
+\newcommand*\Eflat{\bar\E}
+% piecewise linear
+\newcommand*\Epw{\E_{\textup{\textsf{pw}}}}
+\newcommand*\Epwi{\E_{\textup{\textsf{pwi}}}}
+\newcommand*\Eflatpw{\Eflat_{\textup{\textsf{pw}}}}
+\newcommand*\Eflatpwi{\Eflat_{\textup{\textsf{pwi}}}}
+
+% partial function
+\newcommand*\parto{\rightharpoonup}
+
+% B\"uchi and reachability problems
+\newcommand*\pbuchi{\textup{\textsf{B\"uchi}}}
+\newcommand*\preach{\textup{\textsf{Reach}}}
+
+% transpose (of vector or matrix)
+%\newcommand*\transpose[1]{{\vphantom{#1}}^{t}\!{#1}}
+\newcommand*\transpose[1]{{\vphantom{#1}}_{\textup{\textsf{t}}}{#1}}
+
+% "double bot and top" symbols
+% (zero element in energy function semiring)
+\newcommand*\bbot{%
+  \hbox{%
+    \hbox to -.475pt{%
+      \raisebox{1.5pt}[0pt][0pt]{%
+        \rule{6.4pt}{.4pt}%
+      }%
+      \hss}%
+    $\bot$%
+  }}
+\newcommand*\ttop{%
+  \hbox{%
+    \hbox to -.475pt{%
+      \raisebox{5pt}[0pt][0pt]{%
+        \rule{6.4pt}{.4pt}%
+      }%
+      \hss}%
+    $\top$%
+  }}
+
+% has to be defined for elsarticle
+% \newdefinition{definition}{Definition}
+% \newdefinition{example}{Example}
+% \newdefinition{problem}{Problem}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{conjecture}[theorem]{Conjecture}
+% \newtheorem{lemma}{Lemma}
+% \newtheorem{proposition}[lemma]{Proposition}
+% \newtheorem{corollary}[theorem]{Corollary}
+% \newproof{proof}{Proof}
+
+\hyphenation{semi-ring memory-less}
+
+% \usepackage{color}
+% \usepackage{colortbl}
+% \definecolor{light-gray}{gray}{0.65}
+% \definecolor{middle-gray}{gray}{0.30}
+
+\newcommand*\V{\mathcal V}
+\newcommand*\Vc{\V_\textup{\textsf{c}}} % continuous
+\newcommand*\B{\mathbbm B}
+\newcommand*\comp{\triangleright} % function composition
+
+\newcommand*\up{\mathord{\uparrow}}
+\newcommand*\down{\mathord{\downarrow}}
+\newcommand*\defeq{\overset{\textup{def}}{=}}
+
+\newcommand*\FinAdd{\textup{\textbf{FinAdd}}}
+% \newcommand*\LL{\FinAdd_\L}
+
+% \newcommand*\Ax[1]{\textsf{Ax#1}}
+\newcommand*\Ax[1]{$(\textrm{\textup{C}}#1)$}
+\newcommand*\R{\mathcal{R}}
+\newcommand*\two{\mathbf{2}}
+
+\hyphenation{semi-ring semi-rings sub-semi-ring sub-semi-rings}
+
+% some semirings
+\newcommand*\Bool{\mathbbm{B}}
+\newcommand*\Prob{\mathbbm{P}}
+\newcommand*\Trop{\mathbbm{T}}
+\newcommand*\Fuzz{\mathbbm{F}}
+\newcommand*\Nrg{\mathbbm{E}}
+\newcommand*\Vrg{\mathbbm{V}}
+
+\RequirePackage{stmaryrd}
+\newcommand*\sem[2][]{\llbracket #2\rrbracket^{#1}}
+\newcommand*\GPart{\textit{GP}}
+\newcommand*\px{\textit{px}}
+\newcommand*\GP[1]{\GPart[ #1]}
+\newcommand*\lfalse{\textup{\textbf{ff}}}
+\newcommand*\ltrue{\textup{\textbf{tt}}}
+\newcommand*\limpl{\Rightarrow}
+\newcommand*\liff{\Leftrightarrow}
+\newcommand*\gcr{\textup{gcr}}
+\newcommand*\nul{\mathbb{0}}
+\newcommand*\one{\mathbb{1}}
+\newcommand*\bigland{\bigwedge}
+% \newcommand*\proj[2]{#2_{\upharpoonleft #1}}
+% \newcommand*\proj[2]{\pi^{#1}( #2)}
+\newcommand*\proj[2]{\textup{\textsf{proj}}_{#1}( #2)}
+\newcommand*\mcal[1]{\mathcal{#1}}
+\newcommand*\dom{\textup{dom}}
+
+\newcommand*\pend[1]{\textup{\textsf{end}}(#1)}
+\newcommand*\Conf{\textup{\textsf{Conf}}}
+\newcommand*\upd{\textup{\textsf{upd}}}
+\newcommand*\out[2]{\textup{\textsf{out}}(#1,#2)}
+\newcommand*\util{\textup{\textsf{util}}}
+\newcommand*\val{\textup{\textsf{val}}}
+\newcommand*\valr{\val_\textup{\textsf{R}}}
+\newcommand*\vall[1]{\val_{#1}}
+\newcommand*\fval{\textup{\textsf{fval}}}
+\newcommand*\fvalr{\fval_\textup{\textsf{R}}}
+\newcommand*\fvall[1]{\fval_{#1}}
+\newcommand*\tr{\textup{\textsf{tr}}}
+
+\newcommand*\prio[1]{\textup{\textsf{prio}}(#1)}
+\newcommand*\prog{\textup{\textsf{prog}}}
+\newcommand*\fprog{\textup{\textsf{fprog}}}
+\newcommand*\Paths[1]{\textup{\textsf{Paths}}(#1)}
+\newcommand*\fpaths[1]{\textup{\textsf{fPaths}}(#1)}
+\newcommand*\ipaths[1]{\textup{\textsf{iPaths}}(#1)}
+% \newcommand*\parti{\mcal{P}[S_1\times \Bool( N)]}
+
+\newcommand*\attr{\textup{\textsf{attr}}}
+
+\newcommand*\weights[3]{\textup{\textsf{weights}}_{#1\downarrow
+    #2}(#3)}
+% same without weak upper bound
+\newcommand*\weightsi[2]{\textup{\textsf{weights}}_{#1}(#2)}
+\newcommand*\mincr[1]{\textup{\textsf{mincr}}(#1)}
+\newcommand*\lweight[2]{\textup{\textsf{lastweight}}_{#1}(#2)}
+\newcommand*\fweight[2]{\textup{\textsf{firstweight}}_{#1}(#2)}
+% open interval left and right
+\newcommand*\oil{\mathopen{]}}
+\newcommand*\oir{\mathclose{[}}
+\newcommand*\cpa[1]{\textup{\textsf{cpa}}(#1)}
+
+\newcommand*\cpr{\mathfrak{r}} % corner-point region

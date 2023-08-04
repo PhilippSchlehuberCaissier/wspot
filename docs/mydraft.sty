@@ -1,0 +1,66 @@
+%%% for draft only
+
+%%%%%%%%%%%%%%% system stuff
+\usepackage{mparhack}
+\RequirePackage{ragged2e,ifthen,xspace}
+\newcommand{\short@comment@nosurd}[2]{%
+  \marginpar{%
+    \raisebox{.8\baselineskip}{\rule{.95\marginparwidth}{1pt}}\\
+    \raisebox{.9\baselineskip}[0pt][0pt]{\parbox[t]{.95\marginparwidth}{%
+        \small\sffamily%
+        % \ifthenelse{\isodd{\thepage}}{\RaggedLeft}{\RaggedRight}% % does not work
+        \RaggedLeft%
+        {\textcolor{red}{#1} #2}}}}}
+\newcommand{\short@comment}[2]{%
+  \makebox[0pt][c]{\raisebox{.4\baselineskip}[0pt][0pt]{%
+      \small\textcolor{red}{$\bullet$}}}\xspace%
+  \short@comment@nosurd{#1}{#2}}
+\newlength\old@parindent\setlength\old@parindent\parindent
+\newcommand\long@comment[2]{%
+  \par\bigskip\noindent\hspace*{.05\linewidth}%
+  \short@comment@nosurd{}{Long comment here}%
+  \fbox{
+    \begin{minipage}[t]{.9\linewidth}
+      \parindent \old@parindent \parskip 0pt
+      \noindent
+      \makebox[0pt][r]{\textcolor{red}{#1}\quad}#2
+    \end{minipage}
+  }
+  \bigskip\parindent \old@parindent}
+
+\addtolength{\oddsidemargin}{-70pt}
+\addtolength{\evensidemargin}{70pt}
+\addtolength{\marginparwidth}{80pt}
+
+%%%%%%%%%%%%%%%%%%%% user commands
+%
+%% bullshit boundary :-)
+\newcommand{\bbb}{%
+  \par\bigskip\bigskip%
+  % \par\newpage
+  \noindent\makebox[0pt][r]{\textcolor{red}{\textbf{!!!}}}%
+  \dotfill%
+  Below is old and/or wrong stuff%
+  \dotfill%
+  \makebox[0pt][l]{\textcolor{red}{\textbf{!!!}}}%
+  \par\medskip
+  % \newpage
+}
+%% The below gives you two commands for inserting comments in the text:
+%% Assuming you are called `fisk', you would have a command
+%% \fisk for inserting a (preferably short) comment in the margin,
+%% with a marker in the text where the comment was placed, but not
+%% otherwise affecting the text,
+%% and a command \fisklong for inserting a longer comment in the text
+%% body, with a marker in the margin.
+\renewcommand\uli[1]{\short@comment{Uli:}{#1}}
+\newcommand\ulilong[1]{\long@comment{Uli:}{#1}}
+\renewcommand\sv[1]{\short@comment{Sven:}{#1}}
+\newcommand\svlong[1]{\long@comment{Sven:}{#1}}
+\renewcommand\psc[1]{\short@comment{PSC:}{#1}}
+\newcommand\psclong[1]{\long@comment{PSC:}{#1}}
+\renewcommand\rs[1]{\short@comment{RS:}{#1}}
+\newcommand\rslong[1]{\long@comment{RS:}{#1}}
+\newcommand\rev[1]{\short@comment{Reviewer:}{#1}}
+\newcommand\revlong[1]{\long@comment{Reviewer:}{#1}}
+
