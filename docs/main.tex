@@ -103,6 +103,9 @@ with $Sp$ being part of the SCC $Xp \neq X$.}
     \item sets a counter for iterations, launches loop\_ on each state until unchanged (reached the fixed point)
     \item if the counter is higher than 2, it reached the fixed point too late
 \end{itemize}
+\pscrep{If I'm not mistaken I use -2 because -1 is another special to mark unreachable state / states which have never been visited}
+\pscrep{Yes the check for the counter being 2 or less is just a sanity check}
+
 
 \vspace{12pt}
 
@@ -116,6 +119,13 @@ with $Sp$ being part of the SCC $Xp \neq X$.}
     \item goes back to the initial state and marks all the remaining states outside of the loop (not marked by pump loop, still marked as 1 with 2 to indicate they have already been visited
 \end{itemize}
 
+\pscrep{Yes, the idea is that any state that has increased its energy on the second
+iteration of BF needs to be either on a positive loop cycle or on the sufffix of a loop.
+So we make sure we have a state on the loop and then pump it.
+After that we can also adjust the energy of the suffix of the loop
+the increase convergence speed}
+
+
 \vspace{12pt}
 
 \textcolor{blue}{pumpAll}\\
@@ -128,6 +138,20 @@ with $Sp$ being part of the SCC $Xp \neq X$.}
     \item calculates e’, if energy can increase, checkLoop \textcolor{red}{(why not check the loop when the energy doesn’t increase, we don’t know the weights on the next nodes yet, does it matter at which state we start?)}
 \end{itemize}
 
+\pscrep{You do one BF -> energies are at a fix point EXCEPT if there are positive loops.
+You save these energy lelvels. You run another round of BF. All states whose energy changed
+are necessarily on or in the suffix of a positive loop.}
+\pscrep{No, the if at 263 needs to be interpreted differently:
+
+en is the edgenumber of the edge "leading to" the predescessor. If it is 0
+(special marker) then no predescessor exists. If there is no predecessor, then its energy has 
+to be -1 (indicating unreachable) EXCEPT if it is the initial state.}
+\pscrep{For the last point: I think this way you get a state at the end of the suffix
+and therefore you only need to call checkLoop once. Otherwise it can happen
+that you call it for every state on the suffix one after another (It would not be
+wrong but inefficient.). But it's a year since I wrote this, so I have to think about it a 
+bit longer.}
+
 \vspace{12pt}
 
 \textcolor{blue}{BF1}\\
@@ -137,7 +161,7 @@ with $Sp$ being part of the SCC $Xp \neq X$.}
     \item the main loop does N number of states iterations
     \item we pop the states that are waiting (initially the initial state is on that list), pump, then add the destination states that got modified as a result to the list of states that are waiting
 \end{itemize}
-
+\pscrep{Yes almost normal BF, only with the weak upper bound.}
 \vspace{12pt}
 
 \newpage
@@ -169,6 +193,10 @@ with $Sp$ being part of the SCC $Xp \neq X$.}
     \item Loop over all accepting SCCs :
     \begin{itemize}
         \item degeneralize the SCC using degenCounting (and create a reverse dictionary out of the rename() dictionary, \textcolor{red}{for optimisation purposes?})
+        \item \pscrep{No, when you degeneralize the whole automaton, each lvl is a copy of the whole automaton
+        and the state correspondance is easy. Here, for effiencency, we do it SCC by SCC, so we need a dict from the
+        state number of state in the original SCC to the corresponding state in the first level of the 
+        degeneralization as here the numbers start necessarily with 0}
         \item loop over backedges :
         \begin{itemize}
             \item start from the destination of the backedge (the start energy is the optimal energy of that destination) and find the fixed point (best predecessor and maximum energy)
@@ -179,7 +207,7 @@ with $Sp$ being part of the SCC $Xp \neq X$.}
         \end{itemize}
     \end{itemize}
 \end{enumerate}
-
+\pscrep{For the last points we should make a quick call, easier with drawing}
 \newpage
 
 \section{The global functioning}
