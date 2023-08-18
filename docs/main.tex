@@ -144,12 +144,12 @@ are necessarily on or in the suffix of a positive loop.}
 \pscrep{No, the if at 263 needs to be interpreted differently:
 
 en is the edgenumber of the edge "leading to" the predescessor. If it is 0
-(special marker) then no predescessor exists. If there is no predecessor, then its energy has 
+(special marker) then no predescessor exists. If there is no predecessor, then its energy has
 to be -1 (indicating unreachable) EXCEPT if it is the initial state.}
 \pscrep{For the last point: I think this way you get a state at the end of the suffix
 and therefore you only need to call checkLoop once. Otherwise it can happen
 that you call it for every state on the suffix one after another (It would not be
-wrong but inefficient.). But it's a year since I wrote this, so I have to think about it a 
+wrong but inefficient.). But it's a year since I wrote this, so I have to think about it a
 bit longer.}
 
 \vspace{12pt}
@@ -195,7 +195,7 @@ bit longer.}
         \item degeneralize the SCC using degenCounting (and create a reverse dictionary out of the rename() dictionary, \textcolor{red}{for optimisation purposes?})
         \item \pscrep{No, when you degeneralize the whole automaton, each lvl is a copy of the whole automaton
         and the state correspondance is easy. Here, for effiencency, we do it SCC by SCC, so we need a dict from the
-        state number of state in the original SCC to the corresponding state in the first level of the 
+        state number of state in the original SCC to the corresponding state in the first level of the
         degeneralization as here the numbers start necessarily with 0}
         \item loop over backedges :
         \begin{itemize}
@@ -260,4 +260,46 @@ bit longer.}
     \item Try to use the energies calculated by FindMaxEnergies?
 \end{itemize}
 
+\section{Predecessor and loops}
+
+During the execution of the modified Bellman-Ford algorithm we do not only
+keep track of the optimal energy level attainable for a given state, but also
+of the energy optimal predecessor (since we do not work on multigraphs,
+this also unambiguously identifies the transition taken).
+
+We call a sequence of states $(q_0, q_1, q_2, \ldots,q_N)$ an energy trace
+of a state $q_N$ when for all $i$ such that $0\le i < N$
+it holds that $q_i$ is the energy optimal predecessor of $q_{i+1}$.
+
+\subsection*{Trivia}
+Given a weighted automaton that has NO energy positive cycles, restricting it
+to th energy optimal transitions, that is we delete all transitions
+$(q,w,q')$ if $q$ is not the energy optimal predecessor of $q'$, the resulting
+graph is a spanning tree of (the energy reachable part of) the original automaton.
+Therefore, the energy trace of all states are finite, and their first state
+is necessarily the initial state.
+
+\begin{theorem}
+Given a weighted automaton that possibly has energy positive cycles,
+the energy trace for any given state is either finite and the first state is the
+initial state or it is infinite the form of an "inverse lasso", that is
+it starts with a (finite) cycle followed by a finite suffix denoted
+$((q_0, q_1, q_2, q_0)*, q_3, \ldots, q_N)$.
+With $(q_0, q_1, q_2, q_0)$ being the cycle and $(q_3, \ldots, q_N)$ being the suffix.
+\end{theorem}
+
+\textit{Proof}
+Given that the upper bound is sufficiently high, the states on an energy positive
+loop will attain a higher energy level than any state that is not part of an
+energy positive loop. Therefore, these states will eventually become the
+energy optimal predecessor of all their successor states and by transitive closure
+all energy trace of energy attainable states will lead to them.
+The first case occurs if the state is not energy reachable from any state on
+a positive cycle, in which case the energy trace simply leads back to the
+initial state.
 \end{document}
+
+\begin{theorem}
+    The energy optimal path from a state $q$ to some other (energy reachable)
+    state $q'$ is a sequence of energy traces.
+\end{theorem}
