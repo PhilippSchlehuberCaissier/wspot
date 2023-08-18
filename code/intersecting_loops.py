@@ -96,9 +96,10 @@ def bench2_(n, aut, s0, wup):
         spot.set_weight(aut, idx, -wup)
 
     else:
+        tmp = s0
         for _ in range(1, n):
             s = aut.new_state()
-            idx = aut.new_edge(s, s0, buddy.bddtrue)
+            idx = aut.new_edge(tmp, s, buddy.bddtrue)
             spot.set_weight(aut, idx, 0)
             tmp = s
             bench2_(n - 1, aut, s, wup)
