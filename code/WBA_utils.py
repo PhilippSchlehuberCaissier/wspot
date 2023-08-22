@@ -117,7 +117,7 @@ class mod_BF_iter:
         self.N_ = self.g_.num_states()
         # Base values
         self.E_ = array('q', self.N_*[-1]) #today integer inf?; 0 is currently lower bound so ok I guess
-        self.Pred_ = array('Q', self.N_*[0])
+        self.Pred_ = [[] for _ in range(self.N_)]
         self.isWaiting_ = array('b', self.N_*[False])
         # Whether the last "action" changed the energy of the node
         # Also used to detect the fixpoint
@@ -152,7 +152,8 @@ class mod_BF_iter:
 
         if (en_prime >= 0) and ((not opt) or (en_prime > en_dst)):
             self.E_[dst] = en_prime
-            self.Pred_[dst] = en
+            if en not in self.Pred_[dst]:
+                self.Pred_[dst].append(en)
             return en_prime != en_dst
         return False
 
@@ -180,8 +181,8 @@ class mod_BF_iter:
         s = si
         loopItems = deque()
         def pred_(s):
-            en = self.Pred_[s]
-            assert en != 0, "No valid Predecessor!"
+            assert self.Pred_[s], "No valid Predecessor!"
+            en = self.Pred_[s][-1]
             return en, self.g_.edge_storage(en)
         def next_(s):
             en, e = pred_(s)
@@ -229,8 +230,8 @@ class mod_BF_iter:
 
         while self.onLoop_[sprime] == 0:
             self.onLoop_[sprime] = 1
-            assert self.Pred_[sprime] != 0
-            sprime = self.g_.edge_storage(self.Pred_[sprime]).src
+            assert self.Pred_[sprime], "something happened"
+            sprime = self.g_.edge_storage(self.Pred_[sprime][-1]).src
 
         if self.onLoop_[sprime] == 1:
             # Found a new simple positive loop
@@ -239,7 +240,7 @@ class mod_BF_iter:
         sprime = s
         while self.onLoop_[sprime] == 1:
             self.onLoop_[sprime] = 2
-            sprime = self.g_.edge_storage(self.Pred_[sprime]).src
+            sprime = self.g_.edge_storage(self.Pred_[sprime][-1]).src
             # We could propagate energy here directly
             # Would we then need full BF? Optim?
 
@@ -259,7 +260,7 @@ class mod_BF_iter:
                 continue # State belongs to some other loop or postfix
             # Check if energy can increase
             # Todo Code duplication :(
-            en = self.Pred_[s]
+            en = self.Pred_[s][-1]
             if en == 0:
                 # Unreachable
                 if s != self.s0_:
@@ -381,7 +382,11 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
 
     def highlight_c(aut, pred, opt=""):
         if do_display > 1:
-            aut.highlight_edges([i for i in pred if i != 0], 1)
+            to_highlight = []
+            for subpred in pred:
+                for e in subpred:
+                    to_highlight.append(e)
+            aut.highlight_edges(to_highlight, 1)
         display_c(aut, opt)
 
     if isinstance(hoa, str):
