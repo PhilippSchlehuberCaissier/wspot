@@ -45,24 +45,14 @@ def bench(n, wup):
     aut = spot.make_twa_graph()
     aut.new_states(n)
     aut.set_buchi()
-
-    idx = aut.new_edge(0, 1, buddy.bddtrue)
-    if n == 3:
-        spot.set_weight(aut, idx, -wup)
-    else:
-        spot.set_weight(aut, idx, 0)
-    bench_(n - 1, aut, 1, wup)
-
-    for i in range(2, n):
+    
+    for i in range(1, n):
         idx = aut.new_edge(i - 1, i, buddy.bddtrue)
         spot.set_weight(aut, idx, -wup)
         bench_(n - 1, aut, i, wup)
 
     idx = aut.new_edge(n - 1, 0, buddy.bddtrue, [0])
-    if n == 3:
-        spot.set_weight(aut, idx, -wup)
-    else:
-        spot.set_weight(aut, idx, 0)
+    spot.set_weight(aut, idx, -wup)
     bench_(n - 1, aut, 0, wup)
 
     return aut
