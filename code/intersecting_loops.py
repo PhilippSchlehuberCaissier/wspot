@@ -56,3 +56,38 @@ def bench(n, wup):
     bench_(n - 1, aut, 0, wup)
 
     return aut
+
+    
+def bench2(wup):
+    n = 2
+    while wup % n != 0:
+        n += 1
+
+    num_states = n + 3
+
+    aut = spot.make_twa_graph()
+    aut.new_states(num_states)
+    aut.set_buchi()
+
+    idx = aut.new_edge(0, 1, buddy.bddtrue)
+    spot.set_weight(aut, idx, wup)
+
+    for i in range(1, num_states - 1):
+        idx = aut.new_edge(i, i+1, buddy.bddtrue)
+        spot.set_weight(aut, idx, int(-wup/n))
+
+    
+    s = aut.new_state()
+    idx = aut.new_edge(num_states - 1, s, buddy.bddtrue, [0])
+    spot.set_weight(aut, idx, 0)
+    idx = aut.new_edge(s, 0, buddy.bddtrue)
+    spot.set_weight(aut, idx, 0)
+
+    s = aut.new_state()
+    idx = aut.new_edge(2, s, buddy.bddtrue)
+    spot.set_weight(aut, idx, 1)
+    idx = aut.new_edge(s, 2, buddy.bddtrue)
+    spot.set_weight(aut, idx, 1)
+
+    return aut
+

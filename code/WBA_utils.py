@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import spot, buddy
 from copy import deepcopy as deepcopy
 import array
+from collections import deque
 
 __bench_stats__ = {"n_backedges":0, "n_bf_iter":0, "n_scc":0,
                    "n_pump_loop":0, "n_propagate":0}
@@ -230,7 +231,7 @@ class mod_BF_iter:
 
         while self.onLoop_[sprime] == 0:
             self.onLoop_[sprime] = 1
-            assert self.Pred_[sprime], "something happened"
+            assert self.Pred_[sprime]
             sprime = self.g_.edge_storage(self.Pred_[sprime][-1]).src
 
         if self.onLoop_[sprime] == 1:
@@ -278,6 +279,82 @@ class mod_BF_iter:
             if (en_prime > en_dst):
                 #Loop candidate
                 self.checkLoop(dst)
+
+    
+    def trace(self, src, dst, c0, names):
+        next_pred = [0] * self.N_
+        
+        #grabbing the initial path 
+        path = deque()
+
+        en = self.Pred_[dst][0] 
+        e = self.g_.edge_storage(en)
+        while e.src != src:
+            path.append(en)
+            en = self.Pred_[e.dst][0]
+            next_pred[e.dst] += 1
+            e = self.g_.edge_storage(en)
+        path.append(en)
+        next_pred[e.dst] += 1
+
+        #building the trace
+        energy = deque()
+        energy.append((src, c0))
+
+        res = []
+        infix = []
+        cycle = []
+
+        while path:
+            en = path.pop()
+            e = self.g_.edge_storage(en)
+            ew = spot.get_weight(self.g_, en)
+            print("POPPED ", names[e.src], " | ", names[e.dst], " number of predecessors : ", self.Pred_[e.src])
+
+            new_energy = energy[-1] + ew
+            
+            if new_energy < 0:
+                #going back to a point that has a cycle
+                while next_pred[en.dst] >= len(self.Pred_[e.dst]):
+                    en = infix.pop()
+                    e = self.g_.edge_storage(en)
+                    #correction to main path
+                    path.append(en)
+                #getting cycles
+                while next_pred[en.dst] < len(self.Pred_[e.dst]):
+                    pred = self.Pred_[en.src][next_pred[en.dst]]
+                    current = pred
+                    while current != pred:
+                        cycle.append(current)
+                    cycle.append(current)
+                    res.append((infix, cycle.inverse()))
+                    (infix, cycle) = ([], [])
+                    #PUMP AND ADD ENERGY OF CYCLE STATES
+                    new_energy = 
+                    if new_energy > 0: 
+                        break
+                    next_pred[en.dst] += 1
+            energy.append((e.dst, new_energy))
+            infix.append(en)
+
+        if infix:
+            res.append((infix, []))
+
+        #DISPLAY
+
+        print(res)
+        for (infix, cycle) in res:
+            print("INFIX")
+            for ei in infix:
+                e = self.g_.edge_storage(ei)
+                print(names[e.src], " to ", names[e.dst], " weight : ", spot.get_weight(self.g_, ei))
+            print("CYCLE")
+            for ec in cycle:
+                e = self.g_.edge_storage(ec)
+                print(names[e.src], " to ", names[e.dst], " weight : ", spot.get_weight(self.g_, ec))
+            
+        return res
+                
 
     def BF1(self):
 
@@ -458,6 +535,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                 print_c("We found a non-negative loop using edge", names[be.src],
                         "->", names[be.dst]+" directly.")
                 highlight_c(aut_degen, pred3, "tsbrg")
+                #bf2.trace1(be_num, names)
+                bf2.trace(bf2.s0_, be.src, bf2.c0_, names)
                 return True
             else:
                 #restart with the new energy
@@ -476,6 +555,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                     print_c("We found a non-negative loop using edge", names[be.src],
                             "->", names[be.dst]+" in the second iteration.")
                     highlight_c(aut_degen, pred3, "tsbrg")
+                    #bf2.trace1(be_num, names)
+                    bf2.trace(bf2.s0_, be.src, bf2.c0_, names)
                     return True
     print_c("No feasible Büchi run detected!")
     return False
