@@ -281,12 +281,16 @@ class mod_BF_iter:
                 self.checkLoop(dst)
 
     def getCycle_(self, first_edge, next_pred):
-        current = first_edge
         fr = self.g_.edge_storage(first_edge)
+        if fr.src == fr.dst:
+            return ([first_edge], self.wup_)
+        
+        current = first_edge
         c = fr
         cycle = []
         energy_it = []
         energy = 0
+        
         while c.src != fr.dst:
                 cycle.append(current)
                 c = self.g_.edge_storage(current)
@@ -351,7 +355,7 @@ class mod_BF_iter:
 
             (_, v) = energy[-1]
             new_energy = v + ew
-            
+
             if new_energy < 0:
                 #going back to a point that has a cycle
                 path.append(en)
@@ -580,7 +584,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                         "->", names[be.dst]+" directly.")
                 highlight_c(aut_degen, pred3, "tsbrg")
                 #bf2.trace1(be_num, names)
-                bf2.trace(bf2.s0_, be.src, bf2.c0_, names)
+                #bf2.trace(bf2.s0_, be.src, bf2.c0_, names)
+                bf2.trace(bf2.s0_, be.src, 0, names)
                 return True
             else:
                 #restart with the new energy
@@ -600,7 +605,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                             "->", names[be.dst]+" in the second iteration.")
                     highlight_c(aut_degen, pred3, "tsbrg")
                     #bf2.trace1(be_num, names)
-                    bf2.trace(bf2.s0_, be.src, bf2.c0_, names)
+                    #bf2.trace(bf2.s0_, be.src, bf2.c0_, names)
+                    bf2.trace(bf2.s0_, be.src, 0, names)
                     return True
     print_c("No feasible Büchi run detected!")
     return False
