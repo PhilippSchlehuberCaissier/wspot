@@ -291,8 +291,8 @@ class mod_BF_iter:
         e = self.g_.edge_storage(en)
         while e.src != src:
             path.append(en)
-            en = self.Pred_[e.dst][0]
             next_pred[e.dst] += 1
+            en = self.Pred_[e.src][0]
             e = self.g_.edge_storage(en)
         path.append(en)
         next_pred[e.dst] += 1
@@ -309,33 +309,60 @@ class mod_BF_iter:
             en = path.pop()
             e = self.g_.edge_storage(en)
             ew = spot.get_weight(self.g_, en)
-            print("POPPED ", names[e.src], " | ", names[e.dst], " number of predecessors : ", self.Pred_[e.src])
+            print("taking edge", names[e.src], names[e.dst])
 
-            new_energy = energy[-1] + ew
+            (_, v) = energy[-1]
+            new_energy = v + ew
+
+            print(energy)
             
             if new_energy < 0:
                 #going back to a point that has a cycle
-                while next_pred[en.dst] >= len(self.Pred_[e.dst]):
+                path.append(en)
+                while next_pred[e.src] >= len(self.Pred_[e.src]):
+                    print("checking edge ", names[e.src], names[e.dst], next_pred[e.src])
+                    if not infix:
+                        break
                     en = infix.pop()
                     e = self.g_.edge_storage(en)
-                    #correction to main path
+                    #here
+                    next_pred[e.dst] -= 1
+                    energy.pop()
                     path.append(en)
+                if energy :
+                    energy.pop()
+                
                 #getting cycles
-                while next_pred[en.dst] < len(self.Pred_[e.dst]):
-                    pred = self.Pred_[en.src][next_pred[en.dst]]
-                    current = pred
-                    while current != pred:
-                        cycle.append(current)
+                print("suffix of cycle ", names[e.src],"-", names[e.dst], "next pred", next_pred[e.src])
+                current = self.Pred_[e.src][next_pred[e.src]]
+                c = self.g_.edge_storage(current)
+                print("first state of cycle ", c.src ,"-", c.dst)
+                while c.src != e.src:
                     cycle.append(current)
-                    res.append((infix, cycle.inverse()))
-                    (infix, cycle) = ([], [])
-                    #PUMP AND ADD ENERGY OF CYCLE STATES
-                    new_energy = 
-                    if new_energy > 0: 
-                        break
-                    next_pred[en.dst] += 1
-            energy.append((e.dst, new_energy))
-            infix.append(en)
+                    c = self.g_.edge_storage(current)
+                    current = self.Pred_[c.src][next_pred[c.src]]
+                    next_pred[c.src] += 1
+                next_pred[c.src] += 1
+                
+                cycle.reverse()
+                res.append((infix, cycle))
+                
+                #PUMP AND ADD ENERGY OF CYCLE STATES
+                new_energy = self.wup_
+                for tn in cycle:
+                    tw = spot.get_weight(self.g_, tn)
+                    new_energy = min(self.wup_, new_energy + tw)
+                
+                (infix, cycle) = ([], [])
+                #next_pred[e.dst] += 1
+
+                energy.append((e.src, new_energy))
+                infix.append(en)
+
+            else:
+                energy.append((e.dst, new_energy))
+                infix.append(en)
+                
 
         if infix:
             res.append((infix, []))
@@ -354,6 +381,7 @@ class mod_BF_iter:
                 print(names[e.src], " to ", names[e.dst], " weight : ", spot.get_weight(self.g_, ec))
             
         return res
+
                 
 
     def BF1(self):
@@ -528,7 +556,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
             (en3, pred3) = bf2.FindMaxEnergy(be.dst, wup, start_energy)
             print_c(en3, pred3)
             if en3[be.src] >= 0:
-                new_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
+                new_energy = min(en3[be.src] + spot.get_weight(aut_degen, be_num), wup)
             else:
                 new_energy = -1
             if new_energy >= start_energy:
