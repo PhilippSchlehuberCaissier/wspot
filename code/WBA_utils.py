@@ -280,6 +280,45 @@ class mod_BF_iter:
                 #Loop candidate
                 self.checkLoop(dst)
 
+    def getCycle_(self, first_edge, next_pred):
+        current = first_edge
+        fr = self.g_.edge_storage(first_edge)
+        c = fr
+        cycle = []
+        energy_it = []
+        energy = 0
+        while c.src != fr.dst:
+                cycle.append(current)
+                c = self.g_.edge_storage(current)
+                current = self.Pred_[c.src][next_pred[c.src]]
+                next_pred[c.src] += 1
+
+                while(next_pred[c.src] < len(self.Pred_[c.src])):
+                    (sub_cycle, n) = self.getCycle_(self.Pred_[c.src][next_pred[c.src]], next_pred)
+                    sub_cycle.reverse()
+                    cycle = cycle + sub_cycle
+                    energy = max(energy, n)
+                    next_pred[c.src] += 1
+
+                energy += spot.get_weight(self.g_, current)
+                energy_it.append(energy)
+
+        energy_it.reverse()
+        cycle.reverse()
+
+        l = len(energy_it)
+        energies = [0] * l
+        energies[0] = self.wup_
+        i = 1
+
+        while True:
+            tmp = energies[i]
+            energies[i] = min(self.wup_, energies[i - 1] + energy_it[i - 1])
+            if energies[i] == tmp:
+                break
+            i = (i + 1) % l
+
+        return (cycle, min(self.wup_, energies[-2] + energy_it[-1])) 
     
     def trace(self, src, dst, c0, names):
         next_pred = [0] * self.N_
@@ -309,18 +348,14 @@ class mod_BF_iter:
             en = path.pop()
             e = self.g_.edge_storage(en)
             ew = spot.get_weight(self.g_, en)
-            print("taking edge", names[e.src], names[e.dst])
 
             (_, v) = energy[-1]
             new_energy = v + ew
-
-            print(energy)
             
             if new_energy < 0:
                 #going back to a point that has a cycle
                 path.append(en)
                 while next_pred[e.src] >= len(self.Pred_[e.src]):
-                    print("checking edge ", names[e.src], names[e.dst], next_pred[e.src])
                     if not infix:
                         break
                     en = infix.pop()
@@ -332,38 +367,19 @@ class mod_BF_iter:
                 if energy :
                     energy.pop()
                 
-                #getting cycles
-                print("suffix of cycle ", names[e.src],"-", names[e.dst], "next pred", next_pred[e.src])
-                current = self.Pred_[e.src][next_pred[e.src]]
-                c = self.g_.edge_storage(current)
-                print("first state of cycle ", c.src ,"-", c.dst)
-                while c.src != e.src:
-                    cycle.append(current)
-                    c = self.g_.edge_storage(current)
-                    current = self.Pred_[c.src][next_pred[c.src]]
-                    next_pred[c.src] += 1
-                next_pred[c.src] += 1
-                
-                cycle.reverse()
-                res.append((infix, cycle))
-                
                 #PUMP AND ADD ENERGY OF CYCLE STATES
-                new_energy = self.wup_
-                for tn in cycle:
-                    tw = spot.get_weight(self.g_, tn)
-                    new_energy = min(self.wup_, new_energy + tw)
-                
+                current = self.Pred_[e.src][next_pred[e.src]]
+                (cycle, new_energy) = self.getCycle_(current, next_pred)
+
+                res.append((infix, cycle))
                 (infix, cycle) = ([], [])
-                #next_pred[e.dst] += 1
 
                 energy.append((e.src, new_energy))
-                infix.append(en)
 
             else:
                 energy.append((e.dst, new_energy))
                 infix.append(en)
                 
-
         if infix:
             res.append((infix, []))
 
