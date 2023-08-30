@@ -279,131 +279,7 @@ class mod_BF_iter:
             if (en_prime > en_dst):
                 #Loop candidate
                 self.checkLoop(dst)
-
-    def getCycle_(self, first_edge, next_pred):
-        fr = self.g_.edge_storage(first_edge)
-        if fr.src == fr.dst:
-            return ([first_edge], self.wup_)
-        
-        current = first_edge
-        c = fr
-        cycle = []
-        energy_it = []
-        energy = 0
-        
-        while c.src != fr.dst:
-                cycle.append(current)
-                c = self.g_.edge_storage(current)
-                current = self.Pred_[c.src][next_pred[c.src]]
-                next_pred[c.src] += 1
-
-                while(next_pred[c.src] < len(self.Pred_[c.src])):
-                    (sub_cycle, n) = self.getCycle_(self.Pred_[c.src][next_pred[c.src]], next_pred)
-                    sub_cycle.reverse()
-                    cycle = cycle + sub_cycle
-                    energy = max(energy, n)
-                    next_pred[c.src] += 1
-
-                energy += spot.get_weight(self.g_, current)
-                energy_it.append(energy)
-
-        energy_it.reverse()
-        cycle.reverse()
-
-        l = len(energy_it)
-        energies = [0] * l
-        energies[0] = self.wup_
-        i = 1
-
-        while True:
-            tmp = energies[i]
-            energies[i] = min(self.wup_, energies[i - 1] + energy_it[i - 1])
-            if energies[i] == tmp:
-                break
-            i = (i + 1) % l
-
-        return (cycle, min(self.wup_, energies[-2] + energy_it[-1])) 
     
-    def trace(self, src, dst, c0, names):
-        next_pred = [0] * self.N_
-        
-        #grabbing the initial path 
-        path = deque()
-
-        en = self.Pred_[dst][0] 
-        e = self.g_.edge_storage(en)
-        while e.src != src:
-            path.append(en)
-            next_pred[e.dst] += 1
-            en = self.Pred_[e.src][0]
-            e = self.g_.edge_storage(en)
-        path.append(en)
-        next_pred[e.dst] += 1
-
-        #building the trace
-        energy = deque()
-        energy.append((src, c0))
-
-        res = []
-        infix = []
-        cycle = []
-
-        while path:
-            en = path.pop()
-            e = self.g_.edge_storage(en)
-            ew = spot.get_weight(self.g_, en)
-
-            (_, v) = energy[-1]
-            new_energy = v + ew
-
-            if new_energy < 0:
-                #going back to a point that has a cycle
-                path.append(en)
-                while next_pred[e.src] >= len(self.Pred_[e.src]):
-                    if not infix:
-                        break
-                    en = infix.pop()
-                    e = self.g_.edge_storage(en)
-                    #here
-                    next_pred[e.dst] -= 1
-                    energy.pop()
-                    path.append(en)
-                if energy :
-                    energy.pop()
-                
-                #PUMP AND ADD ENERGY OF CYCLE STATES
-                current = self.Pred_[e.src][next_pred[e.src]]
-                (cycle, new_energy) = self.getCycle_(current, next_pred)
-
-                res.append((infix, cycle))
-                (infix, cycle) = ([], [])
-
-                energy.append((e.src, new_energy))
-
-            else:
-                energy.append((e.dst, new_energy))
-                infix.append(en)
-                
-        if infix:
-            res.append((infix, []))
-
-        #DISPLAY
-
-        print(res)
-        for (infix, cycle) in res:
-            print("INFIX")
-            for ei in infix:
-                e = self.g_.edge_storage(ei)
-                print(names[e.src], " to ", names[e.dst], " weight : ", spot.get_weight(self.g_, ei))
-            print("CYCLE")
-            for ec in cycle:
-                e = self.g_.edge_storage(ec)
-                print(names[e.src], " to ", names[e.dst], " weight : ", spot.get_weight(self.g_, ec))
-            
-        return res
-
-                
-
     def BF1(self):
 
         """
@@ -483,130 +359,310 @@ class mod_BF_iter:
 # Whole picture
 # This is algorithm 1
 
-def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations and info"=0):
-    """_summary_
-
-    Args:
-        hoa (HOA automaton): generalized weighted büchi automaton,  filename or twa_graph
-        s0 (state): initial state
-        wup (weak upper bound):
-        c0 (initial credit):
-        do_display: 0 No information is displayed at all
-                    1 Only text is shown
-                    2 The (sub)-graphs are shown as well, only works from jupyter
+class buechi_info:
+    """Class allowing info obtained from running the algorithm to be stored for later tracing
     """
 
-    def print_c(*args, **kwargs):
-        if do_display > 0:
-            print(*args, **kwargs)
-        return
-    def display_c(aut, opt=""):
-        if do_display > 1:
-            display(aut.show(opt))
-        return
+    def __init__(self):
+        self.s0_ = None
+        self.bf_ = None
+        self.scc_ = None
+        self.pred_ = None
+        self.names_ = None
+        self.rev_ = None
+        self.ren_ = None
+        self.be_ = None   
+        self.ben_ = None
 
-    def highlight_c(aut, pred, opt=""):
-        if do_display > 1:
-            to_highlight = []
-            for subpred in pred:
-                for e in subpred:
-                    to_highlight.append(e)
-            aut.highlight_edges(to_highlight, 1)
-        display_c(aut, opt)
+    def BuechiEnergy(self, hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations and info"=0):
+        """_summary_
 
-    if isinstance(hoa, str):
-        aut = spot.automaton(hoa)
-    else:
-        aut = hoa
+        Args:
+            hoa (HOA automaton): generalized weighted büchi automaton,  filename or twa_graph
+            s0 (state): initial state
+            wup (weak upper bound):
+            c0 (initial credit):
+            do_display: 0 No information is displayed at all
+                        1 Only text is shown
+                        2 The (sub)-graphs are shown as well, only works from jupyter
+        """
 
-    print_c("Original automaton")
-    display_c(aut, "tsbrg")
+        self.s0_ = s0
 
-    bf = mod_BF_iter(aut)
-    # whole automaton
-    # Finds optimal prefix energy for each
-    # state, disregarding the colors
-    en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
-    print_c(f"Prefix energy per state\n{en}\nCurrent optimal predescessor\n{pred}")
-    print_c("""State names are: "state number, max energy"\nOptimal predescessor is highlighted in pink""");
-    aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-    highlight_c(aut, pred, "tsbrg")
+        def print_c(*args, **kwargs):
+            if do_display > 0:
+                print(*args, **kwargs)
+            return
+        def display_c(aut, opt=""):
+            if do_display > 1:
+                display(aut.show(opt))
+            return
 
-    ssi = spot.scc_info(aut)
-    # Loop over all SCCs
-    for i in range(ssi.scc_count()):
-        if not ssi.is_accepting_scc(i):
-            continue
-        __bench_stats__["n_scc"] += 1
-        print_c("Checking SCC", i)
-        aut_degen, acc_edge, rename = degen_counting(aut, ssi, i)
-        print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
+        def highlight_c(aut, pred, opt=""):
+            if do_display > 1:
+                to_highlight = []
+                for subpred in pred:
+                    for e in subpred:
+                        to_highlight.append(e)
+                aut.highlight_edges(to_highlight, 1)
+            display_c(aut, opt)
 
-        revrename = {v: k for k, v in rename.items()}
+        if isinstance(hoa, str):
+            aut = spot.automaton(hoa)
+        else:
+            aut = hoa
 
-        # renaming of states
-        names = ["" for _ in range(len(rename))]
-        for old, new in rename.items():
-            names[new] = str(old)
-        names = names * aut.get_acceptance().used_sets().max_set()
-        for i in range(len(names)):
-            names[i] = names[i]+":"+str(i//len(rename))
-        aut_degen.set_state_names(names)
+        print_c("Original automaton")
+        display_c(aut, "tsbrg")
 
-        print_c(f"Current SCC with: {aut_degen.num_states()} states and {len(acc_edge)} back-edges")
-        print_c(rename)
-        display_c(aut_degen, "tsbrg")
+        bf = mod_BF_iter(aut)
+        self.bf_ = bf
 
-        # current degeneralized SCC
-        bf2 = mod_BF_iter(aut_degen)
+        # whole automaton
+        # Finds optimal prefix energy for each
+        # state, disregarding the colors
+        en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
+        print_c(f"Prefix energy per state\n{en}\nCurrent optimal predescessor\n{pred}")
+        print_c("""State names are: "state number, max energy"\nOptimal predescessor is highlighted in pink""");
+        aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
+        highlight_c(aut, pred, "tsbrg")
 
-        # Loop over each (accepting) backedge
-        # of the degeneralized current SCC
-        for be_num in acc_edge:
-            __bench_stats__["n_backedges"] += 1
-            be = aut_degen.edge_storage(be_num)
-            print_c("Analysing backedge "+ names[be.src],"->", names[be.dst]+".")
-
-            start_energy = en[revrename[be.dst]]
-            if start_energy < 0:
+        ssi = spot.scc_info(aut)
+        # Loop over all SCCs
+        for i in range(ssi.scc_count()):
+            if not ssi.is_accepting_scc(i):
                 continue
-            print_c("We start with "+ str(start_energy) + " energy in state "+names[be.dst] + ".")
+            __bench_stats__["n_scc"] += 1
+            print_c("Checking SCC", i)
+            aut_degen, acc_edge, rename = degen_counting(aut, ssi, i)
+            print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
 
-            # look from backedge->destination
-            (en3, pred3) = bf2.FindMaxEnergy(be.dst, wup, start_energy)
-            print_c(en3, pred3)
-            if en3[be.src] >= 0:
-                new_energy = min(en3[be.src] + spot.get_weight(aut_degen, be_num), wup)
-            else:
-                new_energy = -1
-            if new_energy >= start_energy:
-                print_c("We found a non-negative loop using edge", names[be.src],
-                        "->", names[be.dst]+" directly.")
-                highlight_c(aut_degen, pred3, "tsbrg")
-                #bf2.trace1(be_num, names)
-                #bf2.trace(bf2.s0_, be.src, bf2.c0_, names)
-                bf2.trace(bf2.s0_, be.src, 0, names)
-                return True
-            else:
-                #restart with the new energy
-                if new_energy < 0:
+            revrename = {v: k for k, v in rename.items()}
+
+            # renaming of states
+            names = ["" for _ in range(len(rename))]
+            for old, new in rename.items():
+                names[new] = str(old)
+            names = names * aut.get_acceptance().used_sets().max_set()
+            for i in range(len(names)):
+                names[i] = names[i]+":"+str(i//len(rename))
+            aut_degen.set_state_names(names)
+
+            print_c(f"Current SCC with: {aut_degen.num_states()} states and {len(acc_edge)} back-edges")
+            print_c(rename)
+            display_c(aut_degen, "tsbrg")
+
+            # current degeneralized SCC
+            bf2 = mod_BF_iter(aut_degen)
+    
+            # Loop over each (accepting) backedge
+            # of the degeneralized current SCC
+            for be_num in acc_edge:
+                __bench_stats__["n_backedges"] += 1
+                be = aut_degen.edge_storage(be_num)
+                print_c("Analysing backedge "+ names[be.src],"->", names[be.dst]+".")
+    
+                start_energy = en[revrename[be.dst]]
+                if start_energy < 0:
                     continue
-                print_c("We restart with "+ str(new_energy) + " energy in state "+names[be.dst] + ".")
+                print_c("We start with "+ str(start_energy) + " energy in state "+names[be.dst] + ".")
 
-                # look again from backedge->destination but with lower start energy
-                en3, pred3 = bf2.FindMaxEnergy(be.dst, wup, new_energy)
+                # look from backedge->destination
+                (en3, pred3) = bf2.FindMaxEnergy(be.dst, wup, start_energy)
                 print_c(en3, pred3)
                 if en3[be.src] >= 0:
-                    even_newer_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
+                    new_energy = min(en3[be.src] + spot.get_weight(aut_degen, be_num), wup)
                 else:
-                    even_newer_energy = -1
-                if  even_newer_energy >= new_energy:
+                    new_energy = -1
+                if new_energy >= start_energy:
                     print_c("We found a non-negative loop using edge", names[be.src],
-                            "->", names[be.dst]+" in the second iteration.")
+                            "->", names[be.dst]+" directly.")
                     highlight_c(aut_degen, pred3, "tsbrg")
-                    #bf2.trace1(be_num, names)
-                    #bf2.trace(bf2.s0_, be.src, bf2.c0_, names)
-                    bf2.trace(bf2.s0_, be.src, 0, names)
+                    
+                    self.scc_ = bf2
+                    self.pred_ = bf.Pred_
+                    self.names_ = names
+                    self.rev_ = revrename
+                    self.ren_ = rename
+                    self.be_ = be
+                    self.ben_ = be_num
+                    
                     return True
-    print_c("No feasible Büchi run detected!")
-    return False
+                else:
+                    #restart with the new energy
+                    if new_energy < 0:
+                        continue
+                    print_c("We restart with "+ str(new_energy) + " energy in state " + names[be.dst] + ".")
+
+                    # look again from backedge->destination but with lower start energy
+                    en3, pred3 = bf2.FindMaxEnergy(be.dst, wup, new_energy)
+                    print_c(en3, pred3)
+                    if en3[be.src] >= 0:
+                        even_newer_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
+                    else:
+                        even_newer_energy = -1
+                    if  even_newer_energy >= new_energy:
+                        print_c("We found a non-negative loop using edge", names[be.src],
+                                "->", names[be.dst]+" in the second iteration.")
+                        highlight_c(aut_degen, pred3, "tsbrg")
+
+                        self.scc_ = bf2
+                        self.pred_ = bf.Pred_
+                        self.names_ = names
+                        self.rev_ = revrename
+                        self.ren_ = rename
+                        self.be_ = be
+                        self.ben_ = be_num
+                        
+                        return True
+        print_c("No feasible Büchi run detected!")
+
+        return False
+    
+
+def getCycle_(bf, first_edge, next_pred, wup):
+    fr = bf.g_.edge_storage(first_edge)
+    if fr.src == fr.dst:
+        return ([first_edge], wup)
+    
+    current = first_edge
+    c = fr
+    cycle = []
+    energy_it = []
+    energy = 0
+    
+    while c.src != fr.dst:
+            cycle.append(current)
+            c = bf.g_.edge_storage(current)
+            current = bf.Pred_[c.src][next_pred[c.src]]
+            next_pred[c.src] += 1
+            while(next_pred[c.src] < len(bf.Pred_[c.src])):
+                (sub_cycle, n) = getCycle_(bf, bf.Pred_[c.src][next_pred[c.src]], next_pred, wup)
+                sub_cycle.reverse()
+                cycle = cycle + sub_cycle
+                energy = max(energy, n)
+                next_pred[c.src] += 1
+            energy += spot.get_weight(bf.g_, current)
+            energy_it.append(energy)
+    energy_it.reverse()
+    cycle.reverse()
+    l = len(energy_it)
+    energies = [0] * l
+    energies[0] = wup
+    i = 1
+    while True:
+        tmp = energies[i]
+        energies[i] = min(wup, energies[i - 1] + energy_it[i - 1])
+        if energies[i] == tmp:
+            break
+        i = (i + 1) % l
+    return (cycle, min(wup, energies[-2] + energy_it[-1])) 
+
+def trace(bf, src, dst, wup, c0, names):
+    next_pred = [0] * bf.N_
+    
+    #grab the initial path of 0 predecessors
+    path = deque()
+    if not bf.Pred_[dst]:
+        return ([], c0)
+    
+    en = bf.Pred_[dst][0] 
+    e = bf.g_.edge_storage(en)
+    while e.src != src:
+        path.append(en)
+        next_pred[e.dst] += 1
+        en = bf.Pred_[e.src][0]
+        e = bf.g_.edge_storage(en)
+    path.append(en)
+    next_pred[e.dst] += 1
+    #build the tracebf
+    energy = deque()
+    energy.append((src, c0))
+    res = []
+    infix = []
+    cycle = []
+    while path:
+        en = path.pop()
+        e = bf.g_.edge_storage(en)
+        ew = spot.get_weight(bf.g_, en)
+        (_, v) = energy[-1]
+        new_energy = v + ew
+        if new_energy < 0:
+            #go back to a point that has a cycle
+            path.append(en)
+            while next_pred[e.src] >= len(bf.Pred_[e.src]):
+                if not infix:
+                    break
+                en = infix.pop()
+                e = bf.g_.edge_storage(en)
+                #here
+                next_pred[e.dst] -= 1
+                energy.pop()
+                path.append(en)
+            if energy :
+                energy.pop()
+            
+            #PUMP AND ADD ENERGY OF CYCLE STATES
+            current = bf.Pred_[e.src][next_pred[e.src]]
+            (cycle, new_energy) = getCycle_(bf, current, next_pred, wup)
+            res.append((infix, cycle))
+            (infix, cycle) = ([], [])
+            energy.append((e.src, new_energy))
+        else:
+            energy.append((e.dst, new_energy))
+            infix.append(en)
+            
+    if infix:
+        res.append((infix, []))
+        
+    return (res, new_energy)
+
+def fullTrace(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations and info"=0):
+        
+        #launch the algorithm
+        info = buechi_info()
+        info.BuechiEnergy(hoa, s0, wup, c0, do_display)
+
+        print("0", info.names_[0], info.rev_[0])
+
+        #get the trace of the prefix
+        print(info.names_[info.s0_], info.names_[info.be_.dst])
+        
+        (prefix, c0) = trace(info.bf_, info.s0_, info.be_.dst, wup, c0, info.names_)
+        c0 = min(wup, c0 + spot.get_weight(info.bf_.g_, info.ben_))
+
+        #get the trace of the cycle 
+        (decomposed_cycle, _) = trace(info.scc_, info.be_.dst, info.be_.src, wup, c0, info.names_)
+        if decomposed_cycle and decomposed_cycle[-1][0]:
+            decomposed_cycle[-1][0].append(info.ben_)
+        else:
+            decomposed_cycle.append(([info.ben_], [])) 
+        
+        """
+        #display
+        print("MAIN PREFIX")
+        for (infix, cycle) in prefix:
+            print("INFIX")
+            for ei in infix:
+                e = info.bf_.g_.edge_storage(ei)
+                print(info.names_[e.src], " to ", info.names_[e.dst], " weight : ", spot.get_weight(info.bf_.g_, ei))
+            print("CYCLE")
+            for ec in cycle:
+                e = info.bf_.g_.edge_storage(ec)
+                print(info.names_[e.src], " to ", info.names_[e.dst], " weight : ", spot.get_weight(info.bf_.g_, ec))
+
+        print("MAIN CYCLE")
+        for (infix, cycle) in decomposed_cycle:
+            print("INFIX")
+            for ei in infix:
+                e = info.bf_.g_.edge_storage(ei)
+                print(info.names_[e.src], " to ", info.names_[e.dst], " weight : ", spot.get_weight(info.bf_.g_, ei))
+            print("CYCLE")
+            for ec in cycle:
+                e = info.bf_.g_.edge_storage(ec)
+                print(info.ren_[e.src], " to ", info.ren_[e.dst], " weight : ", spot.get_weight(info.bf_.g_, ec))
+        """
+        
+        return prefix + decomposed_cycle
+    
+
