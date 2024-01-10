@@ -467,10 +467,32 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                     even_newer_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
                 else:
                     even_newer_energy = -1
+                print_c("We arrived with "+ str(even_newer_energy) + " energy in state "+names[be.dst] + ".")
                 if  even_newer_energy >= new_energy:
                     print_c("We found a non-negative loop using edge", names[be.src],
                             "->", names[be.dst]+" in the second iteration.")
                     highlight_c(aut_degen, pred3, "tsbrg")
                     return True
+                else:
+                    for node, energy in enumerate(en3):
+                        if energy == wup:
+                            print_c("we should check also from "+str(names[node])+".")
+                            en4, pred4 = bf2.FindMaxEnergy(node, wup, wup)
+                            print_c(en4, pred4)
+                            if en4[be.src] >= 0:
+                                newest_energy = min(en4[be.src]+spot.get_weight(aut_degen, be_num), wup)
+                                print_c("We  arrived  with "+ str(newest_energy) +
+                                        " energy in state "+names[be.dst] + ".")
+                                en5, pred5 = bf2.FindMaxEnergy(be.dst, wup, newest_energy)
+                                print_c(en5, pred5)
+                                print_c("We arrived with "+ str(en5[node]) +
+                                        " energy in state "+names[node] + ".")
+                                if  en5[node] == wup:
+                                    print_c("We found a non-negative loop using node",
+                                            names[node], "in the third iteration.")
+                                    # TODO: look at those highlights, I have no idea
+                                    highlight_c(aut_degen, pred4, "tsbrg")
+                                    highlight_c(aut_degen, pred5, "tsbrg")
+                                    return True
     print_c("No feasible Büchi run detected!")
     return False
