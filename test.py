@@ -1,9 +1,23 @@
 import itertools
 from dataclasses import dataclass
 from typing import List, Set, Tuple, Union
+from copy import copy, deepcopy
+
+def dprint(*args, **kwargs):
+    print(*args, **kwargs)
+def transpose(G:List[List[int]]) -> List[List[int]]:
+    """
+    Returns the transposed graph
+    """
+    GT = [[] for _ in range(len(G))]
+
+    for src, alist in enumerate(G):
+        for dst in alist:
+            GT[dst].append(src)
+
+    return GT
 
 # List of Predescessor
-
 # 0 : Dest state
 # 0' <-> 7 : Src state
 # The ith list here corresponds to the list of optimal predecessors
@@ -19,6 +33,19 @@ P1 = [[],
       [1, 6, 1],
       [5, 6],
       [1]]
+
+# Corresponding graph
+# adjacency list
+G1 = [[1],  # 0
+      [2, 5, 7],  # 1
+      [1, 3, 4],  # 2
+      [2, 3],  # 3
+      [2, 4],  # 4
+      [2, 6],  # 5
+      [5, 6],  # 6
+      [],  # 7
+      ]
+
 
 # Energy definition of the problem
 WUP1 = 75
@@ -47,6 +74,9 @@ P3 = [[],
 P = P1
 W = W1
 wup = WUP1
+G = G1
+GT = transpose(G)
+
 
 InnerMost = [0] * len(P)
 
@@ -250,7 +280,59 @@ def compress(path:List[int]) -> List[path_segment]:
     return res
 
 
-def check_energy_feas(cpath: List[path_segment], ic: int,
+@dataclass
+class energy:
+    """
+    Class representing an energy level.
+    Can be used in generalized BF in forward propagation
+    """
+    e : int
+
+    def __str__(self):
+        return f"(e={self.e}"
+
+    def __repr__(self, other):
+        return self.__str__()
+
+    @staticmethod
+    def get_min_element():
+        return energy(0)
+
+    @staticmethod
+    def get_max_element():
+        from math import inf
+        return energy(inf)
+
+    def prop(self, w: "weight like") -> Tuple[bool, "energy"]:
+        """
+        returns a new energy when propagated along an edge
+        of weight w.
+        Implicitly, energies are always forward propagated
+        Returns false if the propagation fails
+        """
+        en = energy(min(self.e + w, wup))
+        return en.e >= 0, en
+
+
+    def __le__(self, rhs: "energy") -> bool:
+        """
+        For comparison, energies behave like ints
+        """
+        return self.e <= rhs.e
+
+    def __lt__(self, rhs: "energy") -> bool:
+        return self.e < rhs.e
+
+    def __eq__(self, other: "energy") -> bool:
+        return self.e == other.e
+
+    def __deepcopy__(self, memodict={}):
+        return energy(self.e)
+
+    def __copy__(self):
+        return self.__deepcopy__()
+
+def check_energy_feas(cpath: List[path_segment], ic: energy,
                       wup: int) -> bool:
     """
     Check if the given (compressed) path is energy feasible in a
@@ -279,24 +361,24 @@ def check_energy_feas(cpath: List[path_segment], ic: int,
     e = ic
 
     def prop_along(e: int, p: List[int]):
-        for p in zip(p[:-1], p[1:]):
-            e = min(wup, e + W[p])
-            if e < 0:
+        for seg in zip(p[:-1], p[1:]):
+            succ, e = e.prop(W[seg])
+            if not succ:
                 return e
         return e
 
     for ps in cpath:
         # Prefix to next loop, auto skipped if empty
         e = prop_along(e, ps.prefix)
-        if e < 0:
+        if e.e < 0:
             return False
         # Loop part
         # Has loop?
         if ps.loop:
-            estart = e
+            estart = copy(e)
             # Loop once
             e = prop_along(e, ps.loop)
-            if e < 0:
+            if e.e < 0:
                 return False
             if e <= estart:
                 # Discard neutral or negativ loops.
@@ -313,6 +395,147 @@ def check_energy_feas(cpath: List[path_segment], ic: int,
         return True
     else:
         return check_energy_feas(cpath, e, wup)
+
+
+### Optimisation over wup and ic
+
+@dataclass
+class bounds:
+    ic: int  # Minimal initial credit
+    wup: int  # Minimal wup necessary
+
+    def __str__(self):
+        return f"(ic={self.ic}, wup={self})"
+
+    def __repr__(self, other):
+        return self.__str__()
+
+    @staticmethod
+    def get_min_element():
+        return bounds(0, 0)
+
+    @staticmethod
+    def get_max_element():
+        from math import inf
+        return bounds(inf, inf)
+
+    def prop(self, w: "weight like") -> None:
+        """
+        Update the structure when propagated along an edge
+        of weight w.
+        Implicitly, bounds aare always backpropagated
+        """
+
+
+    def __le__(self, rhs: "bounds") -> bool:
+        """
+        An instance of bounds is considered worse (-> larger)
+        if it is worse (larger) for both items
+        """
+        return self.ic <= rhs.ic and self.wup <= rhs.wup
+
+
+class pareto_front(object):
+    def __init__(self, element_type):
+        self.elements = []
+        self.element_type = element_type
+
+    def __str__(self):
+        return str(self.elements)
+
+    def __repr__(self, other):
+        return self.__str__()
+
+    def __eq__(self, other: "pareto_front"):
+        return (len(self.elements) == len(other.elements)) \
+               and (set(self.elements) == set(other.elements))
+
+    def get_min_element(self) -> "pareto_front":
+        pr = pareto_front(self.element_type)
+        pr.add(self.element_type.get_min_element())
+        return pr
+
+    def get_max_element(self) -> "pareto_front":
+        pr = pareto_front(self.element_type)
+        pr.add(self.element_type.get_max_element())
+        return pr
+
+    def add(self, elem: "Element type") -> bool:
+        """
+        Adds an element to the front if it is pareto optimal.
+        If so existing elements are possibly discarded.
+        Returns True iff the element was inserted.
+        """
+        if any(map(lambda x: x <= elem, self.elements)):
+            return False
+
+        # Discard all that are larger in the current set
+        for idx in range(len(self.elements)-1, -1, -1):
+            if elem <= self.elements[idx]:
+                # Discard this element
+                elem[idx] = elem[-1] # elements are unordered -> erase by last
+                self.elements.pop() # Discard last
+
+def compute_minimal_bounds(cpath: List[path_segment]) -> bounds :
+    """
+    Compute the minimal bounds necessary to traverse the given graph
+    """
+
+    def back_prop_along(p: List[int], b: bounds) -> bounds:
+        """
+        back-propagate a bound along a path
+        """
+
+        for seg in zip(p[-2::-1], p[:0:-1]):
+            w = W[seg]
+            # Update
+            b.ic = max(0, b.ic - w)
+            # No checking for wup as this is what
+            # We want to compute
+            b.wup = max(b.wup, b.ic)
+
+        return b
+
+    def try_pump_cycle(p: List[int], b: bounds) -> bounds:
+        """
+        Pump a positive loop -> This does not change the
+        needed wup, but does affect the ic
+        """
+
+        # 1 back prop to get correct wup
+        bic = b.ic
+        b = back_prop_along(p, b)
+        # Check if the loop was positive
+        # AND actually needs to be pumped
+        if b.ic < bic:
+            # 2 "inverse" pump initial energy
+            # Set the initial energy to zero
+            # is corrected via the two calls
+            b.ic = 0
+            b = back_prop_along(p, b)
+            b = back_prop_along(p, b)
+        else:
+            dprint("Avoiding unnecessary or neutral loop")
+
+        return b
+
+    rb = bounds(0, 0)
+
+    for pe in reversed(cpath):
+        # everything needs to be reversed
+        # So loop before cycle
+        if pe.loop:
+            rb = try_pump_cycle(pe.loop, rb)
+        rb = back_prop_along(pe.prefix, rb)
+
+    return rb
+
+
+
+def gen_ext_bf(G:"graph", W: "weight",
+               s: int, e0: "energy-like",
+               ):
+
 
 if __name__ == '__main__':
 
@@ -375,4 +598,16 @@ if __name__ == '__main__':
     print("Results with energy; Backward")
     for x in allCPath4_B_R:
         print(x)
+
+    # Compute for each (open) path the minimal requirements
+    allCPath4_F_B = [(compute_minimal_bounds(cp), cp) for cp in allCPath4_F]
+    allCPath4_B_B = [(compute_minimal_bounds(cp), cp) for cp in allCPath4_B]
+
+    print("Minimal bounds; Forward")
+    for x in allCPath4_F_B:
+        print(x)
+    print("Minimal bounds; Backward")
+    for x in allCPath4_B_B:
+        print(x)
+
 
