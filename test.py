@@ -295,13 +295,13 @@ class energy:
         return self.__str__()
 
     @staticmethod
-    def get_min_element():
+    def get_neutral_plus():
         return energy(0)
 
     @staticmethod
-    def get_max_element():
+    def get_neutral_times():
         from math import inf
-        return energy(inf)
+        return energy(-inf)
 
     def prop(self, w: "weight like") -> Tuple[bool, "energy"]:
         """
@@ -313,6 +313,22 @@ class energy:
         en = energy(min(self.e + w, wup))
         return en.e >= 0, en
 
+    def o_plus(self, w: "weight like") -> "energy":
+        """
+        This corresponds to propagation,
+        however safeguarded against failure
+        """
+        succ, eprime = self.prop(w)
+        if succ:
+            return eprime
+        else:
+            return self.get_neutral_times()
+
+    def o_times(self, other: "energy") -> "energy":
+        """
+        For energy propagation, this corresponds to the max operation
+        """
+        return energy(max(self.e, other.e))
 
     def __le__(self, rhs: "energy") -> bool:
         """
@@ -358,14 +374,14 @@ def check_energy_feas(cpath: List[path_segment], ic: energy,
             assert len(ps.loop) >= 2
             assert ps.loop[-1] == ps.loop[0]
 
-    e = ic
-
-    def prop_along(e: int, p: List[int]):
+    def prop_along(e: energy, p: List[int]):
         for seg in zip(p[:-1], p[1:]):
             succ, e = e.prop(W[seg])
             if not succ:
                 return e
         return e
+
+    e = energy(ic)
 
     for ps in cpath:
         # Prefix to next loop, auto skipped if empty
@@ -387,11 +403,11 @@ def check_energy_feas(cpath: List[path_segment], ic: energy,
                 return False
             # Pump the loop
             # This can be done by propagating twice from wup
-            e = wup
+            e.e = wup
             e = prop_along(e, ps.loop)
             e = prop_along(e, ps.loop)
 
-    if e >= ic:
+    if e.e >= ic:
         return True
     else:
         return check_energy_feas(cpath, e, wup)
@@ -419,13 +435,19 @@ class bounds:
         from math import inf
         return bounds(inf, inf)
 
-    def prop(self, w: "weight like") -> None:
+    def prop(self, w: "weight like") -> Tuple[bool, "bounds"]:
         """
         Update the structure when propagated along an edge
         of weight w.
         Implicitly, bounds aare always backpropagated
+        Here, propagation has no limits, so the boolean returned is
+        always True
         """
+        bprime = bounds(max(self.ic - w, 0), self.wup)
+        bprime.wup = max(bprime.ic, bprime.wup)
+        return True, bprime
 
+    # Can not define o_plus and o_times on bounds
 
     def __le__(self, rhs: "bounds") -> bool:
         """
@@ -450,15 +472,46 @@ class pareto_front(object):
         return (len(self.elements) == len(other.elements)) \
                and (set(self.elements) == set(other.elements))
 
-    def get_min_element(self) -> "pareto_front":
+    def get_neutral_plus(self) -> "pareto_front":
+        """
+        Get the pareto_front that is neutral with
+        respect to the plus operation
+        \note this is somewhat ambiguous
+        """
         pr = pareto_front(self.element_type)
         pr.add(self.element_type.get_min_element())
         return pr
 
-    def get_max_element(self) -> "pareto_front":
+    def get_neutral_times(self) -> "pareto_front":
+        """
+        Get the pareto_front that is neutral with
+        respect to the times operation
+        \note this is somewhat ambiguous
+        """
         pr = pareto_front(self.element_type)
         pr.add(self.element_type.get_max_element())
         return pr
+
+    def o_plus(self, w: "weight like") -> "pareto_front":
+        """
+        Propagate each element of the pareto front along a weight w
+        """
+        newp = pareto_front(self.element_type)
+
+        for elem in self.elements:
+            newp.add(elem.prop(w))
+
+        return newp
+
+    def o_times(self, other: "pareto_front") -> "pareto_front":
+        """
+        Fuse the two fronts into one
+        """
+        newp = pareto_front(self.element_type)
+        for op in [self, other]:
+            for elem in op.elements:
+                newp.add(elem)
+        return newp
 
     def add(self, elem: "Element type") -> bool:
         """
@@ -476,6 +529,13 @@ class pareto_front(object):
                 elem[idx] = elem[-1] # elements are unordered -> erase by last
                 self.elements.pop() # Discard last
 
+    def __deepcopy__(self, memodict={}):
+        newp = pareto_front(self.element_type)
+        for elem in self.elements:
+            newp.elements.append(deepcopy(elem, memodict))
+        return newp
+
+
 def compute_minimal_bounds(cpath: List[path_segment]) -> bounds :
     """
     Compute the minimal bounds necessary to traverse the given graph
@@ -487,12 +547,8 @@ def compute_minimal_bounds(cpath: List[path_segment]) -> bounds :
         """
 
         for seg in zip(p[-2::-1], p[:0:-1]):
-            w = W[seg]
-            # Update
-            b.ic = max(0, b.ic - w)
-            # No checking for wup as this is what
-            # We want to compute
-            b.wup = max(b.wup, b.ic)
+            succ, b = b.prop(W[seg])
+            assert succ
 
         return b
 
@@ -519,7 +575,7 @@ def compute_minimal_bounds(cpath: List[path_segment]) -> bounds :
 
         return b
 
-    rb = bounds(0, 0)
+    rb = bounds.get_min_element()
 
     for pe in reversed(cpath):
         # everything needs to be reversed
@@ -531,10 +587,47 @@ def compute_minimal_bounds(cpath: List[path_segment]) -> bounds :
     return rb
 
 
+class gen_ext_bf:
+    """
+    Extended generic Bellman-Ford
+    """
+    def __init__(G:"graph", W: "weight",
+                 src: int, energy_type: "Type used as an energy",
+                 init: "energy_like or None"):
+        self.G = G
+        self.W = W
+        self.src = src
+        self.e_type = energy_type
+        self.init = init
 
-def gen_ext_bf(G:"graph", W: "weight",
-               s: int, e0: "energy-like",
-               ):
+        self.E = None  # Current energy-like
+        self.P = None  # Current predecessor
+        self.Ep = None  # Next energy-like
+        self.Pp = None  # Next predecessor
+
+    def run(self):
+
+        self.E = [self.e_type.get_neutral_times() for _ in range(len(self.G))]
+        self.P = [None]*len(self.E)
+        self.Ep = [None]*len(self.E)
+        self.Pp = [None]*len(self.E)
+
+        while self.E != self.Ep:
+            # New to old
+            self.E = deepcopy(self.Ep)
+            self.P = deepcopy(self.Pp)
+
+            # Run one round of gen BF
+            # Note: always runs on primed vars
+            self.run_gen_bf()
+            # Try to pump if changed
+            if self.E != self.Ep:
+                self.try_pump_all()
+
+
+
+
+
 
 
 if __name__ == '__main__':
