@@ -2,7 +2,7 @@ import itertools
 import dataclasses
 import sys
 from dataclasses import dataclass
-from typing import List, Set, Tuple, Union, Type
+from typing import List, Set, Tuple, Union, Type, ClassVar, Callable
 from copy import copy, deepcopy
 
 def dprint(*args, **kwargs):
@@ -27,6 +27,11 @@ def transpose(G:List[List[int]]) -> List[List[int]]:
 # The backedge is so to speak "bent away" for simplicity.
 # Instead of going back to 0 from 1 we go to 7 which is
 # implicitly the same as 0
+
+# G1 : Rabbit of death example
+# Each loop needs several sub-loops
+# States can have multiple necessary predecessors
+# and some states need to visit the same predecessor multiple times
 P1 = [[],  # 0
       [0, 2, 5, 2],  # 1
       [1, 3, 1, 4],  # 2
@@ -62,21 +67,21 @@ for (s, d, w) in [(0, 1, 0),
                   ]:
     W1[(s, d)] = w
 
-P2 = [[],
-      [0, 1],
-      [1]]
 
-P3 = [[],
-      [0, 2],
-      [1, 3],
-      [2],
-      [1],
-      [4]]
+# G1p
 
-P = P1
-W = W1
-wup = WUP1
-G = G1
+# G2 The "base" example for which our old algorithm failed
+# Each time you take the "main" loop you loose a bit of initial energy
+
+
+
+#defining which prob to use
+probnr = 1
+
+P = eval(f"P{1}")
+W = eval(f"W{1}")
+wup = eval(f"WUP{1}")
+G = eval(f"G{1}")
 GT = transpose(G)
 # Weights for transposed graph
 WT = dict()
@@ -482,7 +487,7 @@ def check_energy_feas(cpath: List[path_segment], ic: energy,
 
 ### Optimisation over wup and ic
 
-@dataclass(frozen=True, repr=False)
+@dataclass(kw_only=True, frozen=True, repr=False)
 class bounds(has_plus):
     """
     Note bounds are always propagated on the transposed graph.
@@ -501,12 +506,12 @@ class bounds(has_plus):
 
     @staticmethod
     def get_min_element():
-        return bounds(0, 0)
+        return bounds(ic=0, wup=0)
 
     @staticmethod
     def get_max_element():
         from math import inf
-        return bounds(inf, inf)
+        return bounds(ic=inf, wup=inf)
 
     @staticmethod
     def get_neutral_plus() -> "bounds":
@@ -521,7 +526,7 @@ class bounds(has_plus):
         Pumping a bound along an energy positiv cycle
         only reduces the initial credit, the wup remains unchanged
         """
-        return bounds(0, self.wup)
+        return bounds(ic=0, wup=self.wup)
 
     def prop(self, src: "state", dst: "state") -> Tuple[bool, "bounds"]:
         """
@@ -534,7 +539,7 @@ class bounds(has_plus):
         w = WT[(src, dst)]
         new_ic = max(self.ic - w, 0)
         new_wup = max(self.wup, new_ic)
-        return True, bounds(new_ic, new_wup)
+        return True, bounds(ic=new_ic, wup=new_wup)
 
     def o_plus(self, src: "state", dst: "state") -> "bounds":
         succ, bprime = self.prop(src, dst)
@@ -552,6 +557,87 @@ class bounds(has_plus):
         """
         return self.ic <= rhs.ic and self.wup <= rhs.wup
 
+@dataclass(kw_only=True, frozen=True, repr=False)
+class accepting_bounds(bounds):
+    esrc : ClassVar[int]  # Source vertex of special trans
+    edst : ClassVar[int]  # Destination vertex of special trans
+    crit_ic : ClassVar[int]  # critical initial energy.
+                             # If below, a positive loop must have been encountered
+
+    loop_counter : int = 0 # Keeps track of how often the loop was visited, bounded in [0, 3]
+
+    def __str__(self):
+        return f"(ic={self.ic}, wup={self.wup}, lc={self.loop_counter})"
+
+    def __repr__(self):
+        return self.__str__()
+
+    @staticmethod
+    def get_min_element():
+        """
+        Beware, this can not be used as an initial value
+        """
+        b_min = bounds.get_min_element()
+        return accepting_bounds(ic=b_min.ic, wup=b_min.wup, loop_counter=3)
+
+    @staticmethod
+    def get_max_element():
+        """
+        Worst element -> Least repetitions
+        """
+        b_max = bounds.get_max_element()
+        return accepting_bounds(ic=b_max.ic, wup=b_max.wup, loop_counter=0)
+
+    @staticmethod
+    def get_neutral_plus() -> "accepting_bounds":
+        return accepting_bounds.get_min_element()
+
+    @staticmethod
+    def get_neutral_times() -> "accepting_bounds":
+        return accepting_bounds.get_max_element()
+
+    def get_pump_value(self) -> "accepting_bounds":
+        """
+        Pumping a bound along an energy positiv cycle
+        only reduces the initial credit, the wup remains unchanged.
+        If the special transition is on the loop, it will be taken into account
+        automatically. todo Possible fail: Overflowing the number of iterations till fix-point?
+        """
+        bpump = bounds.get_pump_value(self)
+        return accepting_bounds(ic=bpump.ic, wup=bpump.wup, loop_counter=self.loop_counter)
+
+    def prop(self, src: "state", dst: "state") -> Tuple[bool, "accepting_bounds"]:
+        # There is a special case for propagation:
+        # going through the transition from esrc to edst
+        if (src == accepting_bounds.esrc) and (dst == accepting_bounds.edst):
+            # If it is the first time and the energy is below critical:
+            # Perform the reset
+            bprop = None
+            if (self.loop_counter == 0) and (self.ic < accepting_bounds.crit_ic):
+                succ, bprop = bounds.prop(bounds(ic=0, wup=0), src, dst)
+                assert succ
+                return True, accepting_bounds(ic=bprop.ic, wup=bprop, loop_counter=1)
+            else:
+                succ, bprop = bounds.prop(self, src, dst)
+                assert succ
+                return True, accepting_bounds(ic=bprop.ic, wup=bprop.wup, loop_counter=self.loop_counter+1)
+        else:
+            # Usual propagation
+            succ, bprop = bounds.prop(self, src, dst)
+
+            if not succ:
+                return False, accepting_bounds.get_max_element()
+
+            return True, accepting_bounds(ic=bprop.ic, wup=bprop.wup, loop_counter=self.loop_counter)
+
+    def o_plus(self, src: "state", dst: "state") -> "accepting_bounds":
+        succ, bprop = self.prop(src, dst)
+        if succ:
+            return bprop
+        else:
+            return accepting_bounds.get_max_element()
+
+
 
 class pareto_front(energy_like):
     """
@@ -559,9 +645,13 @@ class pareto_front(energy_like):
     To be valid, element_type needs to be propagated
     from a source state to a destination state
     """
-    def __init__(self, element_type):
+
+    element_type = None
+
+    def __init__(self, element_type = None):
         self.elements = []
-        self.element_type = element_type
+        if element_type is not None:
+            pareto_front.element_type = element_type
 
     def __str__(self):
         return str(self.elements)
@@ -579,8 +669,8 @@ class pareto_front(energy_like):
         respect to the plus operation
         \note this is somewhat ambiguous
         """
-        pr = pareto_front(self.element_type)
-        pr.add(self.element_type.get_neutral_plus())
+        pr = pareto_front()
+        pr.add(pareto_front.element_type.get_neutral_plus())
         return pr
 
     def get_neutral_times(self) -> "pareto_front":
@@ -589,15 +679,15 @@ class pareto_front(energy_like):
         respect to the times operation
         \note this is somewhat ambiguous
         """
-        pr = pareto_front(self.element_type)
-        pr.add(self.element_type.get_neutral_times())
+        pr = pareto_front()
+        pr.add(pareto_front.element_type.get_neutral_times())
         return pr
 
     def o_plus(self, src: "state", dst: "state") -> "pareto_front":
         """
         Propagate each element of the pareto front along a weight w
         """
-        newp = pareto_front(self.element_type)
+        newp = pareto_front()
 
         for elem in self.elements:
             newp.add(elem.o_plus(src, dst))
@@ -608,7 +698,7 @@ class pareto_front(energy_like):
         """
         Fuse the two fronts into one
         """
-        newp = pareto_front(self.element_type)
+        newp = pareto_front()
         for op in [self, other]:
             for elem in op.elements:
                 newp.add(elem)
@@ -620,7 +710,7 @@ class pareto_front(energy_like):
         \note, for bounds for instance, this collapses the front into
         unique element.
         """
-        newp = pareto_front(self.element_type)
+        newp = pareto_front()
 
         for elem in self.elements:
             newp.add(elem.get_pump_value())
@@ -649,7 +739,7 @@ class pareto_front(energy_like):
         return True
 
     def __deepcopy__(self, memodict={}):
-        newp = pareto_front(self.element_type)
+        newp = pareto_front()
         for elem in self.elements:
             newp.elements.append(deepcopy(elem, memodict))
         return newp
@@ -783,12 +873,14 @@ class gen_ext_bf:
     def __init__(self, G:"graph",
                  src: int, energy_type: "Type used as an energy",
                  init: "energy_like or None",
-                 predec_type: Type[pre_type]):
+                 predec_type: Type[pre_type],
+                 post_proc: Callable):
         self.G = G
         self.src = src
         self.e_type = energy_type
         self.init = init
         self.predec_type = predec_type
+        self.post_proc = post_proc  # Call after each iteration
 
         self.E = None  # Current energy-like
         self.P = None  # List of all predecessors
@@ -934,7 +1026,8 @@ class gen_ext_bf:
             # Try to pump if changed
             if self.E != self.Ep:
                 self.try_pump_all()
-
+            if self.post_proc:
+                self.post_proc(self)
 
 def test_trace_ext(dir: bool):
 
@@ -976,19 +1069,19 @@ def test_pareto():
 
     p = pareto_front(bounds)
 
-    p.add(bounds(3, 3))
+    p.add(bounds(ic=3, wup=3))
     assert len(p.elements) == 1
-    p.add(bounds(1,4))
+    p.add(bounds(ic=1, wup=4))
     assert len(p.elements) == 2
-    p.add(bounds(4,1))
+    p.add(bounds(ic=4, wup=1))
     assert len(p.elements) == 3
-    p.add(bounds(2,2))
+    p.add(bounds(ic=2, wup=2))
     assert len(p.elements) == 3
-    p.add(bounds(1,1))
+    p.add(bounds(ic=1, wup=1))
     assert len(p.elements) == 1
 
     p2 = pareto_front(bounds)
-    p2.add(bounds(1,1))
+    p2.add(bounds(ic=1, wup=1))
     assert p == p2
 
 
