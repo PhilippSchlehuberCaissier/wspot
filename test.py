@@ -1,6 +1,8 @@
 import itertools
+import dataclasses
+import sys
 from dataclasses import dataclass
-from typing import List, Set, Tuple, Union
+from typing import List, Set, Tuple, Union, Type
 from copy import copy, deepcopy
 
 def dprint(*args, **kwargs):
@@ -25,14 +27,14 @@ def transpose(G:List[List[int]]) -> List[List[int]]:
 # The backedge is so to speak "bent away" for simplicity.
 # Instead of going back to 0 from 1 we go to 7 which is
 # implicitly the same as 0
-P1 = [[],
-      [0, 2, 5, 2],
-      [1, 3, 1, 4],
-      [2, 3],
-      [2, 4],
-      [1, 6, 1],
-      [5, 6],
-      [1]]
+P1 = [[],  # 0
+      [0, 2, 5, 2],  # 1
+      [1, 3, 1, 4],  # 2
+      [2, 3],  # 3
+      [2, 4],  # 4
+      [1, 6, 1],  # 5
+      [5, 6],  # 6
+      [1]]  # 7
 
 # Corresponding graph
 # adjacency list
@@ -41,7 +43,7 @@ G1 = [[1],  # 0
       [1, 3, 4],  # 2
       [2, 3],  # 3
       [2, 4],  # 4
-      [2, 6],  # 5
+      [1, 6],  # 5
       [5, 6],  # 6
       [],  # 7
       ]
@@ -76,6 +78,10 @@ W = W1
 wup = WUP1
 G = G1
 GT = transpose(G)
+# Weights for transposed graph
+WT = dict()
+for (s, d), w in W.items():
+    WT[(d,s)] = w
 
 
 InnerMost = [0] * len(P)
@@ -266,6 +272,10 @@ def compress(path:List[int]) -> List[path_segment]:
             # Reset
             curr_path_idx = dict()
             c_path = []
+            # Avoid generating a prefix with only a single state
+            # Upon the next iteration in the case we have just treated the last element
+            if idx == (N - 1):
+                idx += 1
         else:
             curr_path_idx[s] = len(c_path)
             c_path.append(s)
@@ -279,19 +289,78 @@ def compress(path:List[int]) -> List[path_segment]:
 
     return res
 
+@dataclass(frozen=True)
+class has_plus(object):
+    """
+    Object that can be propagated along a transition
+    """
+    @staticmethod
+    def get_neutral_plus() -> "has_plus":
+        """
+        Neutral element with respect to plus
+        """
+        raise NotImplementedError()
 
-@dataclass
-class energy:
+    def o_plus(self, src:"state", dst:"state"):
+        """
+        Plus operation needs to propagate an instance along a transition
+        """
+        raise NotImplementedError()
+
+    def __eq__(self, other: "has_plus") -> bool:
+        """
+        Objects need to be comparable for equality
+        """
+        raise NotImplementedError()
+
+
+@dataclass(frozen=True)
+class energy_like(has_plus):
+    """
+    Objects that can be used within extended bellmann ford
+    """
+    @staticmethod
+    def get_neutral_times() -> "energy_like":
+        """
+        Needs to return the neutral element with respect to times
+        """
+        raise NotImplementedError()
+
+    def o_times(self, other:"energy_like") -> "energy_like":
+        """
+        Times operation is called on two instances of energy_like
+        and computes their "optimum"
+        """
+        raise NotImplementedError()
+
+    def get_pump_value(self) -> "energy_like":
+        """
+        Initial value for pumping a positive loop
+        """
+        raise NotImplementedError()
+
+    def __le__(self, other: "energy_like") -> bool:
+        """
+        Energy like elements also need to be at least partially ordered
+        """
+        raise NotImplementedError()
+
+
+
+@dataclass(frozen=True, order=True)
+class energy(energy_like):
     """
     Class representing an energy level.
     Can be used in generalized BF in forward propagation
+    We use energies as immutable entities and always want to generate new instances
+    For comparison energy behaves like an int
     """
     e : int
 
     def __str__(self):
-        return f"(e={self.e}"
+        return f"(e={self.e})"
 
-    def __repr__(self, other):
+    def __repr__(self):
         return self.__str__()
 
     @staticmethod
@@ -303,22 +372,23 @@ class energy:
         from math import inf
         return energy(-inf)
 
-    def prop(self, w: "weight like") -> Tuple[bool, "energy"]:
+    def prop(self, src: "state", dst: "state") -> Tuple[bool, "energy"]:
         """
         returns a new energy when propagated along an edge
-        of weight w.
+        from src to dst.
         Implicitly, energies are always forward propagated
         Returns false if the propagation fails
         """
+        w = W[(src, dst)]  # For energy propagation we only need the weight
         en = energy(min(self.e + w, wup))
         return en.e >= 0, en
 
-    def o_plus(self, w: "weight like") -> "energy":
+    def o_plus(self, src: "state", dst: "state") -> "energy":
         """
         This corresponds to propagation,
         however safeguarded against failure
         """
-        succ, eprime = self.prop(w)
+        succ, eprime = self.prop(src, dst)
         if succ:
             return eprime
         else:
@@ -330,17 +400,13 @@ class energy:
         """
         return energy(max(self.e, other.e))
 
-    def __le__(self, rhs: "energy") -> bool:
+    def get_pump_value(self) -> "energy":
         """
-        For comparison, energies behave like ints
+        Return the energy to its "before pumping value".
+        For an actual energy this is simply the WUP,
+        for other energy-like classes this can be more involved
         """
-        return self.e <= rhs.e
-
-    def __lt__(self, rhs: "energy") -> bool:
-        return self.e < rhs.e
-
-    def __eq__(self, other: "energy") -> bool:
-        return self.e == other.e
+        return energy(wup)
 
     def __deepcopy__(self, memodict={}):
         return energy(self.e)
@@ -375,13 +441,14 @@ def check_energy_feas(cpath: List[path_segment], ic: energy,
             assert ps.loop[-1] == ps.loop[0]
 
     def prop_along(e: energy, p: List[int]):
-        for seg in zip(p[:-1], p[1:]):
-            succ, e = e.prop(W[seg])
-            if not succ:
+        e_fail = e.get_neutral_times()
+        for (src, dst) in zip(p[:-1], p[1:]):
+            e = e.o_plus(src, dst)
+            if e == e_fail:
                 return e
         return e
 
-    e = energy(ic)
+    e = deepcopy(ic)
 
     for ps in cpath:
         # Prefix to next loop, auto skipped if empty
@@ -403,11 +470,11 @@ def check_energy_feas(cpath: List[path_segment], ic: energy,
                 return False
             # Pump the loop
             # This can be done by propagating twice from wup
-            e.e = wup
+            e = e.get_pump_value()
             e = prop_along(e, ps.loop)
             e = prop_along(e, ps.loop)
 
-    if e.e >= ic:
+    if e >= ic:
         return True
     else:
         return check_energy_feas(cpath, e, wup)
@@ -415,15 +482,21 @@ def check_energy_feas(cpath: List[path_segment], ic: energy,
 
 ### Optimisation over wup and ic
 
-@dataclass
-class bounds:
+@dataclass(frozen=True, repr=False)
+class bounds(has_plus):
+    """
+    Note bounds are always propagated on the transposed graph.
+    It can not behave like an energy, as the times operation
+    does not have the same return type.
+    (The comparison is only a partial order)
+    """
     ic: int  # Minimal initial credit
     wup: int  # Minimal wup necessary
 
     def __str__(self):
-        return f"(ic={self.ic}, wup={self})"
+        return f"(ic={self.ic}, wup={self.wup})"
 
-    def __repr__(self, other):
+    def __repr__(self):
         return self.__str__()
 
     @staticmethod
@@ -435,17 +508,40 @@ class bounds:
         from math import inf
         return bounds(inf, inf)
 
-    def prop(self, w: "weight like") -> Tuple[bool, "bounds"]:
+    @staticmethod
+    def get_neutral_plus() -> "bounds":
+        return bounds.get_min_element()
+
+    @staticmethod
+    def get_neutral_times() -> "bounds":
+        return bounds.get_max_element()
+
+    def get_pump_value(self) -> "bounds":
+        """
+        Pumping a bound along an energy positiv cycle
+        only reduces the initial credit, the wup remains unchanged
+        """
+        return bounds(0, self.wup)
+
+    def prop(self, src: "state", dst: "state") -> Tuple[bool, "bounds"]:
         """
         Update the structure when propagated along an edge
-        of weight w.
+        from src to dst.
         Implicitly, bounds aare always backpropagated
         Here, propagation has no limits, so the boolean returned is
         always True
         """
-        bprime = bounds(max(self.ic - w, 0), self.wup)
-        bprime.wup = max(bprime.ic, bprime.wup)
-        return True, bprime
+        w = WT[(src, dst)]
+        new_ic = max(self.ic - w, 0)
+        new_wup = max(self.wup, new_ic)
+        return True, bounds(new_ic, new_wup)
+
+    def o_plus(self, src: "state", dst: "state") -> "bounds":
+        succ, bprime = self.prop(src, dst)
+        if succ:
+            return bprime
+        else:
+            return self.get_max_element()
 
     # Can not define o_plus and o_times on bounds
 
@@ -457,7 +553,12 @@ class bounds:
         return self.ic <= rhs.ic and self.wup <= rhs.wup
 
 
-class pareto_front(object):
+class pareto_front(energy_like):
+    """
+    Holds a pareto front of partially ordered elements of element_type.
+    To be valid, element_type needs to be propagated
+    from a source state to a destination state
+    """
     def __init__(self, element_type):
         self.elements = []
         self.element_type = element_type
@@ -465,7 +566,7 @@ class pareto_front(object):
     def __str__(self):
         return str(self.elements)
 
-    def __repr__(self, other):
+    def __repr__(self):
         return self.__str__()
 
     def __eq__(self, other: "pareto_front"):
@@ -479,7 +580,7 @@ class pareto_front(object):
         \note this is somewhat ambiguous
         """
         pr = pareto_front(self.element_type)
-        pr.add(self.element_type.get_min_element())
+        pr.add(self.element_type.get_neutral_plus())
         return pr
 
     def get_neutral_times(self) -> "pareto_front":
@@ -489,17 +590,17 @@ class pareto_front(object):
         \note this is somewhat ambiguous
         """
         pr = pareto_front(self.element_type)
-        pr.add(self.element_type.get_max_element())
+        pr.add(self.element_type.get_neutral_times())
         return pr
 
-    def o_plus(self, w: "weight like") -> "pareto_front":
+    def o_plus(self, src: "state", dst: "state") -> "pareto_front":
         """
         Propagate each element of the pareto front along a weight w
         """
         newp = pareto_front(self.element_type)
 
         for elem in self.elements:
-            newp.add(elem.prop(w))
+            newp.add(elem.o_plus(src, dst))
 
         return newp
 
@@ -511,6 +612,19 @@ class pareto_front(object):
         for op in [self, other]:
             for elem in op.elements:
                 newp.add(elem)
+        return newp
+
+    def get_pump_value(self) -> "pareto_front":
+        """
+        Pumping a pareto front pumps each element.
+        \note, for bounds for instance, this collapses the front into
+        unique element.
+        """
+        newp = pareto_front(self.element_type)
+
+        for elem in self.elements:
+            newp.add(elem.get_pump_value())
+
         return newp
 
     def add(self, elem: "Element type") -> bool:
@@ -526,8 +640,13 @@ class pareto_front(object):
         for idx in range(len(self.elements)-1, -1, -1):
             if elem <= self.elements[idx]:
                 # Discard this element
-                elem[idx] = elem[-1] # elements are unordered -> erase by last
-                self.elements.pop() # Discard last
+                self.elements[idx] = self.elements[-1]  # elements are unordered -> erase by last
+                self.elements.pop()  # Discard last
+
+        # Finally add the element itself
+        self.elements.append(elem)
+
+        return True
 
     def __deepcopy__(self, memodict={}):
         newp = pareto_front(self.element_type)
@@ -545,10 +664,12 @@ def compute_minimal_bounds(cpath: List[path_segment]) -> bounds :
         """
         back-propagate a bound along a path
         """
-
-        for seg in zip(p[-2::-1], p[:0:-1]):
-            succ, b = b.prop(W[seg])
-            assert succ
+        # The path is expected to be in "normal" direction
+        # We need to "transpose" each transition
+        b_fail = b.get_neutral_times()
+        for src, dst in zip(p[:-1], p[1:]):
+            b = b.o_plus(src, dst)
+            assert b != b_fail
 
         return b
 
@@ -567,7 +688,7 @@ def compute_minimal_bounds(cpath: List[path_segment]) -> bounds :
             # 2 "inverse" pump initial energy
             # Set the initial energy to zero
             # is corrected via the two calls
-            b.ic = 0
+            b = b.get_pump_value()
             b = back_prop_along(p, b)
             b = back_prop_along(p, b)
         else:
@@ -581,41 +702,231 @@ def compute_minimal_bounds(cpath: List[path_segment]) -> bounds :
         # everything needs to be reversed
         # So loop before cycle
         if pe.loop:
-            rb = try_pump_cycle(pe.loop, rb)
-        rb = back_prop_along(pe.prefix, rb)
+            rb = try_pump_cycle(list(reversed(pe.loop)), rb)
+        rb = back_prop_along(list(reversed(pe.prefix)), rb)
 
     return rb
+
+@dataclass(kw_only=True, repr=False)
+class pre_type(object):
+    """
+    Base class used to store optimal predecessors
+    -1 is a special predecessor indicating that new_pred has
+    never been called on this instance
+    """
+
+    def new_pred(self, src: "state") -> None:
+        """
+        Register a new optimal predeceessor with the structure
+        """
+        raise NotImplementedError
+
+    def __str__(self):
+        return str(self.all_pred())
+
+    def __repr__(self):
+        return self.__str__()
+
+    def last_pred(self) -> "state":
+        """
+        Lets you access the last one added
+        """
+        raise NotImplementedError
+
+    def all_pred(self) -> List["state"]:
+        """
+        Returns all predecessors encountered as a list
+        """
+        raise NotImplementedError
+
+@dataclass(kw_only=True, repr=False)
+class last_predec(pre_type):
+    """
+    Derived class that only stores the very last predecessor encountered
+    """
+    pred : int = -1
+
+    def new_pred(self, src: "state") -> "state":
+        self.pred = src
+
+    def last_pred(self) -> "state":
+        return self.pred
+
+    def all_pred(self) -> List["state"]:
+        return [self.pred]
+
+@dataclass(kw_only=True, repr=False)
+class all_predec(pre_type):
+    """
+    Derived class storing all predecessors avoiding stuttering
+    """
+    pred : list[int] = dataclasses.field(default_factory=list)
+
+    def new_pred(self, src: "state") -> "state":
+        if self.last_pred() != src:
+            self.pred.append(src)
+
+    def last_pred(self) -> "state":
+        if self.pred:
+            return self.pred[-1]
+        else:
+            return -1
+
+    def all_pred(self) -> List["state"]:
+        return self.pred
 
 
 class gen_ext_bf:
     """
     Extended generic Bellman-Ford
     """
-    def __init__(G:"graph", W: "weight",
+    def __init__(self, G:"graph",
                  src: int, energy_type: "Type used as an energy",
-                 init: "energy_like or None"):
+                 init: "energy_like or None",
+                 predec_type: Type[pre_type]):
         self.G = G
-        self.W = W
         self.src = src
         self.e_type = energy_type
         self.init = init
+        self.predec_type = predec_type
 
         self.E = None  # Current energy-like
-        self.P = None  # Current predecessor
+        self.P = None  # List of all predecessors
         self.Ep = None  # Next energy-like
-        self.Pp = None  # Next predecessor
+
+    def run_gen_bf(self):
+        """
+        Run one round of the generalised Bellmann-Ford
+        todo: unoptimized, brute force version
+        """
+
+        for _ in range(len(self.G)):
+            for src, succ_list in enumerate(self.G):
+                for dst in succ_list:
+                    Eprime = self.Ep[src].o_plus(src, dst)
+                    Eprime = Eprime.o_times(self.Ep[dst])
+                    if Eprime != self.Ep[dst]:
+                        self.Ep[dst] = Eprime
+                        # todo do we really only need to append if
+                        # the predecessor changed?
+                        self.P[dst].new_pred(src)
+
+        return None  # Done
+
+    def pump_loop(self, s: int):
+        """
+        Pump the loop associated to some state
+        """
+        path = [s]
+        cp = None
+        self.onLoop[s] = 1
+
+        # Find the loop
+        while True:
+            pred = self.P[path[-1]].last_pred()
+            assert pred is not None  # Only loops should be found here
+            path.append(pred)
+
+            if self.onLoop[pred] == 1:
+                # Returned back to some state
+                # The path is generated in a reversed manner from the predecessors
+                # -> Reverse it
+                path.reverse()
+                # Compress for easier handling
+                # Must correspond to one or two path_elements,
+                # the first only having a loop, the second only having a prefix
+                cp = compress(path)
+                assert len(cp) and (len(cp) <= 2)
+                assert len(cp[0].loop) and (cp[0].loop[0] == cp[0].loop[-1])
+                assert (len(cp) == 1) or (cp[0].loop[0] == cp[1].prefix[0])
+                break
+            elif self.onLoop[pred] == 2:
+                # We found a new prefix to an existing loop
+                path.reverse()
+                cp = compress(path)
+                assert len(cp) == 1
+                assert len(cp[0].loop) == 0
+                # Prepend an empty loop for semantics
+                cp = [path_segment([], [])] + cp
+                break
+
+            self.onLoop[pred] = 1
+
+        assert cp is not None
+
+        # Pump the loop
+        loop = cp[0].loop
+        # todo: Do we need to (pre-)propagate all states
+        # once more; I suppose not, everything is properly in
+        # place after BF I suppose
+        if loop:
+            # Loop might be empty if prefix only
+            counter = 0
+            self.Ep[loop[0]] = self.Ep[loop[0]].get_pump_value()
+            reached_fixed = False
+            while not reached_fixed:
+                counter += 1
+                # Propagate along the loop
+                for src, dst in zip(loop[:-1], loop[1:]):
+                    Eprimedst = self.Ep[src].o_plus(src, dst)
+                    if Eprimedst == self.Ep[dst]:
+                        reached_fixed = True
+                        break
+
+        # Propagate along the prefix if existent
+        if len(cp) == 2:
+            prefix = cp[1].prefix
+            for (src, dst) in zip(prefix[:-1], prefix[1:]):
+                Eprimedst = self.Ep[src].o_plus(src, dst)
+                self.Ep[dst] = self.Ep[dst].o_times(Eprimedst)
+
+        # Mark all the states as already treated
+        for ps in cp:
+            for pp in [ps.loop, ps.prefix]:
+                for s in pp:
+                    self.onLoop[s] = 2
+
+        # Done
+        return None
+
+    def try_pump_all(self):
+        """
+        Pump currently existing loops
+        """
+
+        self.onLoop = [0]*len(self.G)  # 0 -> untreated; 1 -> on current path; 2 -> on already treated path
+
+        for s in range(len(self.G)):
+            if self.onLoop[s] != 0:
+                # Already treated
+                continue
+
+            pred_s = self.P[s].last_pred()
+
+            if pred_s == -1:
+                # Has no predescessor (yet)
+                # Is currently (energy) unreachable
+                continue
+
+            # Compute the propagation
+            esp = self.Ep[pred_s].o_plus(pred_s, s)
+            # Check if this changes the set of dst
+            esp = self.Ep[s].o_times(esp)
+
+            if esp != self.Ep[s]:
+                # We have actually found a loop
+                self.pump_loop(s)
 
     def run(self):
 
         self.E = [self.e_type.get_neutral_times() for _ in range(len(self.G))]
-        self.P = [None]*len(self.E)
-        self.Ep = [None]*len(self.E)
-        self.Pp = [None]*len(self.E)
+        self.P = [self.predec_type() for _ in range(len(self.G))]
+        self.Ep = [self.e_type.get_neutral_times() for _ in range(len(self.G))]
+        self.Ep[self.src] = self.init
 
         while self.E != self.Ep:
             # New to old
             self.E = deepcopy(self.Ep)
-            self.P = deepcopy(self.Pp)
 
             # Run one round of gen BF
             # Note: always runs on primed vars
@@ -625,12 +936,105 @@ class gen_ext_bf:
                 self.try_pump_all()
 
 
+def test_trace_ext(dir: bool):
 
 
+    allPath4 = []
+    rec4(dir, allPath4, P, 0, len(P) - 1, [len(l) for l in P], [])
 
+    allCPath4 = [compress(p) for p in allPath4]
+
+    allCPath4_R = [(check_energy_feas(cp, energy(0), wup), cp) for cp in allCPath4]
+
+    print("Results with energy; Forward")
+    for x in allCPath4_R:
+        print(x)
+
+    allCPath4_B = [(compute_minimal_bounds(cp), cp) for cp in allCPath4]
+
+    print("Minimal bounds; Forward")
+    for x in allCPath4_B:
+        print(x)
+
+def test_BF_config(G, src, e_type, pred_type, saveP = False):
+
+    prob = gen_ext_bf(G, src, e_type, e_type.get_neutral_plus(), pred_type)
+    prob.run()
+    print(f"Solution for etype: {str(e_type)} and ptype: {str(pred_type)}")
+    print("Energy solution is")
+    for i, e in enumerate(prob.Ep):
+        print(f"{i}: {e}")
+    print("Predecessor solution is:")
+    for i, p in enumerate(prob.P):
+        print(f"{i}: {p}")
+    if saveP == True:
+        print("Saving predecessor solution")
+        for i, p in enumerate(prob.P):
+            P[i] = p.all_pred()
+
+def test_pareto():
+
+    p = pareto_front(bounds)
+
+    p.add(bounds(3, 3))
+    assert len(p.elements) == 1
+    p.add(bounds(1,4))
+    assert len(p.elements) == 2
+    p.add(bounds(4,1))
+    assert len(p.elements) == 3
+    p.add(bounds(2,2))
+    assert len(p.elements) == 3
+    p.add(bounds(1,1))
+    assert len(p.elements) == 1
+
+    p2 = pareto_front(bounds)
+    p2.add(bounds(1,1))
+    assert p == p2
 
 
 if __name__ == '__main__':
+
+    # Test the implementation of pareto
+    test_pareto()
+
+    # trace extraction 1
+    # with bounds optimisation
+    test_trace_ext(True)
+    test_trace_ext(False)
+
+    # Testing energy propagation
+    test_BF_config(G, 0, energy, last_predec)
+    test_BF_config(G, 0, energy, all_predec, True)
+
+    # Retesting trace extraction
+    # with bounds optimisation
+    test_trace_ext(False)
+
+    # Testing bounds optimisation as a generalised BF problem
+    test_BF_config(GT, 7, pareto_front(bounds), all_predec, False)
+
+
+    sys.exit(0)
+
+
+def dump():
+
+    # solve the standard energy problem
+
+
+    # solve the standard energy problem with all predescessors
+    prob = gen_ext_bf(G, 0, energy, energy(0), last_predec)
+    prob.run()
+    print("Base prob energy solution is")
+    print(prob.Ep)
+    print("Base prob predecessor solution is")
+    print(prob.P)
+
+
+
+
+
+def legacy_main():
 
     Pprime = []
     for l in P:
