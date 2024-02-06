@@ -3,6 +3,8 @@
 # The helper algorithms for energy computations,
 # subsumed in algorithm 2 in the paper
 
+from typing import List, Tuple
+
 from dataclasses import dataclass
 import spot, buddy
 from copy import deepcopy as deepcopy
@@ -117,7 +119,9 @@ class mod_BF_iter:
         self.N_ = self.g_.num_states()
         # Base values
         self.E_ = array('q', self.N_*[-1]) #today integer inf?; 0 is currently lower bound so ok I guess
-        self.Pred_ = array('Q', self.N_*[0])
+        # Modification for trace extraction: We need to store all
+        # transitions that have been optimal at some point
+        self.Pred_ = [array('Q', []) for _ in range(self.N_)]
         self.isWaiting_ = array('b', self.N_*[False])
         # Whether the last "action" changed the energy of the node
         # Also used to detect the fixpoint
@@ -152,7 +156,9 @@ class mod_BF_iter:
 
         if (en_prime >= 0) and ((not opt) or (en_prime > en_dst)):
             self.E_[dst] = en_prime
-            self.Pred_[dst] = en
+            # Add all optimal predecessors in a stutter free fashion
+            if (not self.Pred_[dst]) or (self.Pred_[dst][-1] != en):
+                self.Pred_[dst].append(en)
             return en_prime != en_dst
         return False
 
@@ -180,9 +186,10 @@ class mod_BF_iter:
         s = si
         loopItems = deque()
         def pred_(s):
+            # We need to use the latest predecessor
             en = self.Pred_[s]
-            assert en != 0, "No valid Predecessor!"
-            return en, self.g_.edge_storage(en)
+            assert en, "No valid Predecessor!"
+            return en[-1], self.g_.edge_storage(en[-1])
         def next_(s):
             en, e = pred_(s)
             return e.src, en
@@ -229,8 +236,9 @@ class mod_BF_iter:
 
         while self.onLoop_[sprime] == 0:
             self.onLoop_[sprime] = 1
-            assert self.Pred_[sprime] != 0
-            sprime = self.g_.edge_storage(self.Pred_[sprime]).src
+            assert self.Pred_[sprime], "Has no predecessor -> Can not be on a loop"
+            # Works on the last predecessor set
+            sprime = self.g_.edge_storage(self.Pred_[sprime][-1]).src
 
         if self.onLoop_[sprime] == 1:
             # Found a new simple positive loop
@@ -239,7 +247,7 @@ class mod_BF_iter:
         sprime = s
         while self.onLoop_[sprime] == 1:
             self.onLoop_[sprime] = 2
-            sprime = self.g_.edge_storage(self.Pred_[sprime]).src
+            sprime = self.g_.edge_storage(self.Pred_[sprime][-1]).src
             # We could propagate energy here directly
             # Would we then need full BF? Optim?
 
@@ -260,16 +268,17 @@ class mod_BF_iter:
             # Check if energy can increase
             # Todo Code duplication :(
             en = self.Pred_[s]
-            if en == 0:
+            if not en:
                 # Unreachable
+                print("state", s, "pred", en, "energy", self.E_[s])
                 if s != self.s0_:
                     assert self.E_[s] == -1
                 continue
-            e = self.g_.edge_storage(en)
+            e = self.g_.edge_storage(en[-1])
 
             src = e.src
             dst = e.dst
-            ew = spot.get_weight(self.g_, en)
+            ew = spot.get_weight(self.g_, en[-1])
             en_src = self.E_[src]
             en_dst = self.E_[dst]
 
@@ -354,9 +363,14 @@ class mod_BF_iter:
         return (En, Pred)
 
 
+# A helper structure to preserve the additional intermediate solutions
+@dataclass
+class BuechiResult:
+    prefixEn : List[int]  # Optimal prefix energy for each state
+
+
 # Whole picture
 # This is algorithm 1
-
 def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations and info"=0):
     """_summary_
 
@@ -379,9 +393,26 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
             display(aut.show(opt))
         return
 
-    def highlight_c(aut, pred, opt=""):
+    def highlight_c(aut: spot.twa_graph, pred: List[List[int]], predColors: List[int]=[1, 2, 3, 4, 5], opt="") -> None:
+        """
+
+        Args:
+            aut: The automaton
+            pred: List of lists. The list pred[s] contains all predecessors for state s
+            predColors: How many predecessors should be colored and how. The -ith predecessor will be colored with the i-1th color
+            opt: Additional options passed to highlight_edges
+
+        Returns: None
+
+        """
         if do_display > 1:
-            aut.highlight_edges([i for i in pred if i != 0], 1)
+            # Create a list of edges for each color
+            cDict = dict(zip(predColors, [[] for _ in predColors]))
+            for s in range(aut.num_states()):
+                for c, en in zip(predColors, reversed(pred[s])):
+                    cDict[c].append(en)
+            for c, edges in cDict.items():
+                aut.highlight_edges(edges, c)
         display_c(aut, opt)
 
     if isinstance(hoa, str):
@@ -400,7 +431,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
     print_c(f"Prefix energy per state\n{en}\nCurrent optimal predescessor\n{pred}")
     print_c("""State names are: "state number, max energy"\nOptimal predescessor is highlighted in pink""");
     aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-    highlight_c(aut, pred, "tsbrg")
+    highlight_c(aut, pred, opt="tsbrg")
 
     ssi = spot.scc_info(aut)
     # Loop over all SCCs
@@ -452,7 +483,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
             if new_energy >= start_energy:
                 print_c("We found a non-negative loop using edge", names[be.src],
                         "->", names[be.dst]+" directly.")
-                highlight_c(aut_degen, pred3, "tsbrg")
+                highlight_c(aut_degen, pred3, opt="tsbrg")
                 return True
             else:
                 #restart with the new energy
@@ -471,7 +502,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                 if  even_newer_energy >= new_energy:
                     print_c("We found a non-negative loop using edge", names[be.src],
                             "->", names[be.dst]+" in the second iteration.")
-                    highlight_c(aut_degen, pred3, "tsbrg")
+                    highlight_c(aut_degen, pred3, opt="tsbrg")
                     return True
                 else:
                     for node, energy in enumerate(en3):
@@ -491,8 +522,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                                     print_c("We found a non-negative loop using node",
                                             names[node], "in the third iteration.")
                                     # TODO: look at those highlights, I have no idea
-                                    highlight_c(aut_degen, pred4, "tsbrg")
-                                    highlight_c(aut_degen, pred5, "tsbrg")
+                                    highlight_c(aut_degen, pred4, opt="tsbrg")
+                                    highlight_c(aut_degen, pred5, opt="tsbrg")
                                     return True
     print_c("No feasible Büchi run detected!")
     return False
