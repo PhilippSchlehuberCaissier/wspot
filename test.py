@@ -72,16 +72,46 @@ for (s, d, w) in [(0, 1, 0),
 
 # G2 The "base" example for which our old algorithm failed
 # Each time you take the "main" loop you loose a bit of initial energy
+G2 = [[1],  # 0
+      [2, 4, 5, 6, 8],  # 1 Succ (0,1,2,3) must be neg
+      [3],  # 2
+      [0],  # 3 3 -> 0 accepting
+      [2, 4],  # 4 State with pos selfloop
+      [2, 5],  # 5 State with pos selfloop
+      [7],  # 6 State with pos loop
+      [2, 6],  # 7 States (6, 7) form a pos loop
+      [9],  # 8 State with linear successor
+      [2],  # 9: 1 -> 8 -> 9 -> 2
+      ]
+
+special_src2 = 3
+special_dst2 = 0
+WUP2 = 1000
+W2 = dict()
+for (s, d, w) in [(0, 1, 0),  # 0
+                  (1, 2, -1), (1, 4, -10), (1, 5, -9), (1, 6, -5), (1, 8, +10),  # 1
+                  (2, 3, 0),  # 2,
+                  (3, 0, 0),  # 3
+                  (4, 2, -1), (4, 4, 1),  # 4
+                  (5, 2, -2), (5, 5, 1),  # 5
+                  (6, 7, -10),  # 6
+                  (7, 2, -5), (7, 6, +11),  # 7
+                  (8, 9, +10),  # 8
+                  (9, 2, -21),  # 9
+                  ]:
+    W2[(s, d)] = w
+
+P2 = []
 
 
 
 #defining which prob to use
-probnr = 1
+probnr = 2
 
-P = eval(f"P{1}")
-W = eval(f"W{1}")
-wup = eval(f"WUP{1}")
-G = eval(f"G{1}")
+P = eval(f"P{probnr}")
+W = eval(f"W{probnr}")
+wup = eval(f"WUP{probnr}")
+G = eval(f"G{probnr}")
 GT = transpose(G)
 # Weights for transposed graph
 WT = dict()
@@ -325,6 +355,9 @@ class energy_like(has_plus):
     Objects that can be used within extended bellmann ford
     """
     @staticmethod
+    def get_run_multiplier() -> int:
+        return 1
+    @staticmethod
     def get_neutral_times() -> "energy_like":
         """
         Needs to return the neutral element with respect to times
@@ -566,6 +599,10 @@ class accepting_bounds(bounds):
 
     loop_counter : int = 0 # Keeps track of how often the loop was visited, bounded in [0, 3]
 
+    @staticmethod
+    def get_run_multiplier() -> int:
+        return 4
+
     def __str__(self):
         return f"(ic={self.ic}, wup={self.wup}, lc={self.loop_counter})"
 
@@ -607,20 +644,29 @@ class accepting_bounds(bounds):
         return accepting_bounds(ic=bpump.ic, wup=bpump.wup, loop_counter=self.loop_counter)
 
     def prop(self, src: "state", dst: "state") -> Tuple[bool, "accepting_bounds"]:
+        from math import inf
         # There is a special case for propagation:
         # going through the transition from esrc to edst
         if (src == accepting_bounds.esrc) and (dst == accepting_bounds.edst):
             # If it is the first time and the energy is below critical:
             # Perform the reset
             bprop = None
-            if (self.loop_counter == 0) and (self.ic < accepting_bounds.crit_ic):
+            if ((self.ic < accepting_bounds.crit_ic) and
+                (self.wup >= accepting_bounds.crit_ic)):
                 succ, bprop = bounds.prop(bounds(ic=0, wup=0), src, dst)
                 assert succ
-                return True, accepting_bounds(ic=bprop.ic, wup=bprop, loop_counter=1)
+                if (bprop.ic != inf):
+                    return True, accepting_bounds(ic=bprop.ic, wup=bprop.wup, loop_counter=1)
+                else:
+                    return True, self.get_neutral_times()
             else:
                 succ, bprop = bounds.prop(self, src, dst)
                 assert succ
-                return True, accepting_bounds(ic=bprop.ic, wup=bprop.wup, loop_counter=self.loop_counter+1)
+                if (bprop.ic != inf):
+                    return True, accepting_bounds(ic=bprop.ic, wup=bprop.wup,
+                                                  loop_counter=min(self.loop_counter+1, 3))
+                else:
+                    return True, self.get_neutral_times()
         else:
             # Usual propagation
             succ, bprop = bounds.prop(self, src, dst)
@@ -637,6 +683,19 @@ class accepting_bounds(bounds):
         else:
             return accepting_bounds.get_max_element()
 
+    def __le__(self, rhs: "accepting_bounds") -> bool:
+        """
+        An instance is considered worse (-> larger)
+        if it is worse for the bounds part AND has an <= loop_counter
+        """
+        assert (0 <= self.loop_counter) and (self.loop_counter <= 3)
+        assert (0 <= rhs.loop_counter) and (rhs.loop_counter <= 3)
+        return rhs.loop_counter <= self.loop_counter and bounds.__le__(self, rhs)
+
+    def __eq__(self, other: "accepting_bounds") -> bool:
+        return ((self.loop_counter == other.loop_counter)
+                and (bounds.__eq__(self, other)))
+
 
 
 class pareto_front(energy_like):
@@ -646,7 +705,10 @@ class pareto_front(energy_like):
     from a source state to a destination state
     """
 
-    element_type = None
+    element_type : ClassVar["element_type"] = None
+
+    def get_run_multiplier(self) -> int:
+        return self.element_type.get_run_multiplier()
 
     def __init__(self, element_type = None):
         self.elements = []
@@ -865,6 +927,8 @@ class all_predec(pre_type):
     def all_pred(self) -> List["state"]:
         return self.pred
 
+def no_op(*args, **kwargs):
+    pass
 
 class gen_ext_bf:
     """
@@ -874,7 +938,7 @@ class gen_ext_bf:
                  src: int, energy_type: "Type used as an energy",
                  init: "energy_like or None",
                  predec_type: Type[pre_type],
-                 post_proc: Callable):
+                 post_proc: Callable = no_op):
         self.G = G
         self.src = src
         self.e_type = energy_type
@@ -892,7 +956,7 @@ class gen_ext_bf:
         todo: unoptimized, brute force version
         """
 
-        for _ in range(len(self.G)):
+        for _ in range(len(self.G)*self.e_type.get_run_multiplier()): # todo hack
             for src, succ_list in enumerate(self.G):
                 for dst in succ_list:
                     Eprime = self.Ep[src].o_plus(src, dst)
@@ -964,6 +1028,7 @@ class gen_ext_bf:
                     if Eprimedst == self.Ep[dst]:
                         reached_fixed = True
                         break
+                    self.Ep[dst] = Eprimedst
 
         # Propagate along the prefix if existent
         if len(cp) == 2:
@@ -1085,10 +1150,70 @@ def test_pareto():
     assert p == p2
 
 
+def test_accepting():
+    accepting_bounds.esrc = special_dst2
+    accepting_bounds.edst = special_src2
+    accepting_bounds.crit_ic = int(1e6)
+    init_b = accepting_bounds(ic=accepting_bounds.crit_ic*2,
+                              wup=accepting_bounds.crit_ic*2,
+                              loop_counter=0)
+    init = pareto_front(accepting_bounds)
+    init.add(init_b)
+
+    def print_acc(a_BF: gen_ext_bf) -> None:
+        """
+        Postproc is called after each iteration,
+        prints whenever it finds an accepting energy level
+        """
+
+        # Steps one, look for neutral accepting loops
+        # These have the same initial energy, a possibly higher wup and
+        # a loop count of 1
+        for e in a_BF.Ep[accepting_bounds.edst].elements:
+            if (e.ic == accepting_bounds.crit_ic * 2
+                and e.wup >= accepting_bounds.crit_ic * 2
+                and e.loop_counter >= 1):
+                print(f"Print found proof for neutral accepting loop: {e}")
+
+        # Check for accepting positive loops
+        # They have a loop counter of 3 and there exists
+        # an element in the last iteration with loop counter of 2
+        # and the same ic and wup
+        for e in a_BF.Ep[accepting_bounds.edst].elements:
+            if (e.ic < accepting_bounds.crit_ic
+                and e.wup < accepting_bounds.crit_ic
+                and e.loop_counter == 3):
+                # Check if it also exists for loop_counter == 2
+                e2 = accepting_bounds(ic=e.ic, wup=e.wup, loop_counter=2)
+                try:
+                    a_BF.E.index(e2)
+                    print(f"Found a proof for positive accepting loop: {e}")
+                except ValueError:
+                    try:
+                        a_BF.E.index(e)
+                        print(f"Reappearing: {e}")
+                    except ValueError:
+                        print(f"This should not happen I suppose: {e}")
+
+    prob = gen_ext_bf(GT, accepting_bounds.edst, pareto_front(accepting_bounds), init,
+                      all_predec, print_acc)
+    prob.run()
+
+    print("Energy solution is")
+    for i, e in enumerate(prob.Ep):
+        print(f"{i}: {e}")
+    print("Predecessor solution is:")
+    for i, p in enumerate(prob.P):
+        print(f"{i}: {p}")
+
 if __name__ == '__main__':
 
     # Test the implementation of pareto
     test_pareto()
+
+    test_accepting()
+
+    sys.exit(0)
 
     # trace extraction 1
     # with bounds optimisation
