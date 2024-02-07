@@ -3,7 +3,7 @@
 # The helper algorithms for energy computations,
 # subsumed in algorithm 2 in the paper
 
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Union, Callable
 
 from dataclasses import dataclass
 import spot, buddy
@@ -366,13 +366,41 @@ class mod_BF_iter:
 # A helper structure to preserve the additional intermediate solutions
 @dataclass
 class BuechiResult:
-    prefixEn : List[int]  # Optimal prefix energy for each state
+    """
+    Class containing all the information needed to perform trace extraction
+    after running BuechiEnergy.
 
+    If sccEn2 and sccPred2 are None, then a trace was found without investigating
+    the different states attaining an energy equal to the weak upper bound.
+
+    If there was no viable trace, all members are None
+    """
+    g: spot.twa_graph = None  # Original graph
+    gScc: spot.twa_graph = None  # Current accepting SCC
+    renameDict: Dict[int, int] = None  # Dict from the original states to the ones in the SCC
+
+    prefixEn: List[int] = None  # Optimal prefix energy for each state
+    prefixPred: List[List[int]] = None  # Extended optimal predecessor list
+
+    be: int = None  # Embedded accepting backedge
+
+    sccEn1: List[int] = None  # Energy current SCC part 1
+    sccPred1: List[List[int]] = None  # Extended optimal predecessor list current SCC part 1
+
+    sccEn2: List[int] = None  # Energy current SCC part 2
+    sccPred2: List[List[int]] = None  # Extended optimal predecessor list current SCC part 2
+
+    def __bool__(self) -> bool:
+        return self.g is not None
 
 # Whole picture
 # This is algorithm 1
-def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations and info"=0):
-    """_summary_
+def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit",
+                 do_display:"show iterations and info"=0) -> BuechiResult:
+    """Searches for energy feasible lasso in the given automaton from the initial state
+    with a weak upper bound of \a wup and an initial credit of \a c0
+
+    Returns a BuechiResult allowing to extract the trace.
 
     Args:
         hoa (HOA automaton): generalized weighted büchi automaton,  filename or twa_graph
@@ -484,7 +512,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                 print_c("We found a non-negative loop using edge", names[be.src],
                         "->", names[be.dst]+" directly.")
                 highlight_c(aut_degen, pred3, opt="tsbrg")
-                return True
+                return BuechiResult(aut, aut_degen, rename, be_num, en, pred, en3, pred3, None, None)
             else:
                 #restart with the new energy
                 if new_energy < 0:
@@ -503,7 +531,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                     print_c("We found a non-negative loop using edge", names[be.src],
                             "->", names[be.dst]+" in the second iteration.")
                     highlight_c(aut_degen, pred3, opt="tsbrg")
-                    return True
+                    return BuechiResult(aut, aut_degen, rename, be_num, en, pred, en3, pred3, None, None)
                 else:
                     for node, energy in enumerate(en3):
                         if energy == wup:
@@ -524,6 +552,237 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                                     # TODO: look at those highlights, I have no idea
                                     highlight_c(aut_degen, pred4, opt="tsbrg")
                                     highlight_c(aut_degen, pred5, opt="tsbrg")
-                                    return True
+                                    # en/pred4 : WUP to be.src; en/pred5 : be.dst to WUP
+                                    return BuechiResult(aut, aut_degen, rename, be_num, en, pred, en4, pred4, en5, pred5)
     print_c("No feasible Büchi run detected!")
-    return False
+    return BuechiResult()
+
+@dataclass
+class transition:
+    g : spot.twa_graph  # Underlying graph
+    n : int  # Edge number
+
+    @property
+    def src(self):
+        return self.g.edge_storage(self.n).src
+
+    @property
+    def dst(self):
+        return self.g.edge_storage(self.n).dst
+
+    @property
+    def w(self):
+        return spot.get_weight(self.g, self.n)
+
+    def __iter__(self):
+        yield self.src
+        yield self.w
+        yield self.dst
+
+    def __repr__(self) -> str:
+        return self.__str__()
+    def __str__(self):
+        return f"({self.src}, {self.w}, {self.dst})"
+
+    def __deepcopy__(self, memodict={}):
+        return transition(self.g, self.n)
+
+@dataclass
+class pathSegment:
+    prefix: List[transition]  # Prefix leading to a cycle; possibly empty
+    cycle: List[transition]  # Cycle of the path segment; possibly empty
+
+    def __repr__(self):
+        return self.__str__()
+    def __str__(self):
+        res = ""
+        if self.prefix:
+            res = ", ".join(map(str, self.prefix))
+        if self.cycle:
+            res += "(" + ", ".join(map(str, self.cycle)) + ")^*"
+        return res
+
+    def __deepcopy__(self, memodict={}):
+        pnew = [deepcopy(x) for x in self.prefix]
+        cnew = [deepcopy(x) for x in self.cycle]
+        return pathSegment(pnew, cnew)
+
+def compressPath(path: List[transition]) -> List[pathSegment]:
+    """
+    Compress a given \a path that may contain cycles into a list of \a pathSegments
+    Args:
+        path: List of transitions
+
+    Returns: Corresponding list of pathSegments
+    """
+    tc = []
+    idx = 0
+    N = len(path)
+
+    def validate():
+        for t1, t2 in zip(path[:-1], path[1:]):
+            if t1.dst != t2.src:
+                return False
+        return True
+
+    assert validate(), "Invalid path"
+
+    while idx < N:
+        subtrace = []
+        srcIdx = dict()
+        while idx < N:
+            subtrace.append(path[idx])
+            idx += 1
+            try:
+                cutIdx = srcIdx[subtrace[-1].dst]
+                tc.append(pathSegment(subtrace[:cutIdx], subtrace[cutIdx:]))
+                break
+            except KeyError:
+                pass
+            srcIdx[subtrace[-1].src] = len(subtrace) - 1
+    if subtrace:
+        tc.append(pathSegment(subtrace, []))
+
+    return tc
+
+def propAlong(e: int, t: List[transition], wup: int) -> Tuple[bool, int]:
+    """
+    Propagates an energy along a given path.
+    Args:
+        e: starting energy
+        t: the path
+        wup: the considered weak upper bound
+
+    Returns: (true, energy) after if t is feasible, else (false, -1)
+    """
+
+    for at in t:
+        ep = min(e + at.w, wup)
+        if ep < 0:
+            return False, -1
+        e = ep
+    return True, e
+
+def tryPumpLoop(e:int, t:List[transition], wup: int) -> Tuple[bool, int]:
+    """
+
+    Args:
+        e: starting energy
+        t: the cycle
+        wup: the considered weak upper bound
+
+    Returns: (true, maximally attainable energy) after if t is feasible and energy positive, else (false, -1)
+    """
+
+    def validate():
+        return t[0].src == t[-1].dst
+
+    assert validate(), "Invalid cycle"
+
+    eInit = e
+    succ, e = propAlong(e, t, wup)
+
+    if (not succ) or (e <= eInit):
+        return False, -1
+
+    # "Pump"
+    # Set to max
+    # Correct by propagating twice
+    e = wup
+    succ, e = propAlong(e, t, wup)
+    assert succ
+    succ, e = propAlong(e, t, wup)
+    assert succ, e
+
+    return True, e
+
+
+def forwardExploration(ic: int, eDst:int, wup:int, t: List[pathSegment]) -> bool:
+    """
+    Compute whether at least eDst can be attained after traversing t
+
+    Args:
+        ic: Initial credit
+        eDst: Minimal energy at destination 
+        wup: weak upper bound
+        t: considered tracce
+
+    Returns: True iff the energy after traversing the path is at least \a eDst
+    """
+
+    e = ic
+    for ps in t:
+        if ps.prefix:
+            succ, e = propAlong(e, ps.prefix, wup)
+            if not succ:
+                return False
+        if ps.cycle:
+            succ, e = tryPumpLoop(e, ps.cycle, wup)
+            if not succ:
+                return False
+    return e >= eDst
+
+def backwardsSearchImpl_(g: spot.twa_graph, pred: List[List[int]], gSrc: int, forwardExp: Callable, ci: List[int], t: List[transition]):
+
+    # Check if the source state was attained and if so trigger forward exploration
+    if t[-1].src == gSrc:
+        tf = list(reversed(t))
+        tf = compressPath(tf)
+        # Validate via forward exploration
+        if forwardExp(tf):
+            return tf
+
+    # Search recursively
+    # todo implement this with a stack
+    v = t[-1].src
+    # Decide on exploration directions
+    for i in range(ci[v] - 1, -1, -1):
+        ciPrime = deepcopy(ci)
+        tPrime = deepcopy(t)
+        ciPrime[v] = i
+        tPrime.append(transition(g, pred[v][i]))
+        # recurse, if found return the viable trace
+        tr = backwardsSearchImpl_(g, pred, gSrc, forwardExp, ciPrime, tPrime)
+        if tr:
+            return tr
+    return []
+
+def searchTrace(g: spot.twa_graph, pred: List[List[int]], gSrc: int, gDst: int, icSrc: int, eDst: int, wup: int) -> List[pathSegment]:
+    """
+    Search for a trace amongst the optimal predecessors \a pred that arrives at \a gDst with at least \a eDst energy
+    when starting in \a gSrc with at least \a icSrc energy 
+    Args:
+        pred: Optimal predecessor list
+        gSrc: Initial state of the trace
+        gDst: Final state of the trace
+        icSrc: Initial credit to start the run
+        eDst: Minimal final energy
+        wup: Weak upper bound of the trace
+
+    Returns: A viable trace as list of pastSegments; Empty if no trace was found
+
+    """
+
+    fforward_ = lambda t: forwardExploration(icSrc, eDst, wup, t)
+
+    # Initially all predecessors are allowed
+    ci = array('q', [len(pp) for pp in pred])
+    t = []
+    v = gDst
+    # All initial calls
+    # Decide on exploration directions
+    # todo factorise this
+    for i in range(ci[v] - 1, -1, -1):
+        ciPrime = deepcopy(ci)
+        tPrime = deepcopy(t)
+        ciPrime[v] = i
+        tPrime.append(transition(g, pred[v][i]))
+        # recurse, if found return the viable trace
+        tr = backwardsSearchImpl_(g, pred, gSrc, fforward_, ciPrime, tPrime)
+        if tr:
+            return tr
+    return []
+
+
+
+#def traceExctraction(br: BuechiResult) -> List[pathSegment]:
