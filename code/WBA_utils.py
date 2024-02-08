@@ -157,7 +157,9 @@ class mod_BF_iter:
         if (en_prime >= 0) and ((not opt) or (en_prime > en_dst)):
             self.E_[dst] = en_prime
             # Add all optimal predecessors in a stutter free fashion
-            if (not self.Pred_[dst]) or (self.Pred_[dst][-1] != en):
+            # Fix by Sven: In fact we can not be as strict as stutter free
+            # If the loop and the prefix overlap we need the same pred twice
+            if not ((len(self.Pred_[dst]) >= 2) and (self.Pred_[dst][-1] == en) and (self.Pred_[dst][-2] == en)):
                 self.Pred_[dst].append(en)
             return en_prime != en_dst
         return False
