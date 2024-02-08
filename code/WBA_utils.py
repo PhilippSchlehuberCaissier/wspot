@@ -5,7 +5,7 @@
 
 from typing import List, Tuple, Dict, Union, Callable
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import spot, buddy
 from copy import deepcopy as deepcopy
 import array
@@ -378,6 +378,8 @@ class BuechiResult:
     g: spot.twa_graph = None  # Original graph
     gScc: spot.twa_graph = None  # Current accepting SCC
     renameDict: Dict[int, int] = None  # Dict from the original states to the ones in the SCC
+    opts: Dict = field(default_factory=dict)  # Stores options like wup etc
+
 
     prefixEn: List[int] = None  # Optimal prefix energy for each state
     prefixPred: List[List[int]] = None  # Extended optimal predecessor list
@@ -387,6 +389,8 @@ class BuechiResult:
     sccEn1: List[int] = None  # Energy current SCC part 1
     sccPred1: List[List[int]] = None  # Extended optimal predecessor list current SCC part 1
 
+    sWup: int = -1  # Maximal energy state embedded in loop
+
     sccEn2: List[int] = None  # Energy current SCC part 2
     sccPred2: List[List[int]] = None  # Extended optimal predecessor list current SCC part 2
 
@@ -395,6 +399,7 @@ class BuechiResult:
 
 # Whole picture
 # This is algorithm 1
+# todo: Fix we do not need s0
 def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit",
                  do_display:"show iterations and info"=0) -> BuechiResult:
     """Searches for energy feasible lasso in the given automaton from the initial state
@@ -448,6 +453,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
     else:
         aut = hoa
 
+    opts = {"wup": wup, "ic": c0, "s0": aut.get_init_state_number()}
+
     print_c("Original automaton")
     display_c(aut, "tsbrg")
 
@@ -455,6 +462,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
     # whole automaton
     # Finds optimal prefix energy for each
     # state, disregarding the colors
+    assert s0 == aut.get_init_state_number()
     en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
     print_c(f"Prefix energy per state\n{en}\nCurrent optimal predescessor\n{pred}")
     print_c("""State names are: "state number, max energy"\nOptimal predescessor is highlighted in pink""");
@@ -512,7 +520,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                 print_c("We found a non-negative loop using edge", names[be.src],
                         "->", names[be.dst]+" directly.")
                 highlight_c(aut_degen, pred3, opt="tsbrg")
-                return BuechiResult(aut, aut_degen, rename, be_num, en, pred, en3, pred3, None, None)
+                return BuechiResult(aut, aut_degen, rename, opts, be_num, en, pred, en3, pred3, -1, None, None)
             else:
                 #restart with the new energy
                 if new_energy < 0:
@@ -531,7 +539,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                     print_c("We found a non-negative loop using edge", names[be.src],
                             "->", names[be.dst]+" in the second iteration.")
                     highlight_c(aut_degen, pred3, opt="tsbrg")
-                    return BuechiResult(aut, aut_degen, rename, be_num, en, pred, en3, pred3, None, None)
+                    return BuechiResult(aut, aut_degen, rename, opts, be_num, en, pred, en3, pred3, -1, None, None)
                 else:
                     for node, energy in enumerate(en3):
                         if energy == wup:
@@ -553,7 +561,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                                     highlight_c(aut_degen, pred4, opt="tsbrg")
                                     highlight_c(aut_degen, pred5, opt="tsbrg")
                                     # en/pred4 : WUP to be.src; en/pred5 : be.dst to WUP
-                                    return BuechiResult(aut, aut_degen, rename, be_num, en, pred, en4, pred4, en5, pred5)
+                                    return BuechiResult(aut, aut_degen, rename, opts, be_num, en, pred, en4, pred4, node, en5, pred5)
+
     print_c("No feasible Büchi run detected!")
     return BuechiResult()
 
@@ -722,7 +731,22 @@ def forwardExploration(ic: int, eDst:int, wup:int, t: List[pathSegment]) -> bool
                 return False
     return e >= eDst
 
-def backwardsSearchImpl_(g: spot.twa_graph, pred: List[List[int]], gSrc: int, forwardExp: Callable, ci: List[int], t: List[transition]):
+def backwardsSearchImpl_(g: spot.twa_graph, pred: List[List[int]], gSrc: int, forwardExp: Callable,
+                         ci: List[int], t: List[transition]) -> List[pathSegment]:
+    """
+    Recurses on optimal predecessors to find a path starting in \a gSrc.
+    If such a path is found, then forwardExp will be called to test its viability.
+    Args:
+        g: The graph
+        pred: The extended optimal predecessor list
+        gSrc: The initial node of the trace
+        forwardExp: A callable evaluating a possible trace
+        ci: The current index table into the extended predecessor list
+        t: The trace accumulated so far
+
+    Returns: A list of pathSegments representing a valid trace. The list is empty if no such list exists.
+
+    """
 
     # Check if the source state was attained and if so trigger forward exploration
     if t[-1].src == gSrc:
@@ -783,6 +807,185 @@ def searchTrace(g: spot.twa_graph, pred: List[List[int]], gSrc: int, gDst: int, 
             return tr
     return []
 
+def projectTrace_(br: BuechiResult, t: List[pathSegment]) -> List[pathSegment]:
+    """
+    Project a trace in br.gScc onto br.g
+    Args:
+        br: BuechiResult structure holding all the necessary information
+        t: The trace to be projected
+
+    Returns: The projected trace
+
+    """
+
+    revrename = {v: k for k, v in br.rename.items()}
+    assert len(revrename) == len(br.rename), "Should be a isomorphism"
+
+    def fProj(vScc: int) -> int:
+        """
+        Project a state in degeneralised gScc onto the corresponding state in g
+        Args:
+            vScc: State in the scc
+
+        Returns: Corresponding state in g
+        """
+        N = len(revrename)
+        ndown = vScc % N  # Project onto zero level
+
+        return revrename[ndown]  # zero level -> g
+
+    # Assuming that there are no two edges with the same (src, dst, cond)
+    # (We can not use acc as it is modified via the degen)
+    edgeDict = dict()
+    for e in br.g.edges():
+        en = br.g.edge_number(e)
+        eId = (e.src, e.dst, e.cond)
+        assert eId not in edgeDict.keys()
+        edgeDict[eId] = en
+
+    def fTrans(s: transition) -> transition:
+        """
+        Transform a transition \a s in br.gScc into one in br.g
+        Args:
+            ps: transition to be transformed
+
+        Returns: Transformed transition
+        """
+        eScc = br.gScc.edge_storage(s.n)
+        eIdProj = (fProj(eScc.src), fProj(eScc.dst), eScc.cond)
+        return transition(br.g, edgeDict[eIdProj])
 
 
-#def traceExctraction(br: BuechiResult) -> List[pathSegment]:
+    tProj = []
+    for ps in t:
+        tProj.append(pathSegment([fTrans(x) for x in ps.prefix], [fTrans(x) for x in ps.cycle]))
+
+    return tProj
+
+
+def traceExtractionCycle1_(br: BuechiResult, project: bool) -> Tuple[int, List[pathSegment]]:
+    """
+    Extract a *simple* cycle embedding the backedge
+    Args:
+        br: BuechiResult structure holding all the information
+        project: Project the result onto the original graph
+
+    Returns: A valid cycle
+
+    """
+
+    be = br.gScc.edge_storage(br.be)
+
+    icMinDst = br.sccEn1[be.dst]
+    icMinSrc = max(0, icMinDst - spot.get_weight(br.gScc, br.be))
+    assert (icMinSrc <= br.opts["wup"])
+
+    # Attention: The destination of the backedge is the source of the trace...
+    t = searchTrace(br.gScc, br.sccPred1, be.dst, be.src, icMinDst, icMinSrc, br.opts["wup"])
+    assert t, "This is not supposed to happen, there should be a viable trace"
+
+    # Add the backedge
+    if not t[-1].cycle:
+        # If the last segment has no cycle -> add to "prefix"
+        t[-1].prefix.append(transition(br.gScc, be))
+    else:
+        # Add a new pathSegment that is prefix only
+        t.append(pathSegment([transition(br.gScc, be)], []))
+
+    if not project:
+        # The cycle was constructed
+        return icMinDst, t
+
+    # Project the cycle onto g
+    return icMinDst, projectTrace_(br, t)
+
+def traceExtractionCycle2_(br: BuechiResult, project: bool) -> Tuple[int, List[pathSegment]]:
+    """
+    Extract a cycle embedding the backedge and passing by the WUP state br.sWup
+    Args:
+        br: BuechiResult structure holding all the information
+        project: Project the result onto the original graph
+
+    Returns: A valid cycle
+    """
+
+    be = br.gScc.edge_storage(br.be)
+    sWup = br.sWup
+    assert br.opt["wup"] == br.prefixEn[sWup], "Expected WUP state"
+    assert br.opt["wup"] == br.sccEn1[sWup], "Expected WUP state"
+    assert br.opt["wup"] == br.sccEn2[sWup], "Expected WUP state"
+    # Correct?
+
+    # Part one, search for one of the energy optimal traces from
+    # sWup to be.src
+    # These are the energies and predecessors with postfix 1
+    icMinSrc = br.opt["wup"]
+    icMinDst = br.sccEn1[be.src]
+
+    # Attention: The destination of the backedge is the source of the trace...
+    t1 = searchTrace(br.gScc, br.sccPred1, sWup, be.src, icMinDst, icMinSrc, br.opts["wup"])
+    assert t1, "This is not supposed to happen, there should be a viable trace"
+
+    # Part two: Take the backedge and get a trace from be.dst to sWup
+    # Source of the trace is the destination for the backedge
+    icMinSrc = min(br.opts["wup"], br.sccEn1[be.src] + spot.get_weight(br.gScc, be))
+    assert icMinSrc >= 0, "Incoherent energy after taking backedge"
+    icMinDst = br.opts["wup"]  # We need to return to sWup with WUP energy
+    t2 = searchTrace(br.gScc, br.sccPred2, be.dst, sWup, icMinDst, icMinSrc, br.opts["wup"])
+    assert t2, "This is not supposed to happen, there should be a viable trace"
+
+    # Join the cycles and add the backedge
+    t = t1
+    if not t[-1].cycle:
+        # If the last segment has no cycle -> add to "prefix"
+        t[-1].prefix.append(transition(br.gScc, be))
+    else:
+        # Add a new pathSegment that is prefix only
+        t.append(pathSegment([transition(br.gScc, be)], []))
+
+    t += t2
+
+    if not project:
+        # The cycle was constructed
+        return icMinDst, t
+
+    # Project the cycle onto g
+    return icMinDst, projectTrace_(br, t)
+
+
+@dataclass
+class lasso:
+    prefix: List[pathSegment]  # Prefix leading to a cycle; possibly empty
+    cycle: List[pathSegment]  # Cycle part
+
+    def __repr__(self):
+        return self.__str__()
+    def __str__(self):
+        return f"prefix\n{self.prefix}\ncycle\n{self.cycle}\n"
+    def __deepcopy__(self, memodict={}):
+        return lasso(deepcopy(self.prefix, memodict), deepcopy(self.cycle, memodict))
+
+
+def traceExctraction(br: BuechiResult, project: bool) -> List[pathSegment]:
+
+    # Part one, find the cycle
+
+    entryState = None  #Entrance state of the cycle
+    if br.sccEn2 is None:
+        assert br.sWup == -1, "Incoherent Result - Did not expect a WUP state"
+        entryState = br.gScc.edge_storage(br.be)
+        icCycle, cycle = traceExtractionCycle1_(br, project)
+    else:
+        assert (0 <= br.sWup) and (br.sWup < br.gScc.num_states()), "Incoherent Result - Missing WUP state"
+        entryState = br.sWup
+        icCycle, cycle = traceExtractionCycle2_(br, project)
+
+    # Part two find a prefix for the cycle
+    tpre = searchTrace(br.g, br.prefixPred, br.opts["s0"], entryState, br.opts["ic"], icCycle, br.opts["wup"])
+    assert tpre, "This is not supposed to happen, there should be a viable trace"
+    # tpre is always in br.g
+
+    return lasso(tpre, cycle)
+
+
+
