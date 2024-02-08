@@ -39,6 +39,30 @@ def test2():
     g.new_states(50)
     g.set_buchi()
 
+    for (s, w, acc, d) in [(0, 0, [], 1), (0, 0, [], 5),  # 0
+                           (1, 2, [], 2),  # 1
+                           (2, -1, [], 3),  # 2
+                           (3, 0, [], 4), (3, 0, [], 5),  # 3
+                           (4, 0, [], 1),  # 4
+                           (5, -1, [0], 0),  # 5 # 6
+                           ]:
+        en = g.new_edge(s, d, buddy.bddtrue, acc)
+        spot.set_weight(g, en, w)
+
+    print(g.to_str("hoa"))
+
+    br = WBA_utils.BuechiEnergy(g, 0, wup=50, c0=0, do_display=1)
+    print(br)
+
+    t = WBA_utils.traceExctraction(br, False)
+
+
+def test3():
+    g = spot.make_twa_graph()
+
+    g.new_states(50)
+    g.set_buchi()
+
     for (s, w, acc, d) in [(0, 5, [], 1),  # 0
                            (1, -5, [], 2), (1, -3, [], 6),  # 1
                            (2, 3, [], 3), (2, -1, [], 5),  # 2
@@ -55,9 +79,12 @@ def test2():
     br = WBA_utils.BuechiEnergy(g, 0, wup=50, c0=50, do_display=1)
     print(br)
 
+    t = WBA_utils.traceExctraction(br, False)
+
 
 
 
 if __name__ == '__main__':
     test1()
     test2()
+    test3()

@@ -382,7 +382,6 @@ class BuechiResult:
     renameDict: Dict[int, int] = None  # Dict from the original states to the ones in the SCC
     opts: Dict = field(default_factory=dict)  # Stores options like wup etc
 
-
     prefixEn: List[int] = None  # Optimal prefix energy for each state
     prefixPred: List[List[int]] = None  # Extended optimal predecessor list
 
@@ -522,7 +521,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                 print_c("We found a non-negative loop using edge", names[be.src],
                         "->", names[be.dst]+" directly.")
                 highlight_c(aut_degen, pred3, opt="tsbrg")
-                return BuechiResult(aut, aut_degen, rename, opts, be_num, en, pred, en3, pred3, -1, None, None)
+                return BuechiResult(aut, aut_degen, rename, opts, en, pred, be_num, en3, pred3, -1, None, None)
             else:
                 #restart with the new energy
                 if new_energy < 0:
@@ -541,7 +540,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                     print_c("We found a non-negative loop using edge", names[be.src],
                             "->", names[be.dst]+" in the second iteration.")
                     highlight_c(aut_degen, pred3, opt="tsbrg")
-                    return BuechiResult(aut, aut_degen, rename, opts, be_num, en, pred, en3, pred3, -1, None, None)
+                    return BuechiResult(aut, aut_degen, rename, opts, en, pred, be_num, en3, pred3, -1, None, None)
                 else:
                     for node, energy in enumerate(en3):
                         if energy == wup:
@@ -550,20 +549,20 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
                             print_c(en4, pred4)
                             if en4[be.src] >= 0:
                                 newest_energy = min(en4[be.src]+spot.get_weight(aut_degen, be_num), wup)
-                                print_c("We  arrived  with "+ str(newest_energy) +
-                                        " energy in state "+names[be.dst] + ".")
+                                print_c("We arrived with ", newest_energy,
+                                        " energy in state ", names[be.dst], ".")
                                 en5, pred5 = bf2.FindMaxEnergy(be.dst, wup, newest_energy)
                                 print_c(en5, pred5)
-                                print_c("We arrived with "+ str(en5[node]) +
-                                        " energy in state "+names[node] + ".")
-                                if  en5[node] == wup:
+                                print_c("We arrived with ", en5[node],
+                                        " energy in state ", names[node], ".")
+                                if en5[node] == wup:
                                     print_c("We found a non-negative loop using node",
                                             names[node], "in the third iteration.")
                                     # TODO: look at those highlights, I have no idea
                                     highlight_c(aut_degen, pred4, opt="tsbrg")
                                     highlight_c(aut_degen, pred5, opt="tsbrg")
                                     # en/pred4 : WUP to be.src; en/pred5 : be.dst to WUP
-                                    return BuechiResult(aut, aut_degen, rename, opts, be_num, en, pred, en4, pred4, node, en5, pred5)
+                                    return BuechiResult(aut, aut_degen, rename, opts, en, pred, be_num, en4, pred4, node, en5, pred5)
 
     print_c("No feasible Büchi run detected!")
     return BuechiResult()
