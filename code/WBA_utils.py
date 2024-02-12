@@ -303,7 +303,7 @@ class mod_BF_iter:
 
         """
 
-        self.onLoop_ = array('b', self.N_*[0])
+        self.onLoop_ = array('I', self.N_*[0])
         searchIdx = 0
         for s in range(self.N_):
             searchIdx += 1

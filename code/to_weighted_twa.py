@@ -11,6 +11,19 @@ import simple_1CTA
 
 import os, sys
 
+GLOBOPTS = {"tchecker":"./tchecker/build/src/tck-reach"}
+
+def set_tchecker_path(path:str) -> None:
+    """
+    Update the path for tchecker. No check-ups are performed
+    Args:
+        path: New path
+
+    Returns: None
+
+    """
+    GLOBOPTS["tchecker"] = path
+
 def translate(tcheckerFile:"tchecker Input file",
               bddDict:"Dict for AP" = None):
     """_summary_
@@ -26,8 +39,8 @@ def translate(tcheckerFile:"tchecker Input file",
     namedHoaFile = f"{tcheckerFile}_named.hoa"
 
     # Call tchecker
-    print(" ".join(["./tchecker/build/src/tck-reach", "-a", "reach",  "-C",  zgFile, "-l",  "Init", tcheckerFile]))
-    subprocess.check_call(["./tchecker/build/src/tck-reach", "-a", "reach",  "-C",  zgFile, "-l",  "Init", tcheckerFile])
+    print(" ".join([GLOBOPTS["tchecker"], "-a", "reach",  "-C",  zgFile, "-l",  "Init", tcheckerFile]))
+    subprocess.check_call([GLOBOPTS["tchecker"], "-a", "reach",  "-C",  zgFile, "-l",  "Init", tcheckerFile])
 
     sCTA = simple_1CTA.simple_1CTA(tcheckerFile)
 
