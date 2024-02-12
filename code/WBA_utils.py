@@ -200,7 +200,8 @@ class mod_BF_iter:
             loopItems.append((s,en))
             if s == si:
                 break
-        loopItems.rotate(1)
+        #loopItems.rotate(1)
+        loopItems.reverse()
         return loopItems
 
     def pumpLoop_(self, s:"state"):
@@ -215,9 +216,12 @@ class mod_BF_iter:
             self.onLoop_[sprime] = 2 #Mark it as old
             # All of these might get their values changed
             self.mark_(sprime)
+            # Ensure that the predecessor causing the loop appears twice
+            if not ((len(self.Pred_[sprime]) >= 2) and (self.Pred_[sprime][-1] == self.Pred_[sprime][-2])):
+                self.Pred_[sprime].append(self.Pred_[sprime][-1])
         self.E_[s] = self.wup_
 
-        counter = 0;
+        counter = 0
         while True:
             counter += 1
             for (_, en) in self.loop_(s):
@@ -289,6 +293,45 @@ class mod_BF_iter:
                 #Loop candidate
                 self.checkLoop(dst)
 
+    def ensureLoopPred(self):
+        """
+        Search for loops induced by the last predecessors in the graph,
+        if necessary, make them appear twice in the list.
+        #todo This should probable be factor with pumpAll at some point
+
+        Returns:
+
+        """
+
+        self.onLoop_ = array('b', self.N_*[0])
+        searchIdx = 0
+        for s in range(self.N_):
+            searchIdx += 1
+            if self.onLoop_[s] != 0:
+                continue  # State belongs to some other loop or postfix
+
+            # Check this state
+            # Note that here, it does not necessarily have to loop,
+            # but it might also simply return to the source state
+            # (However the source state might also be on a loop...)
+            sprime = s
+
+            while (self.onLoop_[sprime] == 0) and self.Pred_[sprime]:
+                # Continue searching along the loop.
+                # If the current state has no predecessor, he can not be part of a loop
+                self.onLoop_[sprime] = searchIdx
+                sprime = self.g_.edge_storage(self.Pred_[sprime][-1]).src
+
+            if self.onLoop_[sprime] == searchIdx:
+                # We have found a loop
+                for (sloop, _) in self.loop_(sprime):
+                    if not ((len(self.Pred_[sloop]) >= 2) and (self.Pred_[sloop][-1] == self.Pred_[sloop][-2])):
+                        self.Pred_[sloop].append(self.Pred_[sloop][-1])
+            else:
+                # This was just some prefix from the initial state
+                pass
+
+
     def BF1(self):
 
         """
@@ -355,6 +398,10 @@ class mod_BF_iter:
             compE(oldE, self.E_)
             hasChanged = hasChanged or any(self.changedE_)
             yield self.E_, self.Pred_
+
+        # Ensure that even loops that did not get pumped/
+        # traversed multiple times, the loop predecessors still appear twice
+        self.ensureLoopPred()
 
     def FindMaxEnergyGen(self, s0:"state", wup:"weak upper bound", c0:"Initial credit"):
         return self.FindMaxEnergy_(s0, wup, c0)
@@ -646,12 +693,23 @@ def compressPath(path: List[transition]) -> List[pathSegment]:
             try:
                 cutIdx = srcIdx[subtrace[-1].dst]
                 tc.append(pathSegment(subtrace[:cutIdx], subtrace[cutIdx:]))
+                subtrace = []
                 break
             except KeyError:
                 pass
             srcIdx[subtrace[-1].src] = len(subtrace) - 1
     if subtrace:
         tc.append(pathSegment(subtrace, []))
+
+    # Clean up step due to repetition of predecessors
+    # If there is no prefix and the cycle is the same as
+    # the one of the last segment -> delete it
+    idx = 1
+    while idx < len(tc):
+        if (not tc[idx].prefix) and (tc[idx - 1].cycle == tc[idx].cycle):
+            tc.pop(idx)
+        else:
+            idx += 1
 
     return tc
 
@@ -707,7 +765,8 @@ def tryPumpLoop(e:int, t:List[transition], wup: int) -> Tuple[bool, int]:
     return True, e
 
 
-def forwardExploration(ic: int, eDst:int, wup:int, t: List[pathSegment]) -> bool:
+def forwardExploration(ic: int, eDst:int, wup:int, t: List[pathSegment],
+                       implCyclCost:Union[int, None] = None) -> bool:
     """
     Compute whether at least eDst can be attained after traversing t
 
@@ -715,22 +774,51 @@ def forwardExploration(ic: int, eDst:int, wup:int, t: List[pathSegment]) -> bool
         ic: Initial credit
         eDst: Minimal energy at destination 
         wup: weak upper bound
-        t: considered tracce
+        t: considered trace
+        implCyclCost: Implicit cost for closing the cycle; existence of the transition is not verified
 
     Returns: True iff the energy after traversing the path is at least \a eDst
     """
 
-    e = ic
-    for ps in t:
-        if ps.prefix:
-            succ, e = propAlong(e, ps.prefix, wup)
-            if not succ:
-                return False
-        if ps.cycle:
-            succ, e = tryPumpLoop(e, ps.cycle, wup)
-            if not succ:
-                return False
-    return e >= eDst
+    def propOnce(e:int):
+        for ps in t:
+            if ps.prefix:
+                succ, e = propAlong(e, ps.prefix, wup)
+                if not succ:
+                    return False, -1
+            if ps.cycle:
+                succ, e = tryPumpLoop(e, ps.cycle, wup)
+                if not succ:
+                    return False, -1
+        return True, e
+
+    succ, e = propOnce(ic)
+    if not succ:
+        return False
+
+    if e >= eDst:
+        return True
+
+    if implCyclCost is None:
+        return False
+
+    # Check if the trace corresponds to a energy-feasible cycle with the given implicit cost to
+    # pass from the last to the first state
+    ic2 = min(e + implCyclCost, wup)  # No energy at start state
+    if ic2 < 0:
+        return False
+    succ, e = propOnce(ic2)
+    if not succ:
+        return False
+    e = min(e + implCyclCost, wup)
+
+    if e >= ic2:  # We loop back with equal or more energy
+        return True
+
+    # There is truly no hopy
+    return False
+
+
 
 def backwardsSearchImpl_(g: spot.twa_graph, pred: List[List[int]], gSrc: int, forwardExp: Callable,
                          ci: List[int], t: List[transition]) -> List[pathSegment]:
@@ -772,7 +860,8 @@ def backwardsSearchImpl_(g: spot.twa_graph, pred: List[List[int]], gSrc: int, fo
             return tr
     return []
 
-def searchTrace(g: spot.twa_graph, pred: List[List[int]], gSrc: int, gDst: int, icSrc: int, eDst: int, wup: int) -> List[pathSegment]:
+def searchTrace(g: spot.twa_graph, pred: List[List[int]], gSrc: int, gDst: int, icSrc: int,
+                eDst: int, wup: int, implCyclCost:Union[int, None] = None) -> List[pathSegment]:
     """
     Search for a trace amongst the optimal predecessors \a pred that arrives at \a gDst with at least \a eDst energy
     when starting in \a gSrc with at least \a icSrc energy 
@@ -783,12 +872,13 @@ def searchTrace(g: spot.twa_graph, pred: List[List[int]], gSrc: int, gDst: int, 
         icSrc: Initial credit to start the run
         eDst: Minimal final energy
         wup: Weak upper bound of the trace
+        implCyclCost: Implicit cost of closing a cycle. If None we seek for a "linear" path
 
     Returns: A viable trace as list of pastSegments; Empty if no trace was found
 
     """
 
-    fforward_ = lambda t: forwardExploration(icSrc, eDst, wup, t)
+    fforward_ = lambda t: forwardExploration(icSrc, eDst, wup, t, implCyclCost)
 
     # Initially all predecessors are allowed
     ci = array('q', [len(pp) for pp in pred])
@@ -819,8 +909,8 @@ def projectTrace_(br: BuechiResult, t: List[pathSegment]) -> List[pathSegment]:
 
     """
 
-    revrename = {v: k for k, v in br.rename.items()}
-    assert len(revrename) == len(br.rename), "Should be a isomorphism"
+    revrename = {v: k for k, v in br.renameDict.items()}
+    assert len(revrename) == len(br.renameDict), "Should be a isomorphism"
 
     def fProj(vScc: int) -> int:
         """
@@ -879,16 +969,18 @@ def traceExtractionCycle1_(br: BuechiResult, project: bool) -> Tuple[int, List[p
 
     icMinDst = br.sccEn1[be.dst]
     icMinSrc = max(0, icMinDst - spot.get_weight(br.gScc, br.be))
-    assert (icMinSrc <= br.opts["wup"])
+    if (icMinSrc > br.opts["wup"]):
+        print("Only implicit cycles can be found")
 
     # Attention: The destination of the backedge is the source of the trace...
-    t = searchTrace(br.gScc, br.sccPred1, be.dst, be.src, icMinDst, icMinSrc, br.opts["wup"])
+    t = searchTrace(br.gScc, br.sccPred1, be.dst, be.src, icMinDst,
+                    icMinSrc, br.opts["wup"], spot.get_weight(br.gScc, br.be))
     assert t, "This is not supposed to happen, there should be a viable trace"
 
     # Add the backedge
     if not t[-1].cycle:
         # If the last segment has no cycle -> add to "prefix"
-        t[-1].prefix.append(transition(br.gScc, be))
+        t[-1].prefix.append(transition(br.gScc, br.be))
     else:
         # Add a new pathSegment that is prefix only
         t.append(pathSegment([transition(br.gScc, be)], []))
@@ -912,19 +1004,19 @@ def traceExtractionCycle2_(br: BuechiResult, project: bool) -> Tuple[int, List[p
 
     be = br.gScc.edge_storage(br.be)
     sWup = br.sWup
-    assert br.opt["wup"] == br.prefixEn[sWup], "Expected WUP state"
-    assert br.opt["wup"] == br.sccEn1[sWup], "Expected WUP state"
-    assert br.opt["wup"] == br.sccEn2[sWup], "Expected WUP state"
+    assert br.opts["wup"] == br.prefixEn[sWup], "Expected WUP state"
+    assert br.opts["wup"] == br.sccEn1[sWup], "Expected WUP state"
+    assert br.opts["wup"] == br.sccEn2[sWup], "Expected WUP state"
     # Correct?
 
     # Part one, search for one of the energy optimal traces from
     # sWup to be.src
     # These are the energies and predecessors with postfix 1
-    icMinSrc = br.opt["wup"]
+    icMinSrc = br.opts["wup"]
     icMinDst = br.sccEn1[be.src]
 
     # Attention: The destination of the backedge is the source of the trace...
-    t1 = searchTrace(br.gScc, br.sccPred1, sWup, be.src, icMinDst, icMinSrc, br.opts["wup"])
+    t1 = searchTrace(br.gScc, br.sccPred1, sWup, be.src, icMinSrc, icMinDst, br.opts["wup"])
     assert t1, "This is not supposed to happen, there should be a viable trace"
 
     # Part two: Take the backedge and get a trace from be.dst to sWup
@@ -932,17 +1024,17 @@ def traceExtractionCycle2_(br: BuechiResult, project: bool) -> Tuple[int, List[p
     icMinSrc = min(br.opts["wup"], br.sccEn1[be.src] + spot.get_weight(br.gScc, be))
     assert icMinSrc >= 0, "Incoherent energy after taking backedge"
     icMinDst = br.opts["wup"]  # We need to return to sWup with WUP energy
-    t2 = searchTrace(br.gScc, br.sccPred2, be.dst, sWup, icMinDst, icMinSrc, br.opts["wup"])
+    t2 = searchTrace(br.gScc, br.sccPred2, be.dst, sWup, icMinSrc, icMinDst, br.opts["wup"])
     assert t2, "This is not supposed to happen, there should be a viable trace"
 
     # Join the cycles and add the backedge
     t = t1
     if not t[-1].cycle:
         # If the last segment has no cycle -> add to "prefix"
-        t[-1].prefix.append(transition(br.gScc, be))
+        t[-1].prefix.append(transition(br.gScc, br.be))
     else:
         # Add a new pathSegment that is prefix only
-        t.append(pathSegment([transition(br.gScc, be)], []))
+        t.append(pathSegment([transition(br.gScc, br.be)], []))
 
     t += t2
 
@@ -974,12 +1066,17 @@ def traceExctraction(br: BuechiResult, project: bool) -> List[pathSegment]:
     entryState = None  #Entrance state of the cycle
     if br.sccEn2 is None:
         assert br.sWup == -1, "Incoherent Result - Did not expect a WUP state"
-        entryState = br.gScc.edge_storage(br.be)
+        entryState = br.gScc.edge_storage(br.be).dst  # State in gScc
         icCycle, cycle = traceExtractionCycle1_(br, project)
     else:
         assert (0 <= br.sWup) and (br.sWup < br.gScc.num_states()), "Incoherent Result - Missing WUP state"
-        entryState = br.sWup
+        entryState = br.sWup  # State in gScc
         icCycle, cycle = traceExtractionCycle2_(br, project)
+
+    # Project the entry state onto the original graph
+    # Note entry state is necessarily in 0 level
+    revrename = {v: k for k, v in br.renameDict.items()}
+    entryState = revrename[entryState]
 
     # Part two find a prefix for the cycle
     tpre = searchTrace(br.g, br.prefixPred, br.opts["s0"], entryState, br.opts["ic"], icCycle, br.opts["wup"])

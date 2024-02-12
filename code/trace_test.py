@@ -55,6 +55,38 @@ def test2():
     print(br)
 
     t = WBA_utils.traceExctraction(br, False)
+    print(t)
+
+    tproj = WBA_utils.traceExctraction(br, True)
+    print(tproj)
+
+def test2bis():
+    g = spot.make_twa_graph()
+
+    g.new_states(50)
+    g.set_generalized_buchi(2)
+
+    for (s, w, acc, d) in [(0, 0, [], 1), (0, 0, [], 5),  # 0
+                           (1, 2, [], 2),  # 1
+                           (2, -1, [], 3),  (2, -10, [], 6),  # 2
+                           (3, 0, [], 4), (3, 0, [], 5),  # 3
+                           (4, 0, [], 1),  # 4
+                           (5, -1, [0], 0),  # 5
+                           (6, -10, [1], 1),  # 6
+                           ]:
+        en = g.new_edge(s, d, buddy.bddtrue, acc)
+        spot.set_weight(g, en, w)
+
+    print(g.to_str("hoa"))
+
+    br = WBA_utils.BuechiEnergy(g, 0, wup=50, c0=0, do_display=1)
+    print(br)
+
+    t = WBA_utils.traceExctraction(br, False)
+    print(t)
+
+    tproj = WBA_utils.traceExctraction(br, True)
+    print(tproj)
 
 
 def test3():
@@ -80,6 +112,59 @@ def test3():
     print(br)
 
     t = WBA_utils.traceExctraction(br, False)
+    print(t)
+
+    tproj = WBA_utils.traceExctraction(br, True)
+    print(tproj)
+
+
+def testXX():
+    g = spot.automaton("""HOA: v1
+States: 14
+Start: 1
+AP: 0
+acc-name: Buchi
+Acceptance: 1 Inf(0)
+properties: trans-labels explicit-labels state-acc complete
+--BODY--
+State: 0 "0:0"
+[t] 1 <0>
+[t] 5 <0>
+State: 1 "1:0"
+[t] 2 <2>
+State: 2 "2:0"
+[t] 3 <-1>
+[t] 6 <-10>
+State: 3 "3:0"
+[t] 4 <0>
+[t] 5 <0>
+State: 4 "4:0"
+[t] 1 <0>
+State: 5 "5:0"
+[t] 7 <-1>
+State: 6 "6:0"
+[t] 1 <-10>
+State: 7 "0:1"
+[t] 8 <0>
+[t] 12 <0>
+State: 8 "1:1"
+[t] 9 <2>
+State: 9 "2:1"
+[t] 10 <-1>
+[t] 13 <-10>
+State: 10 "3:1"
+[t] 11 <0>
+[t] 12 <0>
+State: 11 "4:1"
+[t] 8 <0>
+State: 12 "5:1"
+[t] 7 <-1>
+State: 13 "6:1" {0}
+[t] 1 <-10>
+--END--""")
+    bf = WBA_utils.mod_BF_iter(g)
+    for i, (en, pred) in enumerate(bf.FindMaxEnergyGen(1, 50, 0)):
+        print(i, en, pred)
 
 
 
@@ -87,4 +172,6 @@ def test3():
 if __name__ == '__main__':
     test1()
     test2()
+    testXX()
+    test2bis()
     test3()
