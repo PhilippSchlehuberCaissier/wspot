@@ -501,6 +501,9 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
     else:
         aut = hoa
 
+    if not (aut.acc().num_sets() >= 1) and aut.acc().is_generalized_buchi():
+        raise RuntimeError("Automaton does not have a generalized buechi acceptance.")
+
     opts = {"wup": wup, "ic": c0, "s0": aut.get_init_state_number()}
 
     print_c("Original automaton")
