@@ -540,6 +540,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
 
         print_c(f"Current SCC with: {aut_degen.num_states()} states and {len(acc_edge)} back-edges")
         print_c(rename)
+        # Update names
+        aut_degen.set_state_names([f"{i}" for i in range(aut_degen.num_states())])
         display_c(aut_degen, "tsbrg")
 
         # current degeneralized SCC
@@ -1079,8 +1081,11 @@ def traceExctraction(br: BuechiResult, project: bool) -> List[pathSegment]:
     entryState = revrename[entryState]
 
     # Part two find a prefix for the cycle
-    tpre = searchTrace(br.g, br.prefixPred, br.opts["s0"], entryState, br.opts["ic"], icCycle, br.opts["wup"])
-    assert tpre, "This is not supposed to happen, there should be a viable trace"
+    if (entryState != br.g.get_init_state_number()):
+        tpre = searchTrace(br.g, br.prefixPred, br.opts["s0"], entryState, br.opts["ic"], icCycle, br.opts["wup"])
+        assert tpre, "This is not supposed to happen, there should be a viable trace"
+    else:
+        tpre = []
     # tpre is always in br.g
 
     return lasso(tpre, cycle)
