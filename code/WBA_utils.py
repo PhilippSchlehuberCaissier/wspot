@@ -1009,7 +1009,8 @@ def traceExtractionCycle2_(br: BuechiResult, project: bool) -> Tuple[int, List[p
 
     be = br.gScc.edge_storage(br.be)
     sWup = br.sWup
-    assert br.opts["wup"] == br.prefixEn[sWup], "Expected WUP state"
+    # We need to project sWup back onto br.g
+    # assert br.opts["wup"] == br.prefixEn[sWup], "Expected WUP state"
     assert br.opts["wup"] == br.sccEn1[sWup], "Expected WUP state"
     assert br.opts["wup"] == br.sccEn2[sWup], "Expected WUP state"
     # Correct?
