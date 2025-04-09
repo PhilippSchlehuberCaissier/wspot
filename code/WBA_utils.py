@@ -1,7 +1,10 @@
-# This file contains our main contributions, notably
-# The main algorithm, algorithm 1 in the paper
-# The helper algorithms for energy computations,
-# subsumed in algorithm 2 in the paper
+## @package WBA_utils
+# Utility functions for solving energy problems in weighted Büchi automata.
+#
+# This file contains our main contributions, notably\n
+# The main algorithm, algorithm 1 in the paper\n
+# The helper algorithms for energy computations,\n
+# subsumed in algorithm 2 in the paper\n
 
 from dataclasses import dataclass
 import spot, buddy
@@ -24,17 +27,15 @@ def get_stats():
 # We are currently working towards using spots built-in, more
 # efficient degeneralization
 
+
+## Find the entering states of a WBA's SCC.
+#
+# @param aut (twa_graph): the automaton we work on
+# @param ssi (scc_info): spot scc_info structure for aut
+# @param idx (int): For which SCC to compute the entering states
+# @return A list of int containing all entering states by number
 def get_entering_states(aut, ssi, idx):
-    """_summary_
-
-    Args:
-        aut (twa_graph): the automaton we work on
-        ssi (scc_info): spot scc_info structure for aut
-        idx (int): For which SCC to compute the entering states
-
-    Returns:
-        set[int]: All entering states by number
-    """
+    
     res = set()
     for e in aut.edges():
         if (ssi.scc_of(e.dst) == idx) and (ssi.scc_of(e.src) != idx):
@@ -42,19 +43,17 @@ def get_entering_states(aut, ssi, idx):
     return res
 
 
-def degen_counting(aut, ssi, idx):
-    """
-    A function that degeneralises a given SCC
-    needs the graph, scc_info and the idx of the SCC to treat
-    :param aut: original automaton
-    :param ssi: scc_info
-    :param idx: index of the SCC to degeneralise
-    :return: Tuple of (A new twa_graph corresponding to the degeneralization,
-                       a list containing the edge numbers of accepting edges,
-                       a dict mapping states in the SCC to states in the first level)
-                       The last info allows to root the scc in the original automaton
-    """
 
+## Degeneralise a given SCC.
+# needs the graph, scc_info and the idx of the SCC to treat
+# @param aut (twa_graph): original automaton
+# @param ssi (scc_info): spot scc_info structure
+# @param idx (int): index of the SCC to degeneralise
+# @return A tuple of (A new twa_graph corresponding to the degeneralization,
+# a list containing the edge numbers of accepting edges,
+# a dict mapping states in the SCC to states in the first level)\n
+# The last info allows to root the scc in the original automaton
+def degen_counting(aut, ssi, idx):
     so = ssi.states_of(idx)
     # "local" number of the state
     rename = dict()
@@ -104,12 +103,12 @@ def degen_counting(aut, ssi, idx):
 from array import array
 
 
-class mod_BF_iter:
-    """Class allowing to run iterations of the modified bellman-ford algorithm.
-    Holds all necessary variables and member functions described in algorithm 2.
-    Most of them have additional optimiations
-    """
 
+## Class allowing to run iterations of the modified bellman-ford algorithm.
+#
+# Holds all necessary variables and member functions described in algorithm 2.
+# Most of them have additional optimiations    
+class mod_BF_iter:
     def __init__(self, g:spot.twa_graph):
         self.g_ = g
 
@@ -133,13 +132,12 @@ class mod_BF_iter:
 
     # Propagate the energy along e
     # Returns if energy of dst was changed
+    
+    ## Propagates the energy along an edge
+    # @param en (int): Edge number
+    # @param opt (bool): Whether the optimal energy for dst is chosen or energy is always propagated
+    # @return Whether the energy of dst changed
     def prop_(self, en:"edge number", opt:bool):
-        """
-        Propagates the energy along an edge
-        :param en: Edge number
-        :param opt: Whether the optimal energy for dst is chosen or energy is always propagated
-        :return: Whether the energy of dst changed
-        """
         __bench_stats__["n_propagate"] += 1
         e = self.g_.edge_storage(en)
         src = e.src
@@ -156,26 +154,23 @@ class mod_BF_iter:
             return en_prime != en_dst
         return False
 
+
+        
+    ## Mark state s as waiting
+    # @param s (int): state to mark    
     def mark_(self, s:"state"):
-        """
-        Mark state s as waiting
-        :param s: state to mark
-        """
         if not self.isWaiting_[s]:
             self.isWaiting_[s] = True
             self.Waiting_.append(s)
 
 
+    ## Helper function to iterate over loops
+    # Must be constructed with a state on a cycle.\n
+    # Will eventually raise an error otherwise
+    # or loop indefinitely otherwise
+    # @param si (int): initial state
+    # @return yields a state till done    
     def loop_(self, si:"init state"):
-        """
-        Helper function to iterate over loops
-        Must be constructed with a state on a cycle
-        Will eventually raise an error otherwise
-        or loop indefinitely otherwise
-
-        :param si: initial state
-        :return: yields a state till done
-        """
         from collections import deque
         s = si
         loopItems = deque()
@@ -194,11 +189,11 @@ class mod_BF_iter:
         loopItems.rotate(1)
         return loopItems
 
+
+        
+    ## Helper to pump the simple positive loop containing s
+    # @param s (int): initial state    
     def pumpLoop_(self, s:"state"):
-        """
-        Helper to pump the simple positive loop containing s
-        :param s: initial state
-        """
         __bench_stats__["n_pump_loop"] += 1
 
         for (sprime, _) in self.loop_(s):
@@ -216,15 +211,14 @@ class mod_BF_iter:
                     assert counter <= 2, "fixpoint found too late"
                     return #fixpoint
 
-    def checkLoop(self, s:"state"):
-        """
-        State s is a candidate for a loop state that
-        needs to be pumped. It could however
-        be either on the loop, or the postfix or
-        the postfix of a loop already pumped
-        :param s: State to be checked
-        """
 
+        
+    # State s is a candidate for a loop state that
+    # needs to be pumped. It could however
+    # be either on the loop, or the postfix or
+    # the postfix of a loop already pumped
+    # @param s (int): State to be checked
+    def checkLoop(self, s:"state"):
         sprime = s
 
         while self.onLoop_[sprime] == 0:
@@ -243,11 +237,9 @@ class mod_BF_iter:
             # We could propagate energy here directly
             # Would we then need full BF? Optim?
 
+
+    ## Pump all (energy positive) loops of the current iteration
     def pumpAll(self):
-        """
-        Pump all (energy positive) loops of the current iteration
-        :return:
-        """
         # Reset who is on a loop
         self.onLoop_ = array('b', self.N_*[0])
 
@@ -278,13 +270,8 @@ class mod_BF_iter:
                 #Loop candidate
                 self.checkLoop(dst)
 
+    ## Perform one round of modified, optimised Bellman-Ford
     def BF1(self):
-
-        """
-        Perform one round of modified, optimised Bellman-Ford
-        :return:
-        """
-
         __bench_stats__["n_bf_iter"] += 1
 
         isWaiting2_ = array('b', self.N_ * [False])
@@ -311,16 +298,13 @@ class mod_BF_iter:
             self.Waiting_, Waiting2_ = Waiting2_, self.Waiting_
         return
 
+
+    ## Computes for each state the maximal energy for which it can be reached from s0 with initial credit c0 given the weak upper bound wup
+    # @param s0 (int): the initial state
+    # @param wup (int): the weak upper bound
+    # @param c0 (int): the initial credit
+    # :param asGen: If set to true, it will yield the current energy levels and predecessors at every iteration
     def FindMaxEnergy_(self, s0:"state", wup:"weak upper bound", c0:"Initial credit"):
-        """
-        Computes for each state the maximal energy for which it can be reached from s0 with
-        initial credit c0 given the weak upper bound wup
-        :param s0:
-        :param wup:
-        :param c0:
-        :param asGen: If set to true, it will yield the current energy levels and predecessors at every iteration
-        :return:
-        """
         self.s0_ = s0
         self.wup_ = wup
         self.c0_ = c0
@@ -357,19 +341,18 @@ class mod_BF_iter:
 # Whole picture
 # This is algorithm 1
 
+
+## Solve an ɷ-regular energy game.
+#
+# @param hoa (HOA automaton): generalized weighted büchi automaton,  filename or twa_graph
+# @param s0 (int): initial state
+# @param wup (int): weak upper bound
+# @param c0 (int): initial credit
+# @param do_display: 0 No information is displayed at all\n
+#                    1 Only text is shown\n
+#                    2 The (sub)-graphs are shown as well, only works from jupyter
+# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations and info"=0):
-    """_summary_
-
-    Args:
-        hoa (HOA automaton): generalized weighted büchi automaton,  filename or twa_graph
-        s0 (state): initial state
-        wup (weak upper bound):
-        c0 (initial credit):
-        do_display: 0 No information is displayed at all
-                    1 Only text is shown
-                    2 The (sub)-graphs are shown as well, only works from jupyter
-    """
-
     def print_c(*args, **kwargs):
         if do_display > 0:
             print(*args, **kwargs)

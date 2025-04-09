@@ -1,0 +1,112 @@
+\doxysection{WBA\+\_\+utils Namespace Reference}
+\hypertarget{namespaceWBA__utils}{}\label{namespaceWBA__utils}\index{WBA\_utils@{WBA\_utils}}
+
+
+Utility functions for solving energy problems in weighted Büchi automata.  
+
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classWBA__utils_1_1mod__BF__iter}{mod\+\_\+\+BF\+\_\+iter}}
+\begin{DoxyCompactList}\small\item\em Class allowing to run iterations of the modified bellman-\/ford algorithm. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{namespaceWBA__utils_af66d1d86ee12cb65f59010c0f5775891}\label{namespaceWBA__utils_af66d1d86ee12cb65f59010c0f5775891} 
+{\bfseries reset\+\_\+stats} ()
+\item 
+\Hypertarget{namespaceWBA__utils_aa795625477a6d3ad392d6c3a024317ad}\label{namespaceWBA__utils_aa795625477a6d3ad392d6c3a024317ad} 
+{\bfseries get\+\_\+stats} ()
+\item 
+\mbox{\hyperlink{namespaceWBA__utils_a0f10f4301186d5ec813bb46594403ce4}{get\+\_\+entering\+\_\+states}} (aut, ssi, idx)
+\begin{DoxyCompactList}\small\item\em Find the entering states of a WBA\textquotesingle{}s SCC. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f}{degen\+\_\+counting}} (aut, ssi, idx)
+\begin{DoxyCompactList}\small\item\em Degeneralise a given SCC. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_a99dde0f6d4436ea43ebeb6a6734559be}{Buechi\+Energy}} ("{}HOA automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Utility functions for solving energy problems in weighted Büchi automata. 
+
+This file contains our main contributions, notably~\newline
+ The main algorithm, algorithm 1 in the paper~\newline
+ The helper algorithms for energy computations,~\newline
+ subsumed in algorithm 2 in the paper~\newline
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceWBA__utils_a99dde0f6d4436ea43ebeb6a6734559be}\label{namespaceWBA__utils_a99dde0f6d4436ea43ebeb6a6734559be} 
+\index{WBA\_utils@{WBA\_utils}!BuechiEnergy@{BuechiEnergy}}
+\index{BuechiEnergy@{BuechiEnergy}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{BuechiEnergy()}{BuechiEnergy()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Buechi\+Energy (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{hoa,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{}}]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Solve an ɷ-\/regular energy game. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hoa} & (HOA automaton)\+: generalized weighted büchi automaton, filename or twa\+\_\+graph \\
+\hline
+{\em s0} & (int)\+: initial state \\
+\hline
+{\em wup} & (int)\+: weak upper bound \\
+\hline
+{\em c0} & (int)\+: initial credit \\
+\hline
+{\em do\+\_\+display} & 0 No information is displayed at all~\newline
+ 1 Only text is shown~\newline
+ 2 The (sub)-\/graphs are shown as well, only works from jupyter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f}\label{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f} 
+\index{WBA\_utils@{WBA\_utils}!degen\_counting@{degen\_counting}}
+\index{degen\_counting@{degen\_counting}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{degen\_counting()}{degen\_counting()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+degen\+\_\+counting (\begin{DoxyParamCaption}\item[{}]{aut,  }\item[{}]{ssi,  }\item[{}]{idx }\end{DoxyParamCaption})}
+
+
+
+Degeneralise a given SCC. 
+
+needs the graph, scc\+\_\+info and the idx of the SCC to treat 
+\begin{DoxyParams}{Parameters}
+{\em aut} & (twa\+\_\+graph)\+: original automaton \\
+\hline
+{\em ssi} & (scc\+\_\+info)\+: spot scc\+\_\+info structure \\
+\hline
+{\em idx} & (int)\+: index of the SCC to degeneralise \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple of (A new twa\+\_\+graph corresponding to the degeneralization, a list containing the edge numbers of accepting edges, a dict mapping states in the SCC to states in the first level)~\newline
+ The last info allows to root the scc in the original automaton 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_a0f10f4301186d5ec813bb46594403ce4}\label{namespaceWBA__utils_a0f10f4301186d5ec813bb46594403ce4} 
+\index{WBA\_utils@{WBA\_utils}!get\_entering\_states@{get\_entering\_states}}
+\index{get\_entering\_states@{get\_entering\_states}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{get\_entering\_states()}{get\_entering\_states()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+get\+\_\+entering\+\_\+states (\begin{DoxyParamCaption}\item[{}]{aut,  }\item[{}]{ssi,  }\item[{}]{idx }\end{DoxyParamCaption})}
+
+
+
+Find the entering states of a WBA\textquotesingle{}s SCC. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aut} & (twa\+\_\+graph)\+: the automaton we work on \\
+\hline
+{\em ssi} & (scc\+\_\+info)\+: spot scc\+\_\+info structure for aut \\
+\hline
+{\em idx} & (int)\+: For which SCC to compute the entering states \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A list of int containing all entering states by number 
+\end{DoxyReturn}
