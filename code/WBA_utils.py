@@ -115,7 +115,7 @@ class mod_BF_iter:
     def init(self):
         self.N_ = self.g_.num_states()
         # Base values
-        self.E_ = array('q', self.N_*[-1]) #today integer inf?; 0 is currently lower bound so ok I guess
+        self.E_ = array('q', self.N_*[-1])
         self.Pred_ = array('Q', self.N_*[0])
         self.isWaiting_ = array('b', self.N_*[False])
         # Whether the last "action" changed the energy of the node
@@ -341,10 +341,105 @@ class mod_BF_iter:
 # Whole picture
 # This is algorithm 1
 
-
 ## Solve an ɷ-regular energy game.
 #
-# @param hoa (HOA automaton): generalized weighted büchi automaton,  filename or twa_graph
+# @param hoa (HOA automaton): automaton with one of the following acceptance conditions: parity, Büchi. filename (cast to twa_graph) or twa_graph
+# @param s0 (int): initial state
+# @param wup (int): weak upper bound
+# @param c0 (int): initial credit
+# @param do_display: 0 No information is displayed at all\n
+#                    1 Only text is shown\n
+#                    2 The (sub)-graphs are shown as well, only works from jupyter
+# @return True if there is a (wup, c0) accepting path in hoa, False otherwise.
+def OmegaEnergy(hoa: "HOA automaton",
+                s0: "state",
+                wup: "weak upper bound",
+                c0: "initial credit",
+                do_display: "show iterations and info" = 0
+                ):
+    
+    # TODO cases where hoa is not a Büchi-accepting automaton (parity, co-Büchi, etc)
+    
+    # We manipulate a twa_graph from now on
+    if isinstance(hoa, str):
+        aut = spot.automaton(hoa)
+    else:
+        aut = hoa
+
+    acc_cond = aut.acc()
+
+    # Empty automaton
+    if aut.num_states() == 0:
+        return False
+    
+    # Büchi (can be generalized)
+    if acc_cond.is_generalized_buchi():
+        return BuechiEnergy(aut, s0, wup, c0, do_display)
+    
+    # Parity
+    # Implements the algorithm presented in Section 7
+    # TODO test this
+    if acc_cond.is_parity()[0]:
+        return ParityEnergy(aut, s0, wup, c0, do_display)
+
+    # TODO other automata types
+    return False
+
+## Remove every transition with maximal priority in an automaton.
+#
+# @param aut (HOA automaton): automaton as twa_graph
+# @param is_max (bool): is this a parity-max automaton? (defaults to True for non-parity automata)
+# @return a new automaton without highest-priority transitions, or an empty automaton if there is only one color
+def PrunePriority(aut: "HOA automaton",
+                  is_max: "bool" = True):
+    aut_new = spot.make_twa_graph(aut, spot.twa_prop_set.all())
+    aut_new.copy_named_properties_of(aut)
+
+    color = MaxColor(aut) if is_max else MinColor(aut)
+
+    # Remove relevant edges using the method provided in twagraph-internals.ipynb
+    # TODO might have problems with automata using non-conventional state numbering
+    for s in range(aut_new.num_states()):
+        it = aut_new.out_iteraser(s)
+        while it:
+            e = it.current()
+            if e.acc.has(color):
+                it.erase()
+            else:
+                it.advance()
+                
+    return aut_new
+
+    
+## Return the highest priority in an automaton.
+#
+# @param aut (HOA automaton)
+# @return the highest priority used in aut, -1 if no priorities were found
+def MaxColor(aut: "HOA automaton"):
+    try:
+        return max([acc_set
+                    for e in aut.edges()
+                    for acc_set in list(e.acc.sets())])
+    except ValueError:
+        return -1
+
+    
+## Return the lowest priority in an automaton.
+#
+# @param aut (HOA automaton)
+# @return the lowest priority used in aut, -1 if no priorities were found
+def MinColor(aut: "HOA automaton"):
+    try:
+        return min([acc_set
+                    for e in aut.edges()
+                    for acc_set in list(e.acc.sets())])
+    except ValueError:
+        return -1
+
+    
+## Solve an ɷ-regular energy game in a parity automaton.
+#
+# @param pau (HOA automaton): parity automaton as twa_graph
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
@@ -352,11 +447,67 @@ class mod_BF_iter:
 #                    1 Only text is shown\n
 #                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
-def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit", do_display:"show iterations and info"=0):
+def ParityEnergy(pau: "parity automaton",
+                 s0: "state",
+                 wup: "weak upper bound",
+                 c0: "initial credit",
+                 do_display: "show iterations and info" = 0
+                 ):
+    parity_status = pau.acc().is_parity()
+    if not parity_status[2]:
+        raise ValueError("ParityEnergy must be called with a pure parity automaton.")
+
+    is_max = parity_status[1]
+    is_odd = parity_status[2]
+
+    current_color = MaxColor(pau) if is_max else MinColor(pau)
+    if current_color == -1:
+        return False
+    
+    # TODO current implementation allocates a LOT of memory
+    if (current_color % 2 == 0 and is_odd) or (current_color % 2 == 1 and not is_odd):
+        pau_copy = PrunePriority(pau, is_max)
+        return ParityEnergy(pau_copy, s0, wup, c0, do_display)
+    else:
+        # Create a copy of the current automaton
+        pau_copy = spot.make_twa_graph(pau, spot.twa_prop_set.all())
+        pau_copy.copy_named_properties_of(pau)
+
+        # Recolor and set the acceptance condition to Büchi
+        for e in pau_copy.edges():
+            e.acc = spot.mark_t({0}) if e.acc.has(current_color) else spot.mark_t()
+        pau_copy.set_buchi()
+        display(pau_copy.show())
+
+        # Solve in this new automaton
+        if BuechiEnergy(pau_copy, s0, wup, c0, do_display):
+            return True
+        else:
+            return ParityEnergy(PrunePriority(pau, is_max),
+                                s0, wup, c0, do_display)
+        
+
+## Solve an ɷ-regular energy game in a Büchi automaton.
+#
+# @param bau (HOA automaton): generalized weighted büchi automaton as twa_graph
+# @param s0 (int): initial state
+# @param wup (int): weak upper bound
+# @param c0 (int): initial credit
+# @param do_display: 0 No information is displayed at all\n
+#                    1 Only text is shown\n
+#                    2 The (sub)-graphs are shown as well, only works from jupyter
+# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
+def BuechiEnergy(bau: "Büchi automaton",
+                 s0: "state",
+                 wup: "weak upper bound",
+                 c0: "initial credit",
+                 do_display: "show iterations and info" = 0
+                 ):
     def print_c(*args, **kwargs):
         if do_display > 0:
             print(*args, **kwargs)
         return
+    
     def display_c(aut, opt=""):
         if do_display > 1:
             display(aut.show(opt))
@@ -366,33 +517,28 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
         if do_display > 1:
             aut.highlight_edges([i for i in pred if i != 0], 1)
         display_c(aut, opt)
-
-    if isinstance(hoa, str):
-        aut = spot.automaton(hoa)
-    else:
-        aut = hoa
-
+        
     print_c("Original automaton")
-    display_c(aut, "tsbrg")
+    display_c(bau, "tsbrg")
 
-    bf = mod_BF_iter(aut)
+    bf = mod_BF_iter(bau)
     # whole automaton
     # Finds optimal prefix energy for each
     # state, disregarding the colors
-    en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
+    en, pred = bf.FindMaxEnergy(bau.get_init_state_number(), wup, c0)
     print_c(f"Prefix energy per state\n{en}\nCurrent optimal predescessor\n{pred}")
     print_c("""State names are: "state number, max energy"\nOptimal predescessor is highlighted in pink""");
-    aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-    highlight_c(aut, pred, "tsbrg")
+    bau.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
+    highlight_c(bau, pred, "tsbrg")
 
-    ssi = spot.scc_info(aut)
+    ssi = spot.scc_info(bau)
     # Loop over all SCCs
     for i in range(ssi.scc_count()):
         if not ssi.is_accepting_scc(i):
             continue
         __bench_stats__["n_scc"] += 1
         print_c("Checking SCC", i)
-        aut_degen, acc_edge, rename = degen_counting(aut, ssi, i)
+        aut_degen, acc_edge, rename = degen_counting(bau, ssi, i)
         print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
 
         revrename = {v: k for k, v in rename.items()}
@@ -401,7 +547,7 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
         names = ["" for _ in range(len(rename))]
         for old, new in rename.items():
             names[new] = str(old)
-        names = names * aut.get_acceptance().used_sets().max_set()
+        names = names * bau.get_acceptance().used_sets().max_set()
         for i in range(len(names)):
             names[i] = names[i]+":"+str(i//len(rename))
         aut_degen.set_state_names(names)
