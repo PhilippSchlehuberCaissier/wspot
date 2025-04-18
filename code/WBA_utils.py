@@ -106,6 +106,38 @@ def degen_counting(aut, ssi, idx):
 from array import array
 
 
+def format_energie_(en: List[int]) -> str:
+    """
+    Format the given energy as string
+    Args:
+        en: Current energy as list like
+
+    Returns: str
+    """
+
+    return '\n'.join([f'{snr}:{enx}' for snr, enx in enumerate(en)])
+
+def format_pred_aut_(aut: spot.twa_graph, pred: List[List[int]]) -> str:
+    """
+    Helper function to correctly format optimal predecessors
+    Args:
+        aut: Automaton which we currently work on
+        pred: List of predecessor lists for each state
+
+    Returns: string representation
+    """
+    res = ""
+    for s in range(aut.num_states()):
+        res += f"{s}: {'[' if pred[s] else 'None  '}"
+        for en in pred[s]:
+            e = aut.edge_storage(en)
+            res += f"({e.src},{spot.get_weight(aut, en)}), "
+        res = res[:-2] + (']' if pred[s] else '') + '\n'
+    return res
+
+
+
+
 class mod_BF_iter:
     """Class allowing to run iterations of the modified bellman-ford algorithm.
     Holds all necessary variables and member functions described in algorithm 2.
@@ -515,8 +547,9 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
     # state, disregarding the colors
     assert s0 == aut.get_init_state_number()
     en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
-    print_c(f"Prefix energy per state\n{en}\nCurrent optimal predescessor\n{pred}")
-    print_c("""State names are: "state number, max energy"\nOptimal predescessor is highlighted in pink""");
+    print_c("Prefix energy per state", format_energie_(en),
+             "\nCurrent optimal predecessor", format_pred_aut_(aut, pred), sep='\n')
+    print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
     aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
     highlight_c(aut, pred, opt="tsbrg")
 
@@ -542,7 +575,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
         aut_degen.set_state_names(names)
 
         print_c(f"Current SCC with: {aut_degen.num_states()} states and {len(acc_edge)} back-edges")
-        print_c(rename)
+        print_c("""Associating states in the original automaton to the corresponding states in lvl 0 of the degeneralised SCC""",
+                rename, sep="\n")
         # Update names
         aut_degen.set_state_names([f"{i}" for i in range(aut_degen.num_states())])
         display_c(aut_degen, "tsbrg")
@@ -564,7 +598,8 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
 
             # look from backedge->destination
             (en3, pred3) = bf2.FindMaxEnergy(be.dst, wup, start_energy)
-            print_c(en3, pred3)
+            print_c("Energy starting in backedge dst", format_energie_(en3),
+                    "Corresponding predecessors", format_pred_aut_(aut_degen, pred3), sep="\n")
             if en3[be.src] >= 0:
                 new_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
             else:
