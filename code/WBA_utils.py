@@ -476,21 +476,21 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
     Returns a BuechiResult allowing to extract the trace.
     """
 
-    acc_cond = aut.acc()
+    acc_cond = hoa.acc()
 
     # Empty automaton
-    if aut.num_states() == 0:
+    if hoa.num_states() == 0:
         return False
     
     # Büchi (can be generalized)
     if acc_cond.is_generalized_buchi():
-        return BuechiEnergy(aut, s0, wup, c0, do_display)
+        return BuechiEnergy(hoa, s0, wup, c0, do_display)
     
     # Parity
     # Implements the algorithm presented in Section 7
     # TODO test this
     if acc_cond.is_parity()[0]:
-        return ParityEnergy(aut, s0, wup, c0, do_display)
+        return ParityEnergy(hoa, s0, wup, c0, do_display)
 
     # TODO other automata types
     return False
@@ -599,7 +599,7 @@ def ParityEnergy(pau: "parity automaton",
 
 ## Solve an ɷ-regular energy game in a Büchi automaton.
 #
-# @param bau (HOA automaton): generalized weighted büchi automaton as twa_graph
+# @param hoa (HOA automaton): generalized weighted büchi automaton as twa_graph
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
@@ -607,7 +607,7 @@ def ParityEnergy(pau: "parity automaton",
 #                    1 Only text is shown\n
 #                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in bau, False otherwise.
-def BuechiEnergy(bau: "Büchi automaton",
+def BuechiEnergy(hoa: "Büchi automaton",
                  s0: "state",
                  wup: "weak upper bound",
                  c0: "initial credit",
@@ -656,9 +656,9 @@ def BuechiEnergy(bau: "Büchi automaton",
     opts = {"wup": wup, "ic": c0, "s0": aut.get_init_state_number()}
 
     print_c("Original automaton")
-    display_c(bau, "tsbrg")
+    display_c(hoa, "tsbrg")
 
-    bf = mod_BF_iter(bau)
+    bf = mod_BF_iter(hoa)
     # whole automaton
     # Finds optimal prefix energy for each
     # state, disregarding the colors
@@ -670,14 +670,14 @@ def BuechiEnergy(bau: "Büchi automaton",
     aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
     highlight_c(aut, pred, opt="tsbrg")
 
-    ssi = spot.scc_info(bau)
+    ssi = spot.scc_info(hoa)
     # Loop over all SCCs
     for i in range(ssi.scc_count()):
         if not ssi.is_accepting_scc(i):
             continue
         __bench_stats__["n_scc"] += 1
         print_c("Checking SCC", i)
-        aut_degen, acc_edge, rename = degen_counting(bau, ssi, i)
+        aut_degen, acc_edge, rename = degen_counting(hoa, ssi, i)
         print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
 
         revrename = {v: k for k, v in rename.items()}
@@ -686,7 +686,7 @@ def BuechiEnergy(bau: "Büchi automaton",
         names = ["" for _ in range(len(rename))]
         for old, new in rename.items():
             names[new] = str(old)
-        names = names * bau.get_acceptance().used_sets().max_set()
+        names = names * hoa.get_acceptance().used_sets().max_set()
         for i in range(len(names)):
             names[i] = names[i]+":"+str(i//len(rename))
         aut_degen.set_state_names(names)
