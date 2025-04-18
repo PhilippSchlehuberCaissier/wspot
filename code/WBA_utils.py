@@ -485,7 +485,7 @@ def ParityEnergy(pau: "parity automaton",
         else:
             return ParityEnergy(PrunePriority(pau, is_max),
                                 s0, wup, c0, do_display)
-        
+
 
 ## Solve an ɷ-regular energy game in a Büchi automaton.
 #
@@ -496,7 +496,7 @@ def ParityEnergy(pau: "parity automaton",
 # @param do_display: 0 No information is displayed at all\n
 #                    1 Only text is shown\n
 #                    2 The (sub)-graphs are shown as well, only works from jupyter
-# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
+# @return True if there is a (wup, c0) accepting Büchi path in bau, False otherwise.
 def BuechiEnergy(bau: "Büchi automaton",
                  s0: "state",
                  wup: "weak upper bound",

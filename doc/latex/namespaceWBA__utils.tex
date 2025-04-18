@@ -23,8 +23,18 @@ class \mbox{\hyperlink{classWBA__utils_1_1mod__BF__iter}{mod\+\_\+\+BF\+\_\+iter
 \begin{DoxyCompactList}\small\item\em Find the entering states of a WBA\textquotesingle{}s SCC. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f}{degen\+\_\+counting}} (aut, ssi, idx)
 \begin{DoxyCompactList}\small\item\em Degeneralise a given SCC. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{namespaceWBA__utils_a99dde0f6d4436ea43ebeb6a6734559be}{Buechi\+Energy}} ("{}HOA automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
-\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\hyperlink{namespaceWBA__utils_a3612fa99d688b26a39b5df4bf29c77af}{Omega\+Energy}} ("{}HOA automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_a86eac1693b76ef2473353c6ee31ba839}{Prune\+Priority}} ("{}HOA automaton"{} aut, "{}bool"{} is\+\_\+max=True)
+\begin{DoxyCompactList}\small\item\em Remove every transition with maximal priority in an automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_aa210de15c2a837458b00d58d24c5b541}{Max\+Color}} ("{}HOA automaton"{} aut)
+\begin{DoxyCompactList}\small\item\em Return the highest priority in an automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_a995af9dbfc48a18bbc88cafdd319b687}{Min\+Color}} ("{}HOA automaton"{} aut)
+\begin{DoxyCompactList}\small\item\em Return the lowest priority in an automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_aafa5826444fab84d4f89e63055eb7a24}{Parity\+Energy}} ("{}parity automaton"{} pau, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a parity automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_ac4d5e93a1e061b243224783055743a48}{Buechi\+Energy}} ("{}Büchi automaton"{} bau, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a Büchi automaton. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -37,19 +47,19 @@ This file contains our main contributions, notably~\newline
 
 
 \doxysubsection{Function Documentation}
-\Hypertarget{namespaceWBA__utils_a99dde0f6d4436ea43ebeb6a6734559be}\label{namespaceWBA__utils_a99dde0f6d4436ea43ebeb6a6734559be} 
+\Hypertarget{namespaceWBA__utils_ac4d5e93a1e061b243224783055743a48}\label{namespaceWBA__utils_ac4d5e93a1e061b243224783055743a48} 
 \index{WBA\_utils@{WBA\_utils}!BuechiEnergy@{BuechiEnergy}}
 \index{BuechiEnergy@{BuechiEnergy}!WBA\_utils@{WBA\_utils}}
 \doxysubsubsection{\texorpdfstring{BuechiEnergy()}{BuechiEnergy()}}
-{\footnotesize\ttfamily WBA\+\_\+utils.\+Buechi\+Energy (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{hoa,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{}}]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Buechi\+Energy (\begin{DoxyParamCaption}\item[{"{}Büchi automaton"{}}]{bau,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
 
 
 
-Solve an ɷ-\/regular energy game. 
+Solve an ɷ-\/regular energy game in a Büchi automaton. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em hoa} & (HOA automaton)\+: generalized weighted büchi automaton, filename or twa\+\_\+graph \\
+{\em bau} & (HOA automaton)\+: generalized weighted büchi automaton as twa\+\_\+graph \\
 \hline
 {\em s0} & (int)\+: initial state \\
 \hline
@@ -63,7 +73,7 @@ Solve an ɷ-\/regular energy game.
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
+True if there is a (wup, c0) accepting Büchi path in bau, False otherwise. 
 \end{DoxyReturn}
 \Hypertarget{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f}\label{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f} 
 \index{WBA\_utils@{WBA\_utils}!degen\_counting@{degen\_counting}}
@@ -109,4 +119,116 @@ Find the entering states of a WBA\textquotesingle{}s SCC.
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 A list of int containing all entering states by number 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_aa210de15c2a837458b00d58d24c5b541}\label{namespaceWBA__utils_aa210de15c2a837458b00d58d24c5b541} 
+\index{WBA\_utils@{WBA\_utils}!MaxColor@{MaxColor}}
+\index{MaxColor@{MaxColor}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{MaxColor()}{MaxColor()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Max\+Color (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{aut }\end{DoxyParamCaption})}
+
+
+
+Return the highest priority in an automaton. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aut} & (HOA automaton) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the highest priority used in aut, -\/1 if no priorities were found 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_a995af9dbfc48a18bbc88cafdd319b687}\label{namespaceWBA__utils_a995af9dbfc48a18bbc88cafdd319b687} 
+\index{WBA\_utils@{WBA\_utils}!MinColor@{MinColor}}
+\index{MinColor@{MinColor}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{MinColor()}{MinColor()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Min\+Color (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{aut }\end{DoxyParamCaption})}
+
+
+
+Return the lowest priority in an automaton. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aut} & (HOA automaton) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the lowest priority used in aut, -\/1 if no priorities were found 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_a3612fa99d688b26a39b5df4bf29c77af}\label{namespaceWBA__utils_a3612fa99d688b26a39b5df4bf29c77af} 
+\index{WBA\_utils@{WBA\_utils}!OmegaEnergy@{OmegaEnergy}}
+\index{OmegaEnergy@{OmegaEnergy}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{OmegaEnergy()}{OmegaEnergy()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Omega\+Energy (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{hoa,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Solve an ɷ-\/regular energy game. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hoa} & (HOA automaton)\+: automaton with one of the following acceptance conditions\+: parity, Büchi. filename (cast to twa\+\_\+graph) or twa\+\_\+graph \\
+\hline
+{\em s0} & (int)\+: initial state \\
+\hline
+{\em wup} & (int)\+: weak upper bound \\
+\hline
+{\em c0} & (int)\+: initial credit \\
+\hline
+{\em do\+\_\+display} & 0 No information is displayed at all~\newline
+ 1 Only text is shown~\newline
+ 2 The (sub)-\/graphs are shown as well, only works from jupyter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if there is a (wup, c0) accepting path in hoa, False otherwise. 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_aafa5826444fab84d4f89e63055eb7a24}\label{namespaceWBA__utils_aafa5826444fab84d4f89e63055eb7a24} 
+\index{WBA\_utils@{WBA\_utils}!ParityEnergy@{ParityEnergy}}
+\index{ParityEnergy@{ParityEnergy}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{ParityEnergy()}{ParityEnergy()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Parity\+Energy (\begin{DoxyParamCaption}\item[{"{}parity automaton"{}}]{pau,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Solve an ɷ-\/regular energy game in a parity automaton. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pau} & (HOA automaton)\+: parity automaton as twa\+\_\+graph \\
+\hline
+{\em s0} & (int)\+: initial state \\
+\hline
+{\em wup} & (int)\+: weak upper bound \\
+\hline
+{\em c0} & (int)\+: initial credit \\
+\hline
+{\em do\+\_\+display} & 0 No information is displayed at all~\newline
+ 1 Only text is shown~\newline
+ 2 The (sub)-\/graphs are shown as well, only works from jupyter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_a86eac1693b76ef2473353c6ee31ba839}\label{namespaceWBA__utils_a86eac1693b76ef2473353c6ee31ba839} 
+\index{WBA\_utils@{WBA\_utils}!PrunePriority@{PrunePriority}}
+\index{PrunePriority@{PrunePriority}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{PrunePriority()}{PrunePriority()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Prune\+Priority (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{aut,  }\item[{"{}bool"{} }]{is\+\_\+max = {\ttfamily True} }\end{DoxyParamCaption})}
+
+
+
+Remove every transition with maximal priority in an automaton. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aut} & (HOA automaton)\+: automaton as twa\+\_\+graph \\
+\hline
+{\em is\+\_\+max} & (bool)\+: is this a parity-\/max automaton? (defaults to True for non-\/parity automata) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a new automaton without highest-\/priority transitions, or an empty automaton if there is only one color 
 \end{DoxyReturn}
