@@ -9,16 +9,18 @@
 from typing import List, Tuple, Dict, Union, Callable
 
 from dataclasses import dataclass, field
-import spot, buddy
+import spot
 from copy import deepcopy as deepcopy
 import array
 
-__bench_stats__ = {"n_backedges":0, "n_bf_iter":0, "n_scc":0,
-                   "n_pump_loop":0, "n_propagate":0}
+__bench_stats__ = {"n_backedges": 0, "n_bf_iter": 0, "n_scc": 0,
+                   "n_pump_loop": 0, "n_propagate": 0}
+
 
 def reset_stats():
     for k in __bench_stats__.keys():
         __bench_stats__[k] = 0
+
 
 def get_stats():
     return __bench_stats__
@@ -37,13 +39,11 @@ def get_stats():
 # @param idx (int): For which SCC to compute the entering states
 # @return A list of int containing all entering states by number
 def get_entering_states(aut, ssi, idx):
-    
     res = set()
     for e in aut.edges():
         if (ssi.scc_of(e.dst) == idx) and (ssi.scc_of(e.src) != idx):
             res.add(e.dst)
     return res
-
 
 
 ## Degeneralise a given SCC.
@@ -85,7 +85,12 @@ def degen_counting(aut, ssi, idx):
                 if c2 == 0:
                     acc = spot.mark_t([0])
 
-            ne = aut_degen.new_edge(c * n_states_orig + src_loc, c2 * n_states_orig + dst_loc, e.cond, acc)
+            ne = aut_degen.new_edge(
+                c * n_states_orig + src_loc,
+                c2 * n_states_orig + dst_loc,
+                e.cond,
+                acc
+            )
             spot.set_weight(aut_degen, ne, w)
             if acc != spot.mark_t():
                 # Colored backedges are treated one by one
@@ -97,7 +102,8 @@ def degen_counting(aut, ssi, idx):
     # Initial
     # This is never used but seems nicer
     for si in get_entering_states(aut, ssi, idx):
-        aut_degen.set_init_state(rename[si]) # This is only one of possibly several
+        aut_degen.set_init_state(rename[si])
+        # This is only one of possibly several
         break
     return aut_degen, acc_edge, rename
 
@@ -115,6 +121,7 @@ def format_energie_(en: List[int]) -> str:
     """
 
     return '\n'.join([f'{snr}:{enx}' for snr, enx in enumerate(en)])
+
 
 def format_pred_aut_(aut: spot.twa_graph, pred: List[List[int]]) -> str:
     """
@@ -135,26 +142,19 @@ def format_pred_aut_(aut: spot.twa_graph, pred: List[List[int]]) -> str:
     return res
 
 
-
-
-class mod_BF_iter:
-    """Class allowing to run iterations of the modified bellman-ford algorithm.
-    Holds all necessary variables and member functions described in algorithm 2.
-    Most of them have additional optimiations
-    """
-
 ## Class allowing to run iterations of the modified bellman-ford algorithm.
 #
 # Holds all necessary variables and member functions described in algorithm 2.
-# Most of them have additional optimiations    
+# Most of them have additional optimiations
 class mod_BF_iter:
-    def __init__(self, g:spot.twa_graph):
+    def __init__(self, g: spot.twa_graph):
         self.g_ = g
 
     def init(self):
         self.N_ = self.g_.num_states()
         # Base values
-        self.E_ = array('q', self.N_*[-1]) #today integer inf?; 0 is currently lower bound so ok I guess
+        # today integer inf?; 0 is currently lower bound so ok I guess
+        self.E_ = array('q', self.N_*[-1])
         # Modification for trace extraction: We need to store all
         # transitions that have been optimal at some point
         self.Pred_ = [array('Q', []) for _ in range(self.N_)]
@@ -164,7 +164,8 @@ class mod_BF_iter:
         self.changedE_ = array('b', self.N_ * [True])
         self.Waiting_ = array('L')
         # For Loop searching
-        #-1: Postfix of a loop, 0: "Free", 1: the current loop, 2: old loop or postfix
+        # -1: Postfix of a loop, 0: "Free",
+        # 1: the current loop, 2: old loop or postfix
         self.onLoop_ = array('b', self.N_*[0])
         # From initial state)
         self.E_[self.s0_] = self.c0_
@@ -173,12 +174,12 @@ class mod_BF_iter:
 
     # Propagate the energy along e
     # Returns if energy of dst was changed
-    
+
     ## Propagates the energy along an edge
     # @param en (int): Edge number
     # @param opt (bool): Whether the optimal energy for dst is chosen or energy is always propagated
     # @return Whether the energy of dst changed
-    def prop_(self, en:"edge number", opt:bool):
+    def prop_(self, en: "edge number", opt: bool):
         __bench_stats__["n_propagate"] += 1
         e = self.g_.edge_storage(en)
         src = e.src
@@ -194,16 +195,16 @@ class mod_BF_iter:
             # Add all optimal predecessors in a stutter free fashion
             # Fix by Sven: In fact we can not be as strict as stutter free
             # If the loop and the prefix overlap we need the same pred twice
-            if not ((len(self.Pred_[dst]) >= 2) and (self.Pred_[dst][-1] == en) and (self.Pred_[dst][-2] == en)):
+            if not ((len(self.Pred_[dst]) >= 2)
+                    and (self.Pred_[dst][-1] == en)
+                    and (self.Pred_[dst][-2] == en)):
                 self.Pred_[dst].append(en)
             return en_prime != en_dst
         return False
 
-
-        
     ## Mark state s as waiting
-    # @param s (int): state to mark    
-    def mark_(self, s:"state"):
+    # @param s (int): state to mark
+    def mark_(self, s: "state"):
         if not self.isWaiting_[s]:
             self.isWaiting_[s] = True
             self.Waiting_.append(s)
@@ -214,42 +215,45 @@ class mod_BF_iter:
     # Will eventually raise an error otherwise
     # or loop indefinitely otherwise
     # @param si (int): initial state
-    # @return yields a state till done    
-    def loop_(self, si:"init state"):
+    # @return yields a state till done
+    def loop_(self, si: "init state"):
         from collections import deque
         s = si
         loopItems = deque()
+
         def pred_(s):
             # We need to use the latest predecessor
             en = self.Pred_[s]
             assert en, "No valid Predecessor!"
             return en[-1], self.g_.edge_storage(en[-1])
+
         def next_(s):
             en, e = pred_(s)
             return e.src, en
+
         while True:
             s, en = next_(s)
-            loopItems.append((s,en))
+            loopItems.append((s, en))
             if s == si:
                 break
-        #loopItems.rotate(1)
+        # loopItems.rotate(1)
         loopItems.reverse()
         return loopItems
 
 
-        
     ## Helper to pump the simple positive loop containing s
-    # @param s (int): initial state    
-    def pumpLoop_(self, s:"state"):
+    # @param s (int): initial state
+    def pumpLoop_(self, s: "state"):
         __bench_stats__["n_pump_loop"] += 1
 
         for (sprime, _) in self.loop_(s):
-            self.E_[sprime] = -2 # Special marker
-            self.onLoop_[sprime] = 2 #Mark it as old
+            self.E_[sprime] = -2  # Special marker
+            self.onLoop_[sprime] = 2  # Mark it as old
             # All of these might get their values changed
             self.mark_(sprime)
             # Ensure that the predecessor causing the loop appears twice
-            if not ((len(self.Pred_[sprime]) >= 2) and (self.Pred_[sprime][-1] == self.Pred_[sprime][-2])):
+            if not ((len(self.Pred_[sprime]) >= 2)
+                    and (self.Pred_[sprime][-1] == self.Pred_[sprime][-2])):
                 self.Pred_[sprime].append(self.Pred_[sprime][-1])
         self.E_[s] = self.wup_
 
@@ -259,21 +263,19 @@ class mod_BF_iter:
             for (_, en) in self.loop_(s):
                 if not self.prop_(en, False):
                     assert counter <= 2, "fixpoint found too late"
-                    return #fixpoint
+                    return  # fixpoint
 
-
-        
     # State s is a candidate for a loop state that
     # needs to be pumped. It could however
     # be either on the loop, or the postfix or
     # the postfix of a loop already pumped
     # @param s (int): State to be checked
-    def checkLoop(self, s:"state"):
+    def checkLoop(self, s: "state"):
         sprime = s
 
         while self.onLoop_[sprime] == 0:
             self.onLoop_[sprime] = 1
-            assert self.Pred_[sprime], "Has no predecessor -> Can not be on a loop"
+            assert self.Pred_[sprime],"Has no predecessor -> Can not be on a loop"
             # Works on the last predecessor set
             sprime = self.g_.edge_storage(self.Pred_[sprime][-1]).src
 
@@ -299,7 +301,7 @@ class mod_BF_iter:
             if not self.changedE_[s]:
                 continue
             if self.onLoop_[s] != 0:
-                continue # State belongs to some other loop or postfix
+                continue  # State belongs to some other loop or postfix
             # Check if energy can increase
             # Todo Code duplication :(
             en = self.Pred_[s]
@@ -319,7 +321,7 @@ class mod_BF_iter:
 
             en_prime = min(self.wup_, en_src + ew)
             if (en_prime > en_dst):
-                #Loop candidate
+                # Loop candidate
                 self.checkLoop(dst)
 
     def ensureLoopPred(self):
@@ -354,27 +356,29 @@ class mod_BF_iter:
             if self.onLoop_[sprime] == searchIdx:
                 # We have found a loop
                 for (sloop, _) in self.loop_(sprime):
-                    if not ((len(self.Pred_[sloop]) >= 2) and (self.Pred_[sloop][-1] == self.Pred_[sloop][-2])):
+                    if not ((len(self.Pred_[sloop]) >= 2)
+                            and (self.Pred_[sloop][-1] == self.Pred_[sloop][-2])):
                         self.Pred_[sloop].append(self.Pred_[sloop][-1])
             else:
                 # This was just some prefix from the initial state
                 pass
-
 
     def BF1(self):
         __bench_stats__["n_bf_iter"] += 1
 
         isWaiting2_ = array('b', self.N_ * [False])
         Waiting2_ = array('L')
-        #Swap
-        #self.isWaiting_, isWaiting2_ = isWaiting2_, self.isWaiting_
-        #self.Waiting_, Waiting2_ = Waiting2_, self.Waiting_
+        # Swap
+        # self.isWaiting_, isWaiting2_ = isWaiting2_, self.isWaiting_
+        # self.Waiting_, Waiting2_ = Waiting2_, self.Waiting_
 
         for _ in range(self.N_):
             if not self.isWaiting_:
                 break  # Early exit
 
-            isWaiting2_ = array('b', self.N_ * [False])  #There is no "fill" for a base array
+            isWaiting2_ = array('b', self.N_ * [False])
+            # There is no "fill" for a base array
+
             while self.Waiting_:
                 s = self.Waiting_.pop()
                 for e in self.g_.out(s):
@@ -394,7 +398,10 @@ class mod_BF_iter:
     # @param wup (int): the weak upper bound
     # @param c0 (int): the initial credit
     # :param asGen: If set to true, it will yield the current energy levels and predecessors at every iteration
-    def FindMaxEnergy_(self, s0:"state", wup:"weak upper bound", c0:"Initial credit"):
+    def FindMaxEnergy_(self,
+                       s0: "state",
+                       wup: "weak upper bound",
+                       c0: "Initial credit"):
         self.s0_ = s0
         self.wup_ = wup
         self.c0_ = c0
@@ -423,10 +430,16 @@ class mod_BF_iter:
         # traversed multiple times, the loop predecessors still appear twice
         self.ensureLoopPred()
 
-    def FindMaxEnergyGen(self, s0:"state", wup:"weak upper bound", c0:"Initial credit"):
+    def FindMaxEnergyGen(self,
+                         s0: "state",
+                         wup: "weak upper bound",
+                         c0: "Initial credit"):
         return self.FindMaxEnergy_(s0, wup, c0)
 
-    def FindMaxEnergy(self, s0:"state", wup:"weak upper bound", c0:"Initial credit"):
+    def FindMaxEnergy(self,
+                      s0: "state",
+                      wup: "weak upper bound",
+                      c0: "Initial credit"):
         for (En, Pred) in self.FindMaxEnergy_(s0, wup, c0):
             continue
         return (En, Pred)
@@ -468,8 +481,11 @@ class BuechiResult:
 # Whole picture
 # This is algorithm 1
 # todo: Fix we do not need s0
-def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"initial credit",
-                 do_display:"show iterations and info"=0) -> BuechiResult:
+def BuechiEnergy(hoa: "HOA automaton",
+                 s0: "state",
+                 wup: "weak upper bound",
+                 c0: "initial credit",
+                 do_display: "show iterations and info" = 0) -> BuechiResult:
     """Searches for energy feasible lasso in the given automaton from the initial state
     with a weak upper bound of \a wup and an initial credit of \a c0
 
@@ -481,11 +497,11 @@ def BuechiEnergy(hoa:"HOA automaton", s0:"state", wup:"weak upper bound", c0:"in
     # Empty automaton
     if hoa.num_states() == 0:
         return False
-    
+
     # Büchi (can be generalized)
     if acc_cond.is_generalized_buchi():
         return BuechiEnergy(hoa, s0, wup, c0, do_display)
-    
+
     # Parity
     # Implements the algorithm presented in Section 7
     # TODO test this
@@ -517,7 +533,7 @@ def PrunePriority(aut: "HOA automaton",
                 it.erase()
             else:
                 it.advance()
-                
+
     return aut_new
 
     
@@ -573,7 +589,7 @@ def ParityEnergy(pau: "parity automaton",
     current_color = MaxColor(pau) if is_max else MinColor(pau)
     if current_color == -1:
         return False
-    
+
     # TODO current implementation allocates a LOT of memory
     if (current_color % 2 == 0 and is_odd) or (current_color % 2 == 1 and not is_odd):
         pau_copy = PrunePriority(pau, is_max)
@@ -617,13 +633,16 @@ def BuechiEnergy(hoa: "Büchi automaton",
         if do_display > 0:
             print(*args, **kwargs)
         return
-    
+
     def display_c(aut, opt=""):
         if do_display > 1:
             display(aut.show(opt))
         return
 
-    def highlight_c(aut: spot.twa_graph, pred: List[List[int]], predColors: List[int]=[1, 2, 3, 4, 5], opt="") -> None:
+    def highlight_c(aut: spot.twa_graph,
+                    pred: List[List[int]],
+                    predColors: List[int] = [1, 2, 3, 4, 5],
+                    opt="") -> None:
         """
 
         Args:
@@ -706,12 +725,14 @@ def BuechiEnergy(hoa: "Büchi automaton",
         for be_num in acc_edge:
             __bench_stats__["n_backedges"] += 1
             be = aut_degen.edge_storage(be_num)
-            print_c("Analysing backedge "+ names[be.src],"->", names[be.dst]+".")
+            print_c("Analysing backedge " + names[be.src],
+                    "->", names[be.dst] + ".")
 
             start_energy = en[revrename[be.dst]]
             if start_energy < 0:
                 continue
-            print_c("We start with "+ str(start_energy) + " energy in state "+names[be.dst] + ".")
+            print_c("We start with " + str(start_energy)
+                    + " energy in state " + names[be.dst] + ".")
 
             # look from backedge->destination
             (en3, pred3) = bf2.FindMaxEnergy(be.dst, wup, start_energy)
@@ -727,32 +748,34 @@ def BuechiEnergy(hoa: "Büchi automaton",
                 highlight_c(aut_degen, pred3, opt="tsbrg")
                 return BuechiResult(aut, aut_degen, rename, opts, en, pred, be_num, en3, pred3, -1, None, None)
             else:
-                #restart with the new energy
+                # restart with the new energy
                 if new_energy < 0:
                     continue
-                print_c("We restart with "+ str(new_energy) + " energy in state "+names[be.dst] + ".")
+                print_c("We restart with " + str(new_energy)
+                        + " energy in state " + names[be.dst] + ".")
 
                 # look again from backedge->destination but with lower start energy
                 en3, pred3 = bf2.FindMaxEnergy(be.dst, wup, new_energy)
                 print_c(en3, pred3)
                 if en3[be.src] >= 0:
-                    even_newer_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
+                    even_newer_energy = min(en3[be.src] + spot.get_weight(aut_degen, be_num), wup)
                 else:
                     even_newer_energy = -1
-                print_c("We arrived with "+ str(even_newer_energy) + " energy in state "+names[be.dst] + ".")
-                if  even_newer_energy >= new_energy:
+                print_c("We arrived with " + str(even_newer_energy)
+                        + " energy in state " + names[be.dst] + ".")
+                if even_newer_energy >= new_energy:
                     print_c("We found a non-negative loop using edge", names[be.src],
-                            "->", names[be.dst]+" in the second iteration.")
+                            "->", names[be.dst] + " in the second iteration.")
                     highlight_c(aut_degen, pred3, opt="tsbrg")
                     return BuechiResult(aut, aut_degen, rename, opts, en, pred, be_num, en3, pred3, -1, None, None)
                 else:
                     for node, energy in enumerate(en3):
                         if energy == wup:
-                            print_c("we should check also from "+str(names[node])+".")
+                            print_c("we should check also from " + str(names[node])+".")
                             en4, pred4 = bf2.FindMaxEnergy(node, wup, wup)
                             print_c(en4, pred4)
                             if en4[be.src] >= 0:
-                                newest_energy = min(en4[be.src]+spot.get_weight(aut_degen, be_num), wup)
+                                newest_energy = min(en4[be.src] + spot.get_weight(aut_degen, be_num), wup)
                                 print_c("We arrived with ", newest_energy,
                                         " energy in state ", names[be.dst], ".")
                                 en5, pred5 = bf2.FindMaxEnergy(be.dst, wup, newest_energy)
@@ -773,8 +796,8 @@ def BuechiEnergy(hoa: "Büchi automaton",
 
 @dataclass
 class transition:
-    g : spot.twa_graph  # Underlying graph
-    n : int  # Edge number
+    g: spot.twa_graph  # Underlying graph
+    n: int  # Edge number
 
     @property
     def src(self):
@@ -795,11 +818,13 @@ class transition:
 
     def __repr__(self) -> str:
         return self.__str__()
+
     def __str__(self):
         return f"({self.src}, {self.w}, {self.dst})"
 
     def __deepcopy__(self, memodict={}):
         return transition(self.g, self.n)
+
 
 @dataclass
 class pathSegment:
@@ -808,6 +833,7 @@ class pathSegment:
 
     def __repr__(self):
         return self.__str__()
+
     def __str__(self):
         res = ""
         if self.prefix:
@@ -820,6 +846,7 @@ class pathSegment:
         pnew = [deepcopy(x) for x in self.prefix]
         cnew = [deepcopy(x) for x in self.cycle]
         return pathSegment(pnew, cnew)
+
 
 def compressPath(path: List[transition]) -> List[pathSegment]:
     """
@@ -870,6 +897,7 @@ def compressPath(path: List[transition]) -> List[pathSegment]:
 
     return tc
 
+
 def propAlong(e: int, t: List[transition], wup: int) -> Tuple[bool, int]:
     """
     Propagates an energy along a given path.
@@ -888,7 +916,8 @@ def propAlong(e: int, t: List[transition], wup: int) -> Tuple[bool, int]:
         e = ep
     return True, e
 
-def tryPumpLoop(e:int, t:List[transition], wup: int) -> Tuple[bool, int]:
+
+def tryPumpLoop(e: int, t: List[transition], wup: int) -> Tuple[bool, int]:
     """
 
     Args:
@@ -922,14 +951,14 @@ def tryPumpLoop(e:int, t:List[transition], wup: int) -> Tuple[bool, int]:
     return True, e
 
 
-def forwardExploration(ic: int, eDst:int, wup:int, t: List[pathSegment],
-                       implCyclCost:Union[int, None] = None) -> bool:
+def forwardExploration(ic: int, eDst: int, wup: int, t: List[pathSegment],
+                       implCyclCost: Union[int, None] = None) -> bool:
     """
     Compute whether at least eDst can be attained after traversing t
 
     Args:
         ic: Initial credit
-        eDst: Minimal energy at destination 
+        eDst: Minimal energy at destination
         wup: weak upper bound
         t: considered trace
         implCyclCost: Implicit cost for closing the cycle; existence of the transition is not verified
@@ -937,7 +966,7 @@ def forwardExploration(ic: int, eDst:int, wup:int, t: List[pathSegment],
     Returns: True iff the energy after traversing the path is at least \a eDst
     """
 
-    def propOnce(e:int):
+    def propOnce(e: int):
         for ps in t:
             if ps.prefix:
                 succ, e = propAlong(e, ps.prefix, wup)
@@ -976,9 +1005,12 @@ def forwardExploration(ic: int, eDst:int, wup:int, t: List[pathSegment],
     return False
 
 
-
-def backwardsSearchImpl_(g: spot.twa_graph, pred: List[List[int]], gSrc: int, forwardExp: Callable,
-                         ci: List[int], t: List[transition]) -> List[pathSegment]:
+def backwardsSearchImpl_(g: spot.twa_graph,
+                         pred: List[List[int]],
+                         gSrc: int,
+                         forwardExp: Callable,
+                         ci: List[int],
+                         t: List[transition]) -> List[pathSegment]:
     """
     Recurses on optimal predecessors to find a path starting in \a gSrc.
     If such a path is found, then forwardExp will be called to test its viability.
@@ -1017,11 +1049,17 @@ def backwardsSearchImpl_(g: spot.twa_graph, pred: List[List[int]], gSrc: int, fo
             return tr
     return []
 
-def searchTrace(g: spot.twa_graph, pred: List[List[int]], gSrc: int, gDst: int, icSrc: int,
-                eDst: int, wup: int, implCyclCost:Union[int, None] = None) -> List[pathSegment]:
+
+def searchTrace(g: spot.twa_graph,
+                pred: List[List[int]],
+                gSrc: int, gDst: int,
+                icSrc: int,
+                eDst: int,
+                wup: int,
+                implCyclCost: Union[int, None] = None) -> List[pathSegment]:
     """
     Search for a trace amongst the optimal predecessors \a pred that arrives at \a gDst with at least \a eDst energy
-    when starting in \a gSrc with at least \a icSrc energy 
+    when starting in \a gSrc with at least \a icSrc energy
     Args:
         pred: Optimal predecessor list
         gSrc: Initial state of the trace
@@ -1054,6 +1092,7 @@ def searchTrace(g: spot.twa_graph, pred: List[List[int]], gSrc: int, gDst: int, 
         if tr:
             return tr
     return []
+
 
 def projectTrace_(br: BuechiResult, t: List[pathSegment]) -> List[pathSegment]:
     """
@@ -1103,15 +1142,18 @@ def projectTrace_(br: BuechiResult, t: List[pathSegment]) -> List[pathSegment]:
         eIdProj = (fProj(eScc.src), fProj(eScc.dst), eScc.cond)
         return transition(br.g, edgeDict[eIdProj])
 
-
     tProj = []
     for ps in t:
-        tProj.append(pathSegment([fTrans(x) for x in ps.prefix], [fTrans(x) for x in ps.cycle]))
+        tProj.append(pathSegment(
+            [fTrans(x) for x in ps.prefix],
+            [fTrans(x) for x in ps.cycle]
+        ))
 
     return tProj
 
 
-def traceExtractionCycle1_(br: BuechiResult, project: bool) -> Tuple[int, List[pathSegment]]:
+def traceExtractionCycle1_(br: BuechiResult,
+                           project: bool) -> Tuple[int, List[pathSegment]]:
     """
     Extract a *simple* cycle embedding the backedge
     Args:
@@ -1149,7 +1191,9 @@ def traceExtractionCycle1_(br: BuechiResult, project: bool) -> Tuple[int, List[p
     # Project the cycle onto g
     return icMinDst, projectTrace_(br, t)
 
-def traceExtractionCycle2_(br: BuechiResult, project: bool) -> Tuple[int, List[pathSegment]]:
+
+def traceExtractionCycle2_(br: BuechiResult,
+                           project: bool) -> Tuple[int, List[pathSegment]]:
     """
     Extract a cycle embedding the backedge and passing by the WUP state br.sWup
     Args:
@@ -1174,7 +1218,8 @@ def traceExtractionCycle2_(br: BuechiResult, project: bool) -> Tuple[int, List[p
     icMinDst = br.sccEn1[be.src]
 
     # Attention: The destination of the backedge is the source of the trace...
-    t1 = searchTrace(br.gScc, br.sccPred1, sWup, be.src, icMinSrc, icMinDst, br.opts["wup"])
+    t1 = searchTrace(br.gScc, br.sccPred1, sWup, be.src,
+                     icMinSrc, icMinDst, br.opts["wup"])
     assert t1, "This is not supposed to happen, there should be a viable trace"
 
     # Part two: Take the backedge and get a trace from be.dst to sWup
@@ -1211,17 +1256,20 @@ class lasso:
 
     def __repr__(self):
         return self.__str__()
+
     def __str__(self):
         return f"prefix\n{self.prefix}\ncycle\n{self.cycle}\n"
+
     def __deepcopy__(self, memodict={}):
-        return lasso(deepcopy(self.prefix, memodict), deepcopy(self.cycle, memodict))
+        return lasso(deepcopy(self.prefix, memodict),
+                     deepcopy(self.cycle, memodict))
 
 
 def traceExctraction(br: BuechiResult, project: bool) -> List[pathSegment]:
 
     # Part one, find the cycle
 
-    entryState = None  #Entrance state of the cycle
+    entryState = None  # Entrance state of the cycle
     if br.sccEn2 is None:
         assert br.sWup == -1, "Incoherent Result - Did not expect a WUP state"
         entryState = br.gScc.edge_storage(br.be).dst  # State in gScc
@@ -1238,13 +1286,11 @@ def traceExctraction(br: BuechiResult, project: bool) -> List[pathSegment]:
 
     # Part two find a prefix for the cycle
     if (entryState != br.g.get_init_state_number()):
-        tpre = searchTrace(br.g, br.prefixPred, br.opts["s0"], entryState, br.opts["ic"], icCycle, br.opts["wup"])
+        tpre = searchTrace(br.g, br.prefixPred, br.opts["s0"],
+                           entryState, br.opts["ic"], icCycle, br.opts["wup"])
         assert tpre, "This is not supposed to happen, there should be a viable trace"
     else:
         tpre = []
     # tpre is always in br.g
 
     return lasso(tpre, cycle)
-
-
-
