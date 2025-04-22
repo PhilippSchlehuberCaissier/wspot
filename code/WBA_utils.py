@@ -478,10 +478,11 @@ class BuechiResult:
     def __bool__(self) -> bool:
         return self.g is not None
 
+    
 # Whole picture
 # This is algorithm 1
 # todo: Fix we do not need s0
-def BuechiEnergy(hoa: "HOA automaton",
+def OmegaEnergy(hoa: "HOA automaton",
                  s0: "state",
                  wup: "weak upper bound",
                  c0: "initial credit",
@@ -498,13 +499,18 @@ def BuechiEnergy(hoa: "HOA automaton",
     if hoa.num_states() == 0:
         return False
 
+    # TODO case where the acceptance condition is t
+
     # Büchi (can be generalized)
     if acc_cond.is_generalized_buchi():
         return BuechiEnergy(hoa, s0, wup, c0, do_display)
 
+    # Co-Büchi
+    if acc_cond.is_co_buchi():
+        return False
+
     # Parity
     # Implements the algorithm presented in Section 7
-    # TODO test this
     if acc_cond.is_parity()[0]:
         return ParityEnergy(hoa, s0, wup, c0, do_display)
 
@@ -613,6 +619,48 @@ def ParityEnergy(pau: "parity automaton",
                                 s0, wup, c0, do_display)
 
 
+## Solve an ɷ-regular energy game in a co-Büchi automaton.
+#
+# @param hoa (HOA automaton): generalized weighted büchi automaton as twa_graph
+# @param s0 (int): initial state
+# @param wup (int): weak upper bound
+# @param c0 (int): initial credit
+# @param do_display: 0 No information is displayed at all\n
+#                    1 Only text is shown\n
+#                    2 The (sub)-graphs are shown as well, only works from jupyter
+# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
+def CoBuechiEnergy(hoa: "co-Büchi automaton",
+                   s0: "state",
+                   wup: "weak upper bound",
+                   c0: "initial credit",
+                   do_display: "show iterations and info" = 0
+                   ):
+    # TODO more visual output
+    # Algorithm:
+    # For every accepting set a, set the acceptance of every edge to a
+    # if it is not accepting a, or None if it is accepting a.
+    # Also set the accepting condition of this new automaton to buchi.
+    # Run BuechiEnergy on this new automaton
+
+    # TODO boilerplate, move this function somewhere else
+    def print_c(*args, **kwargs):
+        if do_display > 0:
+            print(*args, **kwargs)
+        return
+
+    for col in range(hoa.acc().num_sets()):
+        print_c(f"Building Büchi automaton for color {str(col)}")
+        co_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
+        co_hoa.copy_named_properties_of(hoa)
+        co_hoa.set_buchi()
+
+        for e in co_hoa.edges():
+            e.acc = spot.mark_t() if e.acc.has(col) else spot.mark_t({col})
+
+        if BuechiEnergy(co_hoa, s0, wup, c0, do_display):
+            return True
+
+
 ## Solve an ɷ-regular energy game in a Büchi automaton.
 #
 # @param hoa (HOA automaton): generalized weighted büchi automaton as twa_graph
@@ -622,7 +670,7 @@ def ParityEnergy(pau: "parity automaton",
 # @param do_display: 0 No information is displayed at all\n
 #                    1 Only text is shown\n
 #                    2 The (sub)-graphs are shown as well, only works from jupyter
-# @return True if there is a (wup, c0) accepting Büchi path in bau, False otherwise.
+# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def BuechiEnergy(hoa: "Büchi automaton",
                  s0: "state",
                  wup: "weak upper bound",
