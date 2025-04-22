@@ -483,38 +483,48 @@ class BuechiResult:
 # This is algorithm 1
 # todo: Fix we do not need s0
 def OmegaEnergy(hoa: "HOA automaton",
-                 s0: "state",
-                 wup: "weak upper bound",
-                 c0: "initial credit",
-                 do_display: "show iterations and info" = 0) -> BuechiResult:
+                s0: "state",
+                wup: "weak upper bound",
+                c0: "initial credit",
+                do_display: "show iterations and info" = 0) -> BuechiResult:
     """Searches for energy feasible lasso in the given automaton from the initial state
     with a weak upper bound of \a wup and an initial credit of \a c0
 
     Returns a BuechiResult allowing to extract the trace.
     """
+    # TODO boilerplate, move this function somewhere else
+    def print_c(*args, **kwargs):
+        if do_display > 0:
+            print(*args, **kwargs)
+        return
 
     acc_cond = hoa.acc()
 
     # Empty automaton
     if hoa.num_states() == 0:
+        print_c("This automaton is empty!")
         return False
 
     # TODO case where the acceptance condition is t
 
     # Büchi (can be generalized)
     if acc_cond.is_generalized_buchi():
+        print_c("(Generalized) Büchi condition detected.")
         return BuechiEnergy(hoa, s0, wup, c0, do_display)
 
     # Co-Büchi
     if acc_cond.is_co_buchi():
-        return False
+        print_c("(Generalized) co-Büchi condition detected.")
+        return CoBuechiEnergy(hoa, s0, wup, c0, do_display)
 
     # Parity
     # Implements the algorithm presented in Section 7
     if acc_cond.is_parity()[0]:
+        print_c("Parity condition detected.")
         return ParityEnergy(hoa, s0, wup, c0, do_display)
 
     # TODO other automata types
+    print_c("Solving is not yet implemented for this type of automaton.")
     return False
 
 ## Remove every transition with maximal priority in an automaton.
