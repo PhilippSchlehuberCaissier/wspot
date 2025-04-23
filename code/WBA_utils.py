@@ -503,7 +503,7 @@ def OmegaEnergy(hoa: "HOA automaton",
     # Empty automaton
     if hoa.num_states() == 0:
         print_c("This automaton is empty!")
-        return False
+        return BuechiResult()
 
     # TODO case where the acceptance condition is t
 
@@ -531,7 +531,7 @@ def OmegaEnergy(hoa: "HOA automaton",
 
     # TODO other automata types
     print_c("Solving is not yet implemented for this type of automaton.")
-    return False
+    return BuechiResult()
 
 ## Remove every transition with maximal priority in an automaton.
 #
@@ -610,7 +610,7 @@ def ParityEnergy(pau: "parity automaton",
 
     current_color = MaxColor(pau) if is_max else MinColor(pau)
     if current_color == -1:
-        return False
+        return BuechiResult()
 
     # TODO current implementation allocates a LOT of memory
     if (current_color % 2 == 0 and is_odd) or (current_color % 2 == 1 and not is_odd):
@@ -628,12 +628,9 @@ def ParityEnergy(pau: "parity automaton",
         display(pau_copy.show())
 
         # Solve in this new automaton
-        if BuechiEnergy(pau_copy, s0, wup, c0, do_display):
-            # TODO use BuechiResult
-            return True
-        else:
-            return ParityEnergy(PrunePriority(pau, is_max),
-                                s0, wup, c0, do_display)
+        buchi_res = BuechiEnergy(pau_copy, s0, wup, c0, do_display)
+        return buchi_res if buchi_res else ParityEnergy(PrunePriority(pau, is_max),
+                                                        s0, wup, c0, do_display)
 
 
 ## Solve an ɷ-regular energy game in a co-Büchi automaton.
