@@ -517,17 +517,17 @@ def OmegaEnergy(hoa: "HOA automaton",
         print_c("(Generalized) co-Büchi condition detected.")
         return CoBuechiEnergy(hoa, s0, wup, c0, do_display)
 
-    # Rabin
-    p = acc_cond.is_rabin()
-    if p != 1:
-        print_c("Rabin condition detected.")
-        return RabinEnergy(hoa, p, s0, wup, c0, do_display)
-
     # Parity
     # Implements the algorithm presented in Section 7
     if acc_cond.is_parity()[0]:
         print_c("Parity condition detected.")
         return ParityEnergy(hoa, s0, wup, c0, do_display)
+
+    # Rabin
+    p = acc_cond.is_rabin()
+    if p != 1:
+        print_c("Rabin condition detected.")
+        return RabinEnergy(hoa, p, s0, wup, c0, do_display)
 
     # TODO other automata types
     print_c("Solving is not yet implemented for this type of automaton.")
