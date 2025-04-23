@@ -517,6 +517,12 @@ def OmegaEnergy(hoa: "HOA automaton",
         print_c("(Generalized) co-Büchi condition detected.")
         return CoBuechiEnergy(hoa, s0, wup, c0, do_display)
 
+    # Rabin
+    p = acc_cond.is_rabin()
+    if p != 1:
+        print_c("Rabin condition detected.")
+        return RabinEnergy(hoa, p, s0, wup, c0, do_display)
+
     # Parity
     # Implements the algorithm presented in Section 7
     if acc_cond.is_parity()[0]:
@@ -623,6 +629,7 @@ def ParityEnergy(pau: "parity automaton",
 
         # Solve in this new automaton
         if BuechiEnergy(pau_copy, s0, wup, c0, do_display):
+            # TODO use BuechiResult
             return True
         else:
             return ParityEnergy(PrunePriority(pau, is_max),
@@ -631,7 +638,7 @@ def ParityEnergy(pau: "parity automaton",
 
 ## Solve an ɷ-regular energy game in a co-Büchi automaton.
 #
-# @param hoa (HOA automaton): generalized weighted büchi automaton as twa_graph
+# @param hoa (HOA automaton): generalized weighted co-büchi automaton as twa_graph
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
@@ -646,6 +653,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                    do_display: "show iterations and info" = 0
                    ):
     # TODO more visual output
+    # TODO this actually doesn't work
     # Algorithm:
     # For every accepting set a, set the acceptance of every edge to a
     # if it is not accepting a, or None if it is accepting a.
@@ -665,10 +673,63 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
         co_hoa.set_buchi()
 
         for e in co_hoa.edges():
-            e.acc = spot.mark_t() if e.acc.has(col) else spot.mark_t({col})
+            e.acc = spot.mark_t() if e.acc.has(col) else spot.mark_t({0})
+        display(co_hoa.show())
 
         if BuechiEnergy(co_hoa, s0, wup, c0, do_display):
+            # TODO use BuechiResult
             return True
+        
+    return BuechiResult()
+
+
+## Solve an ɷ-regular energy game in a Rabin automaton.
+#
+# @param hoa (HOA automaton): generalized weighted Rabin automaton as twa_graph
+# @param p (int): number of acceptance set pairs
+# @param s0 (int): initial state
+# @param wup (int): weak upper bound
+# @param c0 (int): initial credit
+# @param do_display: 0 No information is displayed at all\n
+#                    1 Only text is shown\n
+#                    2 The (sub)-graphs are shown as well, only works from jupyter
+# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
+def RabinEnergy(hoa: "Rabin automaton",
+                p: int,
+                s0: "state",
+                wup: "weak upper bound",
+                c0: "initial credit",
+                do_display: "show iterations and info" = 0
+                ):
+    # TODO Try to find a more efficient algorithm
+    # Algorithm:
+    # for each accepting state pair (f, i), run two tests:
+    # - CoBuechiEnergy when considering only f
+    # - BuechiEnergy when considering only i
+    # Return True if the two tests were successful, else move on to the next pair
+    for k in range(p):
+        f = 2 * k
+        i = 2 * k + 1
+
+        buchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
+        buchi_hoa.copy_named_properties_of(hoa)
+        buchi_hoa.set_buchi()
+
+        cobuchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
+        cobuchi_hoa.copy_named_properties_of(hoa)
+        cobuchi_hoa.set_co_buchi()
+
+        for buchi_e in buchi_hoa.edges():
+            buchi_e.acc = spot.mark_t({0}) if buchi_e.acc.has(i) else spot.mark_t()
+        # cobuchi_hoa will already be ready for Büchi analysis
+        for cobuchi_e in cobuchi_hoa.edges():
+            cobuchi_e.acc = spot.mark_t() if cobuchi_e.acc.has(f) else spot.mark_t({0})
+
+        if BuechiEnergy(buchi_hoa, s0, wup, c0, do_display) and BuechiEnergy(cobuchi_hoa, s0, wup, c0, do_display):
+            # TODO use BuechiResult
+            return True
+
+    return BuechiResult()
 
 
 ## Solve an ɷ-regular energy game in a Büchi automaton.
