@@ -704,10 +704,8 @@ def RabinEnergy(hoa: "Rabin automaton",
                 ):
     # TODO Try to find a more efficient algorithm
     # Algorithm:
-    # for each accepting state pair (f, i), run two tests:
-    # - CoBuechiEnergy when considering only f
-    # - BuechiEnergy when considering only i
-    # Return True if the two tests were successful, else move on to the next pair
+    # for each accepting state pair (f, i), check if hoa with Büchi condition Inf(i) has a Büchi accepting path when removing every edge that accepts f
+    # Else move on to the next pair
     for k in range(p):
         f = 2 * k
         i = 2 * k + 1
@@ -716,19 +714,23 @@ def RabinEnergy(hoa: "Rabin automaton",
         buchi_hoa.copy_named_properties_of(hoa)
         buchi_hoa.set_buchi()
 
-        cobuchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
-        cobuchi_hoa.copy_named_properties_of(hoa)
-        cobuchi_hoa.set_co_buchi()
+        # First iteration: remove f-accepting edges
+        for i in range(buchi_hoa.num_states()):
+            it = buchi_hoa.out_iteraser(i)
+            while it:
+                e = it.current()
+                if e.acc.has(f):
+                    it.erase()
+                else:
+                    it.advance()
 
+        # Second iteration: set acceptance to Büchi
         for buchi_e in buchi_hoa.edges():
             buchi_e.acc = spot.mark_t({0}) if buchi_e.acc.has(i) else spot.mark_t()
-        # cobuchi_hoa will already be ready for Büchi analysis
-        for cobuchi_e in cobuchi_hoa.edges():
-            cobuchi_e.acc = spot.mark_t() if cobuchi_e.acc.has(f) else spot.mark_t({0})
 
-        if BuechiEnergy(buchi_hoa, s0, wup, c0, do_display) and BuechiEnergy(cobuchi_hoa, s0, wup, c0, do_display):
-            # TODO use BuechiResult
-            return True
+        energy = BuechiEnergy(buchi_hoa, s0, wup, c0, do_display)
+        if energy:
+            return energy
 
     return BuechiResult()
 
