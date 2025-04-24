@@ -500,12 +500,15 @@ def OmegaEnergy(hoa: "HOA automaton",
 
     acc_cond = hoa.acc()
 
-    # Empty automaton
-    if hoa.num_states() == 0:
-        print_c("This automaton is empty!")
+    # Empty automaton or f
+    if hoa.num_states() == 0 or acc_cond.is_f():
+        print_c("This automaton is empty or its condition is False!")
         return BuechiResult()
 
-    # TODO case where the acceptance condition is t
+    # Condition is t
+    if acc_cond.is_t():
+        print_c("True condition detected.")
+        return TrueEnergy(hoa, s0, wup, c0, do_display)
 
     # Büchi (can be generalized)
     if acc_cond.is_generalized_buchi():
@@ -530,8 +533,9 @@ def OmegaEnergy(hoa: "HOA automaton",
         return RabinEnergy(hoa, p, s0, wup, c0, do_display)
 
     # TODO other automata types
-    print_c("Solving is not yet implemented for this type of automaton.")
-    return BuechiResult()
+    print_c("Unknown automaton type. Assuming acceptance condition is t.")
+    print_c("This will lead to errors in trace extraction if the acceptance condition is not t.")
+    return TrueEnergy(hoa, s0, wup, c0, do_display)
 
 ## Remove every transition with maximal priority in an automaton.
 #
@@ -727,6 +731,33 @@ def RabinEnergy(hoa: "Rabin automaton",
             return True
 
     return BuechiResult()
+
+
+## Solve an ɷ-regular energy game in an automaton with an acceptance condition of t.
+#
+# @param hoa (HOA automaton): automaton as twa_graph
+# @param s0 (int): initial state
+# @param wup (int): weak upper bound
+# @param c0 (int): initial credit
+# @param do_display: 0 No information is displayed at all\n
+#                    1 Only text is shown\n
+#                    2 The (sub)-graphs are shown as well, only works from jupyter
+# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
+def TrueEnergy(hoa: "automaton",
+               s0: "state",
+               wup: "weak upper bound",
+               c0: "initial credit",
+               do_display: "show iterations and info" = 0
+               ):
+    # Algorithm: promote every edge to back edge and run BuechiEnergy on the new automaton
+    buchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
+    buchi_hoa.copy_named_properties_of(hoa)
+    buchi_hoa.set_buchi()
+
+    for e in buchi_hoa.edges():
+        e.acc = spot.mark_t({0})
+
+    return BuechiEnergy(buchi_hoa, s0, wup, c0, do_display)
 
 
 ## Solve an ɷ-regular energy game in a Büchi automaton.
