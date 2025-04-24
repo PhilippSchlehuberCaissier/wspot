@@ -111,9 +111,10 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>pumpAll</b> (self)</td></tr>
 <tr class="memdesc:acaa77741df1766a7bf108e2099a66023"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pump all (energy positive) loops of the current iteration. <br /></td></tr>
 <tr class="separator:acaa77741df1766a7bf108e2099a66023"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafcfd46516ed2d53eaa321fc19fe309a" id="r_aafcfd46516ed2d53eaa321fc19fe309a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWBA__utils_1_1mod__BF__iter.html#aafcfd46516ed2d53eaa321fc19fe309a">ensureLoopPred</a> (self)</td></tr>
+<tr class="separator:aafcfd46516ed2d53eaa321fc19fe309a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55fbe598a4bd37c3396276300bac4daf" id="r_a55fbe598a4bd37c3396276300bac4daf"><td class="memItemLeft" align="right" valign="top"><a id="a55fbe598a4bd37c3396276300bac4daf" name="a55fbe598a4bd37c3396276300bac4daf"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>BF1</b> (self)</td></tr>
-<tr class="memdesc:a55fbe598a4bd37c3396276300bac4daf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform one round of modified, optimised Bellman-Ford. <br /></td></tr>
 <tr class="separator:a55fbe598a4bd37c3396276300bac4daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebdddf2f06ab29e476915c9240eabd50" id="r_aebdddf2f06ab29e476915c9240eabd50"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWBA__utils_1_1mod__BF__iter.html#aebdddf2f06ab29e476915c9240eabd50">FindMaxEnergy_</a> (self, &quot;state&quot; s0, &quot;weak upper bound&quot; wup, &quot;Initial credit&quot; c0)</td></tr>
 <tr class="memdesc:aebdddf2f06ab29e476915c9240eabd50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes for each state the maximal energy for which it can be reached from s0 with initial credit c0 given the weak upper bound wup.  <br /></td></tr>
@@ -163,9 +164,30 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class allowing to run iterations of the modified bellman-ford algorithm. </p>
-<p>Holds all necessary variables and member functions described in algorithm 2. Most of them have additional optimiations <br  />
- </p>
+<p>Holds all necessary variables and member functions described in algorithm 2. Most of them have additional optimiations </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="aafcfd46516ed2d53eaa321fc19fe309a" name="aafcfd46516ed2d53eaa321fc19fe309a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafcfd46516ed2d53eaa321fc19fe309a">&#9670;&#160;</a></span>ensureLoopPred()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WBA_utils.mod_BF_iter.ensureLoopPred </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Search for loops induced by the last predecessors in the graph,
+if necessary, make them appear twice in the list.
+#todo This should probable be factor with pumpAll at some point
+
+Returns:</pre> 
+</div>
+</div>
 <a id="aebdddf2f06ab29e476915c9240eabd50" name="aebdddf2f06ab29e476915c9240eabd50"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aebdddf2f06ab29e476915c9240eabd50">&#9670;&#160;</a></span>FindMaxEnergy_()</h2>
 
@@ -250,8 +272,7 @@ Public Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>yields a state till done <br  />
- </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>yields a state till done </dd></dl>
 
 </div>
 </div>
@@ -284,8 +305,7 @@ Public Attributes</h2></td></tr>
 <p>Mark state s as waiting. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">s</td><td>(int): state to mark <br  />
- </td></tr>
+    <tr><td class="paramname">s</td><td>(int): state to mark </td></tr>
   </table>
   </dd>
 </dl>
@@ -365,8 +385,7 @@ Public Attributes</h2></td></tr>
 <p>Helper to pump the simple positive loop containing s. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">s</td><td>(int): initial state <br  />
- </td></tr>
+    <tr><td class="paramname">s</td><td>(int): initial state </td></tr>
   </table>
   </dd>
 </dl>

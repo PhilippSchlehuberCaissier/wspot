@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['findmaxenergy_5f_0',['FindMaxEnergy_',['../classWBA__utils_1_1mod__BF__iter.html#aebdddf2f06ab29e476915c9240eabd50',1,'WBA_utils::mod_BF_iter']]]
+  ['degen_5fcounting_0',['degen_counting',['../namespaceWBA__utils.html#a478c8d7f4de3cc1eb3b268cb9bc6e72f',1,'WBA_utils']]]
 ];

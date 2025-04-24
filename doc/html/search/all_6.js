@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['omegaenergy_0',['OmegaEnergy',['../namespaceWBA__utils.html#a3612fa99d688b26a39b5df4bf29c77af',1,'WBA_utils']]]
+  ['lasso_0',['lasso',['../classWBA__utils_1_1lasso.html',1,'WBA_utils']]],
+  ['loop_5f_1',['loop_',['../classWBA__utils_1_1mod__BF__iter.html#a47bd3adc559334c70f23702b8c95e469',1,'WBA_utils::mod_BF_iter']]]
 ];

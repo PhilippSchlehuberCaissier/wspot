@@ -28,9 +28,11 @@ Class allowing to run iterations of the modified bellman-\/ford algorithm.
 \Hypertarget{classWBA__utils_1_1mod__BF__iter_acaa77741df1766a7bf108e2099a66023}\label{classWBA__utils_1_1mod__BF__iter_acaa77741df1766a7bf108e2099a66023} 
 {\bfseries pump\+All} (self)
 \begin{DoxyCompactList}\small\item\em Pump all (energy positive) loops of the current iteration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classWBA__utils_1_1mod__BF__iter_aafcfd46516ed2d53eaa321fc19fe309a}{ensure\+Loop\+Pred}} (self)
+\item 
 \Hypertarget{classWBA__utils_1_1mod__BF__iter_a55fbe598a4bd37c3396276300bac4daf}\label{classWBA__utils_1_1mod__BF__iter_a55fbe598a4bd37c3396276300bac4daf} 
 {\bfseries BF1} (self)
-\begin{DoxyCompactList}\small\item\em Perform one round of modified, optimised Bellman-\/\+Ford. \end{DoxyCompactList}\item 
+\item 
 \mbox{\hyperlink{classWBA__utils_1_1mod__BF__iter_aebdddf2f06ab29e476915c9240eabd50}{Find\+Max\+Energy\+\_\+}} (self, "{}state"{} s0, "{}weak upper bound"{} wup, "{}Initial credit"{} c0)
 \begin{DoxyCompactList}\small\item\em Computes for each state the maximal energy for which it can be reached from s0 with initial credit c0 given the weak upper bound wup. \end{DoxyCompactList}\item 
 \Hypertarget{classWBA__utils_1_1mod__BF__iter_a3205b90e0242678a72d3706ac5974768}\label{classWBA__utils_1_1mod__BF__iter_a3205b90e0242678a72d3706ac5974768} 
@@ -80,11 +82,21 @@ Class allowing to run iterations of the modified bellman-\/ford algorithm.
 \doxysubsection{Detailed Description}
 Class allowing to run iterations of the modified bellman-\/ford algorithm. 
 
-Holds all necessary variables and member functions described in algorithm 2. Most of them have additional optimiations ~\newline
- 
+Holds all necessary variables and member functions described in algorithm 2. Most of them have additional optimiations 
 
 \doxysubsection{Member Function Documentation}
-\Hypertarget{classWBA__utils_1_1mod__BF__iter_aebdddf2f06ab29e476915c9240eabd50}\label{classWBA__utils_1_1mod__BF__iter_aebdddf2f06ab29e476915c9240eabd50} 
+\Hypertarget{classWBA__utils_1_1mod__BF__iter_aafcfd46516ed2d53eaa321fc19fe309a}\label{classWBA__utils_1_1mod__BF__iter_aafcfd46516ed2d53eaa321fc19fe309a} 
+\index{WBA\_utils.mod\_BF\_iter@{WBA\_utils.mod\_BF\_iter}!ensureLoopPred@{ensureLoopPred}}
+\index{ensureLoopPred@{ensureLoopPred}!WBA\_utils.mod\_BF\_iter@{WBA\_utils.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{ensureLoopPred()}{ensureLoopPred()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+mod\+\_\+\+BF\+\_\+iter.\+ensure\+Loop\+Pred (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Search for loops induced by the last predecessors in the graph,
+if necessary, make them appear twice in the list.
+#todo This should probable be factor with pumpAll at some point
+
+Returns:\end{DoxyVerb}
+ \Hypertarget{classWBA__utils_1_1mod__BF__iter_aebdddf2f06ab29e476915c9240eabd50}\label{classWBA__utils_1_1mod__BF__iter_aebdddf2f06ab29e476915c9240eabd50} 
 \index{WBA\_utils.mod\_BF\_iter@{WBA\_utils.mod\_BF\_iter}!FindMaxEnergy\_@{FindMaxEnergy\_}}
 \index{FindMaxEnergy\_@{FindMaxEnergy\_}!WBA\_utils.mod\_BF\_iter@{WBA\_utils.mod\_BF\_iter}}
 \doxysubsubsection{\texorpdfstring{FindMaxEnergy\_()}{FindMaxEnergy\_()}}
@@ -120,8 +132,7 @@ Helper function to iterate over loops Must be constructed with a state on a cycl
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-yields a state till done ~\newline
- 
+yields a state till done 
 \end{DoxyReturn}
 \Hypertarget{classWBA__utils_1_1mod__BF__iter_a8da85ec373bbf40991ebb251369cb984}\label{classWBA__utils_1_1mod__BF__iter_a8da85ec373bbf40991ebb251369cb984} 
 \index{WBA\_utils.mod\_BF\_iter@{WBA\_utils.mod\_BF\_iter}!mark\_@{mark\_}}
@@ -135,8 +146,7 @@ Mark state s as waiting.
 
 
 \begin{DoxyParams}{Parameters}
-{\em s} & (int)\+: state to mark ~\newline
- \\
+{\em s} & (int)\+: state to mark \\
 \hline
 \end{DoxyParams}
 \Hypertarget{classWBA__utils_1_1mod__BF__iter_afea0f6107cc1c781bc766abe59d81e78}\label{classWBA__utils_1_1mod__BF__iter_afea0f6107cc1c781bc766abe59d81e78} 
@@ -171,8 +181,7 @@ Helper to pump the simple positive loop containing s.
 
 
 \begin{DoxyParams}{Parameters}
-{\em s} & (int)\+: initial state ~\newline
- \\
+{\em s} & (int)\+: initial state \\
 \hline
 \end{DoxyParams}
 

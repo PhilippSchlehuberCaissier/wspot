@@ -8,8 +8,16 @@ Utility functions for solving energy problems in weighted Büchi automata.
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
+class \mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}}
+\item 
+class \mbox{\hyperlink{classWBA__utils_1_1lasso}{lasso}}
+\item 
 class \mbox{\hyperlink{classWBA__utils_1_1mod__BF__iter}{mod\+\_\+\+BF\+\_\+iter}}
-\begin{DoxyCompactList}\small\item\em Class allowing to run iterations of the modified bellman-\/ford algorithm. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Class allowing to run iterations of the modified bellman-\/ford algorithm. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}
+\item 
+class \mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}
+\end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -23,8 +31,12 @@ class \mbox{\hyperlink{classWBA__utils_1_1mod__BF__iter}{mod\+\_\+\+BF\+\_\+iter
 \begin{DoxyCompactList}\small\item\em Find the entering states of a WBA\textquotesingle{}s SCC. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f}{degen\+\_\+counting}} (aut, ssi, idx)
 \begin{DoxyCompactList}\small\item\em Degeneralise a given SCC. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{namespaceWBA__utils_a3612fa99d688b26a39b5df4bf29c77af}{Omega\+Energy}} ("{}HOA automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
-\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespaceWBA__utils_a7e5ab9ed7550ab48a64324eb880d8ccc}{format\+\_\+energie\+\_\+}} (List\mbox{[}int\mbox{]} en)
+\item 
+str \mbox{\hyperlink{namespaceWBA__utils_a4740de177c581ac12ea3a72cee03a137}{format\+\_\+pred\+\_\+aut\+\_\+}} (spot.\+twa\+\_\+graph aut, List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]} pred)
+\item 
+\mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespaceWBA__utils_aab0362b0c30794e577efa306755f282c}{Omega\+Energy}} ("{}HOA automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\item 
 \mbox{\hyperlink{namespaceWBA__utils_a86eac1693b76ef2473353c6ee31ba839}{Prune\+Priority}} ("{}HOA automaton"{} aut, "{}bool"{} is\+\_\+max=True)
 \begin{DoxyCompactList}\small\item\em Remove every transition with maximal priority in an automaton. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceWBA__utils_aa210de15c2a837458b00d58d24c5b541}{Max\+Color}} ("{}HOA automaton"{} aut)
@@ -33,8 +45,35 @@ class \mbox{\hyperlink{classWBA__utils_1_1mod__BF__iter}{mod\+\_\+\+BF\+\_\+iter
 \begin{DoxyCompactList}\small\item\em Return the lowest priority in an automaton. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceWBA__utils_aafa5826444fab84d4f89e63055eb7a24}{Parity\+Energy}} ("{}parity automaton"{} pau, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
 \begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a parity automaton. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{namespaceWBA__utils_ac4d5e93a1e061b243224783055743a48}{Buechi\+Energy}} ("{}Büchi automaton"{} bau, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
-\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a Büchi automaton. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\hyperlink{namespaceWBA__utils_ac119c17ad4930ecf0b7a3e7b0898915e}{Co\+Buechi\+Energy}} ("{}co-\/Büchi automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_a48846a5fc235c89289db7414df11b4fd}{Rabin\+Energy}} ("{}Rabin automaton"{} hoa, int p, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a Rabin automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_a76c0c3af5f70cffc7155e3496654b532}{True\+Energy}} ("{}automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in an automaton with an acceptance condition of t. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceWBA__utils_a5932503265bdcfc45e7fe66abcbd4006}{Buechi\+Energy}} ("{}Büchi automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0, "{}show iterations and info"{} do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a Büchi automaton. \end{DoxyCompactList}\item 
+List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespaceWBA__utils_a679aea2a5dbfeac9f1f12d53a348f1df}{compress\+Path}} (List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}\mbox{]} path)
+\item 
+Tuple\mbox{[}bool, int\mbox{]} \mbox{\hyperlink{namespaceWBA__utils_a002347614c20a551eac92d9903c49483}{prop\+Along}} (int e, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}\mbox{]} t, int wup)
+\item 
+Tuple\mbox{[}bool, int\mbox{]} \mbox{\hyperlink{namespaceWBA__utils_a6abdfac6b1346654fba419a83deaf396}{try\+Pump\+Loop}} (int e, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}\mbox{]} t, int wup)
+\item 
+bool \mbox{\hyperlink{namespaceWBA__utils_ae6f455e4325fc30e678229ddcec529d0}{forward\+Exploration}} (int ic, int e\+Dst, int wup, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} t, Union\mbox{[}int, None\mbox{]} impl\+Cycl\+Cost=None)
+\item 
+List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespaceWBA__utils_af3a0c7f949c30ab688648e2be2df322e}{backwards\+Search\+Impl\+\_\+}} (spot.\+twa\+\_\+graph g, List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]} pred, int g\+Src, Callable forward\+Exp, List\mbox{[}int\mbox{]} ci, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}\mbox{]} t)
+\item 
+List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespaceWBA__utils_ac11a659dff17afeac9079244ff17dbfa}{search\+Trace}} (spot.\+twa\+\_\+graph g, List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]} pred, int g\+Src, int g\+Dst, int ic\+Src, int e\+Dst, int wup, Union\mbox{[}int, None\mbox{]} impl\+Cycl\+Cost=None)
+\item 
+List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespaceWBA__utils_a52bf5f72e56d06d2b1d39c2d9590bd3a}{project\+Trace\+\_\+}} (\mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}} br, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} t)
+\item 
+Tuple\mbox{[}int, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]}\mbox{]} \mbox{\hyperlink{namespaceWBA__utils_aa475d4de8dd4ab32c3d7201cde591a7d}{trace\+Extraction\+Cycle1\+\_\+}} (\mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}} br, bool project)
+\item 
+Tuple\mbox{[}int, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]}\mbox{]} \mbox{\hyperlink{namespaceWBA__utils_ae0ee6bca12265759f0993df9325ea3f6}{trace\+Extraction\+Cycle2\+\_\+}} (\mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}} br, bool project)
+\item 
+\Hypertarget{namespaceWBA__utils_a07e405c6bd9cde25fc09578ca197b0eb}\label{namespaceWBA__utils_a07e405c6bd9cde25fc09578ca197b0eb} 
+List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} {\bfseries trace\+Exctraction} (\mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}} br, bool project)
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -47,11 +86,28 @@ This file contains our main contributions, notably~\newline
 
 
 \doxysubsection{Function Documentation}
-\Hypertarget{namespaceWBA__utils_ac4d5e93a1e061b243224783055743a48}\label{namespaceWBA__utils_ac4d5e93a1e061b243224783055743a48} 
+\Hypertarget{namespaceWBA__utils_af3a0c7f949c30ab688648e2be2df322e}\label{namespaceWBA__utils_af3a0c7f949c30ab688648e2be2df322e} 
+\index{WBA\_utils@{WBA\_utils}!backwardsSearchImpl\_@{backwardsSearchImpl\_}}
+\index{backwardsSearchImpl\_@{backwardsSearchImpl\_}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{backwardsSearchImpl\_()}{backwardsSearchImpl\_()}}
+{\footnotesize\ttfamily  List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} WBA\+\_\+utils.\+backwards\+Search\+Impl\+\_\+ (\begin{DoxyParamCaption}\item[{spot.\+twa\+\_\+graph}]{g,  }\item[{List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]}}]{pred,  }\item[{int}]{g\+Src,  }\item[{Callable}]{forward\+Exp,  }\item[{List\mbox{[}int\mbox{]}}]{ci,  }\item[{List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}\mbox{]}}]{t }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Recurses on optimal predecessors to find a path starting in \a gSrc.
+If such a path is found, then forwardExp will be called to test its viability.
+Args:
+    g: The graph
+    pred: The extended optimal predecessor list
+    gSrc: The initial node of the trace
+    forwardExp: A callable evaluating a possible trace
+    ci: The current index table into the extended predecessor list
+    t: The trace accumulated so far
+
+Returns: A list of pathSegments representing a valid trace. The list is empty if no such list exists.\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_a5932503265bdcfc45e7fe66abcbd4006}\label{namespaceWBA__utils_a5932503265bdcfc45e7fe66abcbd4006} 
 \index{WBA\_utils@{WBA\_utils}!BuechiEnergy@{BuechiEnergy}}
 \index{BuechiEnergy@{BuechiEnergy}!WBA\_utils@{WBA\_utils}}
 \doxysubsubsection{\texorpdfstring{BuechiEnergy()}{BuechiEnergy()}}
-{\footnotesize\ttfamily WBA\+\_\+utils.\+Buechi\+Energy (\begin{DoxyParamCaption}\item[{"{}Büchi automaton"{}}]{bau,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Buechi\+Energy (\begin{DoxyParamCaption}\item[{"{}Büchi automaton"{}}]{hoa,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
 
 
 
@@ -59,7 +115,7 @@ Solve an ɷ-\/regular energy game in a Büchi automaton.
 
 
 \begin{DoxyParams}{Parameters}
-{\em bau} & (HOA automaton)\+: generalized weighted büchi automaton as twa\+\_\+graph \\
+{\em hoa} & (HOA automaton)\+: generalized weighted büchi automaton as twa\+\_\+graph \\
 \hline
 {\em s0} & (int)\+: initial state \\
 \hline
@@ -73,9 +129,49 @@ Solve an ɷ-\/regular energy game in a Büchi automaton.
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-True if there is a (wup, c0) accepting Büchi path in bau, False otherwise. 
+True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
 \end{DoxyReturn}
-\Hypertarget{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f}\label{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f} 
+\Hypertarget{namespaceWBA__utils_ac119c17ad4930ecf0b7a3e7b0898915e}\label{namespaceWBA__utils_ac119c17ad4930ecf0b7a3e7b0898915e} 
+\index{WBA\_utils@{WBA\_utils}!CoBuechiEnergy@{CoBuechiEnergy}}
+\index{CoBuechiEnergy@{CoBuechiEnergy}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{CoBuechiEnergy()}{CoBuechiEnergy()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Co\+Buechi\+Energy (\begin{DoxyParamCaption}\item[{"{}co-\/Büchi automaton"{}}]{hoa,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hoa} & (HOA automaton)\+: generalized weighted co-\/büchi automaton as twa\+\_\+graph \\
+\hline
+{\em s0} & (int)\+: initial state \\
+\hline
+{\em wup} & (int)\+: weak upper bound \\
+\hline
+{\em c0} & (int)\+: initial credit \\
+\hline
+{\em do\+\_\+display} & 0 No information is displayed at all~\newline
+ 1 Only text is shown~\newline
+ 2 The (sub)-\/graphs are shown as well, only works from jupyter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_a679aea2a5dbfeac9f1f12d53a348f1df}\label{namespaceWBA__utils_a679aea2a5dbfeac9f1f12d53a348f1df} 
+\index{WBA\_utils@{WBA\_utils}!compressPath@{compressPath}}
+\index{compressPath@{compressPath}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{compressPath()}{compressPath()}}
+{\footnotesize\ttfamily  List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} WBA\+\_\+utils.\+compress\+Path (\begin{DoxyParamCaption}\item[{List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}\mbox{]}}]{path }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Compress a given \a path that may contain cycles into a list of \a pathSegments
+Args:
+    path: List of transitions
+
+Returns: Corresponding list of pathSegments
+\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f}\label{namespaceWBA__utils_a478c8d7f4de3cc1eb3b268cb9bc6e72f} 
 \index{WBA\_utils@{WBA\_utils}!degen\_counting@{degen\_counting}}
 \index{degen\_counting@{degen\_counting}!WBA\_utils@{WBA\_utils}}
 \doxysubsubsection{\texorpdfstring{degen\_counting()}{degen\_counting()}}
@@ -98,7 +194,49 @@ needs the graph, scc\+\_\+info and the idx of the SCC to treat
 A tuple of (A new twa\+\_\+graph corresponding to the degeneralization, a list containing the edge numbers of accepting edges, a dict mapping states in the SCC to states in the first level)~\newline
  The last info allows to root the scc in the original automaton 
 \end{DoxyReturn}
-\Hypertarget{namespaceWBA__utils_a0f10f4301186d5ec813bb46594403ce4}\label{namespaceWBA__utils_a0f10f4301186d5ec813bb46594403ce4} 
+\Hypertarget{namespaceWBA__utils_a7e5ab9ed7550ab48a64324eb880d8ccc}\label{namespaceWBA__utils_a7e5ab9ed7550ab48a64324eb880d8ccc} 
+\index{WBA\_utils@{WBA\_utils}!format\_energie\_@{format\_energie\_}}
+\index{format\_energie\_@{format\_energie\_}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{format\_energie\_()}{format\_energie\_()}}
+{\footnotesize\ttfamily  str WBA\+\_\+utils.\+format\+\_\+energie\+\_\+ (\begin{DoxyParamCaption}\item[{List\mbox{[}int\mbox{]}}]{en }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Format the given energy as string
+Args:
+    en: Current energy as list like
+
+Returns: str
+\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_a4740de177c581ac12ea3a72cee03a137}\label{namespaceWBA__utils_a4740de177c581ac12ea3a72cee03a137} 
+\index{WBA\_utils@{WBA\_utils}!format\_pred\_aut\_@{format\_pred\_aut\_}}
+\index{format\_pred\_aut\_@{format\_pred\_aut\_}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{format\_pred\_aut\_()}{format\_pred\_aut\_()}}
+{\footnotesize\ttfamily  str WBA\+\_\+utils.\+format\+\_\+pred\+\_\+aut\+\_\+ (\begin{DoxyParamCaption}\item[{spot.\+twa\+\_\+graph}]{aut,  }\item[{List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]}}]{pred }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Helper function to correctly format optimal predecessors
+Args:
+    aut: Automaton which we currently work on
+    pred: List of predecessor lists for each state
+
+Returns: string representation
+\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_ae6f455e4325fc30e678229ddcec529d0}\label{namespaceWBA__utils_ae6f455e4325fc30e678229ddcec529d0} 
+\index{WBA\_utils@{WBA\_utils}!forwardExploration@{forwardExploration}}
+\index{forwardExploration@{forwardExploration}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{forwardExploration()}{forwardExploration()}}
+{\footnotesize\ttfamily  bool WBA\+\_\+utils.\+forward\+Exploration (\begin{DoxyParamCaption}\item[{int}]{ic,  }\item[{int}]{e\+Dst,  }\item[{int}]{wup,  }\item[{List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]}}]{t,  }\item[{Union\mbox{[}int, None\mbox{]} }]{impl\+Cycl\+Cost = {\ttfamily None} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Compute whether at least eDst can be attained after traversing t
+
+Args:
+    ic: Initial credit
+    eDst: Minimal energy at destination
+    wup: weak upper bound
+    t: considered trace
+    implCyclCost: Implicit cost for closing the cycle; existence of the transition is not verified
+
+Returns: True iff the energy after traversing the path is at least \a eDst
+\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_a0f10f4301186d5ec813bb46594403ce4}\label{namespaceWBA__utils_a0f10f4301186d5ec813bb46594403ce4} 
 \index{WBA\_utils@{WBA\_utils}!get\_entering\_states@{get\_entering\_states}}
 \index{get\_entering\_states@{get\_entering\_states}!WBA\_utils@{WBA\_utils}}
 \doxysubsubsection{\texorpdfstring{get\_entering\_states()}{get\_entering\_states()}}
@@ -156,35 +294,18 @@ Return the lowest priority in an automaton.
 \begin{DoxyReturn}{Returns}
 the lowest priority used in aut, -\/1 if no priorities were found 
 \end{DoxyReturn}
-\Hypertarget{namespaceWBA__utils_a3612fa99d688b26a39b5df4bf29c77af}\label{namespaceWBA__utils_a3612fa99d688b26a39b5df4bf29c77af} 
+\Hypertarget{namespaceWBA__utils_aab0362b0c30794e577efa306755f282c}\label{namespaceWBA__utils_aab0362b0c30794e577efa306755f282c} 
 \index{WBA\_utils@{WBA\_utils}!OmegaEnergy@{OmegaEnergy}}
 \index{OmegaEnergy@{OmegaEnergy}!WBA\_utils@{WBA\_utils}}
 \doxysubsubsection{\texorpdfstring{OmegaEnergy()}{OmegaEnergy()}}
-{\footnotesize\ttfamily WBA\+\_\+utils.\+Omega\+Energy (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{hoa,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}} WBA\+\_\+utils.\+Omega\+Energy (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{hoa,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
 
+\begin{DoxyVerb}Searches for energy feasible lasso in the given automaton from the initial state
+with a weak upper bound of \a wup and an initial credit of \a c0
 
-
-Solve an ɷ-\/regular energy game. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em hoa} & (HOA automaton)\+: automaton with one of the following acceptance conditions\+: parity, Büchi. filename (cast to twa\+\_\+graph) or twa\+\_\+graph \\
-\hline
-{\em s0} & (int)\+: initial state \\
-\hline
-{\em wup} & (int)\+: weak upper bound \\
-\hline
-{\em c0} & (int)\+: initial credit \\
-\hline
-{\em do\+\_\+display} & 0 No information is displayed at all~\newline
- 1 Only text is shown~\newline
- 2 The (sub)-\/graphs are shown as well, only works from jupyter \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-True if there is a (wup, c0) accepting path in hoa, False otherwise. 
-\end{DoxyReturn}
-\Hypertarget{namespaceWBA__utils_aafa5826444fab84d4f89e63055eb7a24}\label{namespaceWBA__utils_aafa5826444fab84d4f89e63055eb7a24} 
+Returns a BuechiResult allowing to extract the trace.
+\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_aafa5826444fab84d4f89e63055eb7a24}\label{namespaceWBA__utils_aafa5826444fab84d4f89e63055eb7a24} 
 \index{WBA\_utils@{WBA\_utils}!ParityEnergy@{ParityEnergy}}
 \index{ParityEnergy@{ParityEnergy}!WBA\_utils@{WBA\_utils}}
 \doxysubsubsection{\texorpdfstring{ParityEnergy()}{ParityEnergy()}}
@@ -212,7 +333,33 @@ Solve an ɷ-\/regular energy game in a parity automaton.
 \begin{DoxyReturn}{Returns}
 True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
 \end{DoxyReturn}
-\Hypertarget{namespaceWBA__utils_a86eac1693b76ef2473353c6ee31ba839}\label{namespaceWBA__utils_a86eac1693b76ef2473353c6ee31ba839} 
+\Hypertarget{namespaceWBA__utils_a52bf5f72e56d06d2b1d39c2d9590bd3a}\label{namespaceWBA__utils_a52bf5f72e56d06d2b1d39c2d9590bd3a} 
+\index{WBA\_utils@{WBA\_utils}!projectTrace\_@{projectTrace\_}}
+\index{projectTrace\_@{projectTrace\_}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{projectTrace\_()}{projectTrace\_()}}
+{\footnotesize\ttfamily  List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} WBA\+\_\+utils.\+project\+Trace\+\_\+ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}}}]{br,  }\item[{List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]}}]{t }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Project a trace in br.gScc onto br.g
+Args:
+    br: BuechiResult structure holding all the necessary information
+    t: The trace to be projected
+
+Returns: The projected trace\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_a002347614c20a551eac92d9903c49483}\label{namespaceWBA__utils_a002347614c20a551eac92d9903c49483} 
+\index{WBA\_utils@{WBA\_utils}!propAlong@{propAlong}}
+\index{propAlong@{propAlong}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{propAlong()}{propAlong()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}bool, int\mbox{]} WBA\+\_\+utils.\+prop\+Along (\begin{DoxyParamCaption}\item[{int}]{e,  }\item[{List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}\mbox{]}}]{t,  }\item[{int}]{wup }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Propagates an energy along a given path.
+Args:
+    e: starting energy
+    t: the path
+    wup: the considered weak upper bound
+
+Returns: (true, energy) after if t is feasible, else (false, -1)
+\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_a86eac1693b76ef2473353c6ee31ba839}\label{namespaceWBA__utils_a86eac1693b76ef2473353c6ee31ba839} 
 \index{WBA\_utils@{WBA\_utils}!PrunePriority@{PrunePriority}}
 \index{PrunePriority@{PrunePriority}!WBA\_utils@{WBA\_utils}}
 \doxysubsubsection{\texorpdfstring{PrunePriority()}{PrunePriority()}}
@@ -232,3 +379,118 @@ Remove every transition with maximal priority in an automaton.
 \begin{DoxyReturn}{Returns}
 a new automaton without highest-\/priority transitions, or an empty automaton if there is only one color 
 \end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_a48846a5fc235c89289db7414df11b4fd}\label{namespaceWBA__utils_a48846a5fc235c89289db7414df11b4fd} 
+\index{WBA\_utils@{WBA\_utils}!RabinEnergy@{RabinEnergy}}
+\index{RabinEnergy@{RabinEnergy}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{RabinEnergy()}{RabinEnergy()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+Rabin\+Energy (\begin{DoxyParamCaption}\item[{"{}Rabin automaton"{}}]{hoa,  }\item[{int}]{p,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Solve an ɷ-\/regular energy game in a Rabin automaton. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hoa} & (HOA automaton)\+: generalized weighted Rabin automaton as twa\+\_\+graph \\
+\hline
+{\em p} & (int)\+: number of acceptance set pairs \\
+\hline
+{\em s0} & (int)\+: initial state \\
+\hline
+{\em wup} & (int)\+: weak upper bound \\
+\hline
+{\em c0} & (int)\+: initial credit \\
+\hline
+{\em do\+\_\+display} & 0 No information is displayed at all~\newline
+ 1 Only text is shown~\newline
+ 2 The (sub)-\/graphs are shown as well, only works from jupyter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_ac11a659dff17afeac9079244ff17dbfa}\label{namespaceWBA__utils_ac11a659dff17afeac9079244ff17dbfa} 
+\index{WBA\_utils@{WBA\_utils}!searchTrace@{searchTrace}}
+\index{searchTrace@{searchTrace}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{searchTrace()}{searchTrace()}}
+{\footnotesize\ttfamily  List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]} WBA\+\_\+utils.\+search\+Trace (\begin{DoxyParamCaption}\item[{spot.\+twa\+\_\+graph}]{g,  }\item[{List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]}}]{pred,  }\item[{int}]{g\+Src,  }\item[{int}]{g\+Dst,  }\item[{int}]{ic\+Src,  }\item[{int}]{e\+Dst,  }\item[{int}]{wup,  }\item[{Union\mbox{[}int, None\mbox{]} }]{impl\+Cycl\+Cost = {\ttfamily None} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Search for a trace amongst the optimal predecessors \a pred that arrives at \a gDst with at least \a eDst energy
+when starting in \a gSrc with at least \a icSrc energy
+Args:
+    pred: Optimal predecessor list
+    gSrc: Initial state of the trace
+    gDst: Final state of the trace
+    icSrc: Initial credit to start the run
+    eDst: Minimal final energy
+    wup: Weak upper bound of the trace
+    implCyclCost: Implicit cost of closing a cycle. If None we seek for a "linear" path
+
+Returns: A viable trace as list of pastSegments; Empty if no trace was found\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_aa475d4de8dd4ab32c3d7201cde591a7d}\label{namespaceWBA__utils_aa475d4de8dd4ab32c3d7201cde591a7d} 
+\index{WBA\_utils@{WBA\_utils}!traceExtractionCycle1\_@{traceExtractionCycle1\_}}
+\index{traceExtractionCycle1\_@{traceExtractionCycle1\_}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{traceExtractionCycle1\_()}{traceExtractionCycle1\_()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}int, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]}\mbox{]} WBA\+\_\+utils.\+trace\+Extraction\+Cycle1\+\_\+ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}}}]{br,  }\item[{bool}]{project }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Extract a *simple* cycle embedding the backedge
+Args:
+    br: BuechiResult structure holding all the information
+    project: Project the result onto the original graph
+
+Returns: A valid cycle\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_ae0ee6bca12265759f0993df9325ea3f6}\label{namespaceWBA__utils_ae0ee6bca12265759f0993df9325ea3f6} 
+\index{WBA\_utils@{WBA\_utils}!traceExtractionCycle2\_@{traceExtractionCycle2\_}}
+\index{traceExtractionCycle2\_@{traceExtractionCycle2\_}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{traceExtractionCycle2\_()}{traceExtractionCycle2\_()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}int, List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1pathSegment}{path\+Segment}}\mbox{]}\mbox{]} WBA\+\_\+utils.\+trace\+Extraction\+Cycle2\+\_\+ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classWBA__utils_1_1BuechiResult}{Buechi\+Result}}}]{br,  }\item[{bool}]{project }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Extract a cycle embedding the backedge and passing by the WUP state br.sWup
+Args:
+    br: BuechiResult structure holding all the information
+    project: Project the result onto the original graph
+
+Returns: A valid cycle
+\end{DoxyVerb}
+ \Hypertarget{namespaceWBA__utils_a76c0c3af5f70cffc7155e3496654b532}\label{namespaceWBA__utils_a76c0c3af5f70cffc7155e3496654b532} 
+\index{WBA\_utils@{WBA\_utils}!TrueEnergy@{TrueEnergy}}
+\index{TrueEnergy@{TrueEnergy}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{TrueEnergy()}{TrueEnergy()}}
+{\footnotesize\ttfamily WBA\+\_\+utils.\+True\+Energy (\begin{DoxyParamCaption}\item[{"{}automaton"{}}]{hoa,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}initial credit"{}}]{c0,  }\item[{"{}show iterations and info"{} }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Solve an ɷ-\/regular energy game in an automaton with an acceptance condition of t. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hoa} & (HOA automaton)\+: automaton as twa\+\_\+graph \\
+\hline
+{\em s0} & (int)\+: initial state \\
+\hline
+{\em wup} & (int)\+: weak upper bound \\
+\hline
+{\em c0} & (int)\+: initial credit \\
+\hline
+{\em do\+\_\+display} & 0 No information is displayed at all~\newline
+ 1 Only text is shown~\newline
+ 2 The (sub)-\/graphs are shown as well, only works from jupyter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
+\end{DoxyReturn}
+\Hypertarget{namespaceWBA__utils_a6abdfac6b1346654fba419a83deaf396}\label{namespaceWBA__utils_a6abdfac6b1346654fba419a83deaf396} 
+\index{WBA\_utils@{WBA\_utils}!tryPumpLoop@{tryPumpLoop}}
+\index{tryPumpLoop@{tryPumpLoop}!WBA\_utils@{WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{tryPumpLoop()}{tryPumpLoop()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}bool, int\mbox{]} WBA\+\_\+utils.\+try\+Pump\+Loop (\begin{DoxyParamCaption}\item[{int}]{e,  }\item[{List\mbox{[}\mbox{\hyperlink{classWBA__utils_1_1transition}{transition}}\mbox{]}}]{t,  }\item[{int}]{wup }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Args:
+    e: starting energy
+    t: the cycle
+    wup: the considered weak upper bound
+
+Returns: (true, maximally attainable energy) after if t is feasible and energy positive, else (false, -1)
+\end{DoxyVerb}
+ 
