@@ -13,6 +13,9 @@ import spot
 from copy import deepcopy as deepcopy
 import array
 
+import ipython_utils as ipy
+ipy_utils = ipy.IPythonUtils()
+
 __bench_stats__ = {"n_backedges": 0, "n_bf_iter": 0, "n_scc": 0,
                    "n_pump_loop": 0, "n_propagate": 0}
 
@@ -81,7 +84,7 @@ def degen_counting(aut, ssi, idx):
             c2 = c
             acc = spot.mark_t()
             if e.acc.has(c):
-                c2 = (c + 1)%n_color
+                c2 = (c + 1) % n_color
                 if c2 == 0:
                     acc = spot.mark_t([0])
 
@@ -482,6 +485,17 @@ class BuechiResult:
 # Whole picture
 # This is algorithm 1
 # todo: Fix we do not need s0
+
+## Solve an ɷ-regular energy game in an energy ɷ-automaton.
+#
+# @param hoa (HOA automaton): automaton as twa_graph
+# @param s0 (int): initial state
+# @param wup (int): weak upper bound
+# @param c0 (int): initial credit
+# @param do_display: 0 No information is displayed at all\n
+#                    1 Only text is shown\n
+#                    2 The (sub)-graphs are shown as well, only works from jupyter
+# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def OmegaEnergy(hoa: "HOA automaton",
                 s0: "state",
                 wup: "weak upper bound",
@@ -492,50 +506,45 @@ def OmegaEnergy(hoa: "HOA automaton",
 
     Returns a BuechiResult allowing to extract the trace.
     """
-    # TODO boilerplate, move this function somewhere else
-    def print_c(*args, **kwargs):
-        if do_display > 0:
-            print(*args, **kwargs)
-        return
-
+    ipy_utils.set_display_mode(do_display)
     acc_cond = hoa.acc()
 
     # Empty automaton or f
     if hoa.num_states() == 0 or acc_cond.is_f():
-        print_c("This automaton is empty or its condition is False!")
+        ipy_utils.print_c("This automaton is empty or its condition is False!")
         return BuechiResult()
 
     # Condition is t
     if acc_cond.is_t():
-        print_c("True condition detected.")
-        return TrueEnergy(hoa, s0, wup, c0, do_display)
+        ipy_utils.print_c("True condition detected.")
+        return TrueEnergy(hoa, s0, wup, c0)
 
     # Büchi (can be generalized)
     if acc_cond.is_generalized_buchi():
-        print_c("(Generalized) Büchi condition detected.")
-        return BuechiEnergy(hoa, s0, wup, c0, None, None, do_display)
+        ipy_utils.print_c("(Generalized) Büchi condition detected.")
+        return BuechiEnergy(hoa, s0, wup, c0, None, None)
 
     # Co-Büchi
     if acc_cond.is_co_buchi():
-        print_c("(Generalized) co-Büchi condition detected.")
-        return CoBuechiEnergy(hoa, s0, wup, c0, do_display)
+        ipy_utils.print_c("(Generalized) co-Büchi condition detected.")
+        return CoBuechiEnergy(hoa, s0, wup, c0)
 
     # Parity
     # Implements the algorithm presented in Section 7
     if acc_cond.is_parity()[0]:
-        print_c("Parity condition detected.")
-        return ParityEnergy(hoa, s0, wup, c0, do_display)
+        ipy_utils.print_c("Parity condition detected.")
+        return ParityEnergy(hoa, s0, wup, c0)
 
     # Rabin
     p = acc_cond.is_rabin()
     if p != 1:
-        print_c("Rabin condition detected.")
-        return RabinEnergy(hoa, p, s0, wup, c0, do_display)
+        ipy_utils.print_c("Rabin condition detected.")
+        return RabinEnergy(hoa, p, s0, wup, c0)
 
     # TODO other automata types
-    print_c("Unknown automaton type. Assuming acceptance condition is t.")
-    print_c("This will lead to errors in trace extraction if the acceptance condition is not t.")
-    return TrueEnergy(hoa, s0, wup, c0, do_display)
+    ipy_utils.print_c("Unknown automaton type. Assuming acceptance condition is t.")
+    ipy_utils.print_c("This will lead to errors in trace extraction if the acceptance condition is not t.")
+    return TrueEnergy(hoa, s0, wup, c0)
 
 ## Remove every transition with maximal priority in an automaton.
 #
@@ -595,52 +604,12 @@ def MinColor(aut: "HOA automaton"):
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
-# @param do_display: 0 No information is displayed at all\n
-#                    1 Only text is shown\n
-#                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def ParityEnergy(hoa: "parity automaton",
                  s0: "state",
                  wup: "weak upper bound",
-                 c0: "initial credit",
-                 do_display: "show iterations and info" = 0
+                 c0: "initial credit"
                  ):
-    # TODO put these functions somewhere else!
-    def print_c(*args, **kwargs):
-        if do_display > 0:
-            print(*args, **kwargs)
-        return
-
-    def display_c(aut, opt=""):
-        if do_display > 1:
-            display(aut.show(opt))
-        return
-
-    def highlight_c(aut: spot.twa_graph,
-                    pred: List[List[int]],
-                    predColors: List[int] = [1, 2, 3, 4, 5],
-                    opt="") -> None:
-        """
-
-        Args:
-            aut: The automaton
-            pred: List of lists. The list pred[s] contains all predecessors for state s
-            predColors: How many predecessors should be colored and how. The -ith predecessor will be colored with the i-1th color
-            opt: Additional options passed to highlight_edges
-
-        Returns: None
-
-        """
-        if do_display > 1:
-            # Create a list of edges for each color
-            cDict = dict(zip(predColors, [[] for _ in predColors]))
-            for s in range(aut.num_states()):
-                for c, en in zip(predColors, reversed(pred[s])):
-                    cDict[c].append(en)
-            for c, edges in cDict.items():
-                aut.highlight_edges(edges, c)
-        display_c(aut, opt)
-
     def scc_same_parity(acc_set, look_for_odd):
         ## Return True if acc_set contains at least one odd set (even set if look_for_odd is set to False), False otherwise.
         # @param acc_set(mark_t): set of all acceptance sets in a SCC
@@ -660,11 +629,11 @@ def ParityEnergy(hoa: "parity automaton",
     # state, disregarding the colors
     assert s0 == hoa.get_init_state_number()
     en, pred = bf.FindMaxEnergy(hoa.get_init_state_number(), wup, c0)
-    print_c("Prefix energy per state", format_energie_(en),
+    ipy_utils.print_c("Prefix energy per state", format_energie_(en),
              "\nCurrent optimal predecessor", format_pred_aut_(hoa, pred), sep='\n')
-    print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
+    ipy_utils.print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
     hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-    highlight_c(hoa, pred, opt="tsbrg")
+    ipy_utils.highlight_c(hoa, pred, opt="tsbrg")
 
     ssi = spot.scc_info(hoa)
     # Loop over all SCCs
@@ -683,7 +652,7 @@ def ParityEnergy(hoa: "parity automaton",
     # TODO current implementation allocates a LOT of memory
     if (current_color % 2 == 0 and is_odd) or (current_color % 2 == 1 and not is_odd):
         hoa_copy = PrunePriority(hoa, is_max)
-        return ParityEnergy(hoa_copy, s0, wup, c0, do_display)
+        return ParityEnergy(hoa_copy, s0, wup, c0)
     else:
         # Create a copy of the current automaton
         hoa_copy = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
@@ -696,9 +665,9 @@ def ParityEnergy(hoa: "parity automaton",
         display(hoa_copy.show())
 
         # Solve in this new automaton
-        buchi_res = BuechiEnergy(hoa_copy, s0, wup, c0, None, None, do_display)
+        buchi_res = BuechiEnergy(hoa_copy, s0, wup, c0, None, None)
         return buchi_res if buchi_res else ParityEnergy(PrunePriority(hoa, is_max),
-                                                        s0, wup, c0, do_display)
+                                                        s0, wup, c0)
 
 
 ## Solve an ɷ-regular energy game in a co-Büchi automaton.
@@ -707,15 +676,11 @@ def ParityEnergy(hoa: "parity automaton",
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
-# @param do_display: 0 No information is displayed at all\n
-#                    1 Only text is shown\n
-#                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def CoBuechiEnergy(hoa: "co-Büchi automaton",
                    s0: "state",
                    wup: "weak upper bound",
-                   c0: "initial credit",
-                   do_display: "show iterations and info" = 0
+                   c0: "initial credit"
                    ):
     # TODO cleaner visual output
     # Algorithm:
@@ -725,58 +690,21 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
     # Run BuechiEnergy in this new automaton
     # TODO find a more efficient algorithm
 
-    # TODO boilerplate, move this function somewhere else
-    def print_c(*args, **kwargs):
-        if do_display > 0:
-            print(*args, **kwargs)
-        return
-
-    def display_c(aut, opt=""):
-        if do_display > 1:
-            display(aut.show(opt))
-        return
-
-    def highlight_c(aut: spot.twa_graph,
-                    pred: List[List[int]],
-                    predColors: List[int] = [1, 2, 3, 4, 5],
-                    opt="") -> None:
-        """
-
-        Args:
-            aut: The automaton
-            pred: List of lists. The list pred[s] contains all predecessors for state s
-            predColors: How many predecessors should be colored and how. The -ith predecessor will be colored with the i-1th color
-            opt: Additional options passed to highlight_edges
-
-        Returns: None
-
-        """
-        if do_display > 1:
-            # Create a list of edges for each color
-            cDict = dict(zip(predColors, [[] for _ in predColors]))
-            for s in range(aut.num_states()):
-                for c, en in zip(predColors, reversed(pred[s])):
-                    cDict[c].append(en)
-            for c, edges in cDict.items():
-                aut.highlight_edges(edges, c)
-        display_c(aut, opt)
-
-
     bf = mod_BF_iter(hoa)
     # whole automaton
     # Finds optimal prefix energy for each
     # state, disregarding the colors
     assert s0 == hoa.get_init_state_number()
     en, pred = bf.FindMaxEnergy(hoa.get_init_state_number(), wup, c0)
-    print_c("Prefix energy per state", format_energie_(en),
+    ipy_utils.print_c("Prefix energy per state", format_energie_(en),
              "\nCurrent optimal predecessor", format_pred_aut_(hoa, pred), sep='\n')
-    print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
+    ipy_utils.print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
     hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-    highlight_c(hoa, pred, opt="tsbrg")
+    ipy_utils.highlight_c(hoa, pred, opt="tsbrg")
 
 
     for col in range(hoa.acc().num_sets()):
-        print_c(f"Building Büchi automaton for color {str(col)}")
+        ipy_utils.print_c(f"Building Büchi automaton for color {str(col)}")
         co_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
         co_hoa.copy_named_properties_of(hoa)
         co_hoa.set_buchi()
@@ -797,7 +725,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
 
         display(co_hoa.show())
 
-        res = BuechiEnergy(co_hoa, s0, wup, c0, en, pred, do_display)
+        res = BuechiEnergy(co_hoa, s0, wup, c0, en, pred)
         if res:
             return res
 
@@ -811,16 +739,12 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
-# @param do_display: 0 No information is displayed at all\n
-#                    1 Only text is shown\n
-#                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def RabinEnergy(hoa: "Rabin automaton",
                 p: int,
                 s0: "state",
                 wup: "weak upper bound",
-                c0: "initial credit",
-                do_display: "show iterations and info" = 0
+                c0: "initial credit"
                 ):
     # TODO Try to find a more efficient algorithm
     # Algorithm:
@@ -848,7 +772,7 @@ def RabinEnergy(hoa: "Rabin automaton",
         for buchi_e in buchi_hoa.edges():
             buchi_e.acc = spot.mark_t({0}) if buchi_e.acc.has(i) else spot.mark_t()
 
-        energy = BuechiEnergy(buchi_hoa, s0, wup, c0, None, None, do_display)
+        energy = BuechiEnergy(buchi_hoa, s0, wup, c0, None, None)
         if energy:
             return energy
 
@@ -861,15 +785,11 @@ def RabinEnergy(hoa: "Rabin automaton",
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
-# @param do_display: 0 No information is displayed at all\n
-#                    1 Only text is shown\n
-#                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def TrueEnergy(hoa: "automaton",
                s0: "state",
                wup: "weak upper bound",
-               c0: "initial credit",
-               do_display: "show iterations and info" = 0
+               c0: "initial credit"
                ):
     # Algorithm: promote every edge to back edge and run BuechiEnergy on the new automaton
     buchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
@@ -879,7 +799,7 @@ def TrueEnergy(hoa: "automaton",
     for e in buchi_hoa.edges():
         e.acc = spot.mark_t({0})
 
-    return BuechiEnergy(buchi_hoa, s0, wup, c0, None, None, do_display)
+    return BuechiEnergy(buchi_hoa, s0, wup, c0, None, None)
 
 
 ## Solve an ɷ-regular energy game in a Büchi automaton.
@@ -891,52 +811,14 @@ def TrueEnergy(hoa: "automaton",
 # @param en: array containing the prefix energies for each state.
 # If it is not provided, the prefixes are calculated instead.
 # @param pred: array containing the optimal predecessors for each state
-# @param do_display: 0 No information is displayed at all\n
-#                    1 Only text is shown\n
-#                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def BuechiEnergy(hoa: "Büchi automaton",
                  s0: "state",
                  wup: "weak upper bound",
                  c0: "initial credit",
                  en: "prefix energies array" = None,
-                 pred: "optimal predecessors array" = None,
-                 do_display: "show iterations and info" = 0,
+                 pred: "optimal predecessors array" = None
                  ):
-    def print_c(*args, **kwargs):
-        if do_display > 0:
-            print(*args, **kwargs)
-        return
-
-    def display_c(aut, opt=""):
-        if do_display > 1:
-            display(aut.show(opt))
-        return
-
-    def highlight_c(aut: spot.twa_graph,
-                    pred: List[List[int]],
-                    predColors: List[int] = [1, 2, 3, 4, 5],
-                    opt="") -> None:
-        """
-
-        Args:
-            aut: The automaton
-            pred: List of lists. The list pred[s] contains all predecessors for state s
-            predColors: How many predecessors should be colored and how. The -ith predecessor will be colored with the i-1th color
-            opt: Additional options passed to highlight_edges
-
-        Returns: None
-
-        """
-        if do_display > 1:
-            # Create a list of edges for each color
-            cDict = dict(zip(predColors, [[] for _ in predColors]))
-            for s in range(aut.num_states()):
-                for c, en in zip(predColors, reversed(pred[s])):
-                    cDict[c].append(en)
-            for c, edges in cDict.items():
-                aut.highlight_edges(edges, c)
-        display_c(aut, opt)
 
     if isinstance(hoa, str):
         aut = spot.automaton(hoa)
@@ -948,8 +830,8 @@ def BuechiEnergy(hoa: "Büchi automaton",
 
     opts = {"wup": wup, "ic": c0, "s0": aut.get_init_state_number()}
 
-    print_c("Original automaton")
-    display_c(aut, "tsbrg")
+    ipy_utils.print_c("Original automaton")
+    ipy_utils.display_c(aut, "tsbrg")
 
     if not en:
         bf = mod_BF_iter(hoa)
@@ -958,11 +840,11 @@ def BuechiEnergy(hoa: "Büchi automaton",
         # state, disregarding the colors
         assert s0 == aut.get_init_state_number()
         en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
-        print_c("Prefix energy per state", format_energie_(en),
+        ipy_utils.print_c("Prefix energy per state", format_energie_(en),
             "\nCurrent optimal predecessor", format_pred_aut_(aut, pred), sep='\n')
-        print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
+        ipy_utils.print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
         aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-        highlight_c(aut, pred, opt="tsbrg")
+        ipy_utils.highlight_c(aut, pred, opt="tsbrg")
 
     ssi = spot.scc_info(aut)
     # Loop over all SCCs
@@ -970,9 +852,9 @@ def BuechiEnergy(hoa: "Büchi automaton",
         if not ssi.is_accepting_scc(i):
             continue
         __bench_stats__["n_scc"] += 1
-        print_c("Checking SCC", i)
+        ipy_utils.print_c("Checking SCC", i)
         aut_degen, acc_edge, rename = degen_counting(aut, ssi, i)
-        print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
+        ipy_utils.print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
 
         revrename = {v: k for k, v in rename.items()}
 
@@ -985,12 +867,12 @@ def BuechiEnergy(hoa: "Büchi automaton",
             names[i] = names[i]+":"+str(i//len(rename))
         aut_degen.set_state_names(names)
 
-        print_c(f"Current SCC with: {aut_degen.num_states()} states and {len(acc_edge)} back-edges")
-        print_c("""Associating states in the original automaton to the corresponding states in lvl 0 of the degeneralised SCC""",
+        ipy_utils.print_c(f"Current SCC with: {aut_degen.num_states()} states and {len(acc_edge)} back-edges")
+        ipy_utils.print_c("""Associating states in the original automaton to the corresponding states in lvl 0 of the degeneralised SCC""",
                 rename, sep="\n")
         # Update names
         aut_degen.set_state_names([f"{i}" for i in range(aut_degen.num_states())])
-        display_c(aut_degen, "tsbrg")
+        ipy_utils.display_c(aut_degen, "tsbrg")
 
         # current degeneralized SCC
         bf2 = mod_BF_iter(aut_degen)
@@ -1000,73 +882,73 @@ def BuechiEnergy(hoa: "Büchi automaton",
         for be_num in acc_edge:
             __bench_stats__["n_backedges"] += 1
             be = aut_degen.edge_storage(be_num)
-            print_c("Analysing backedge " + names[be.src],
+            ipy_utils.print_c("Analysing backedge " + names[be.src],
                     "->", names[be.dst] + ".")
 
             start_energy = en[revrename[be.dst]]
             if start_energy < 0:
                 continue
-            print_c("We start with " + str(start_energy)
+            ipy_utils.print_c("We start with " + str(start_energy)
                     + " energy in state " + names[be.dst] + ".")
 
             # look from backedge->destination
             (en3, pred3) = bf2.FindMaxEnergy(be.dst, wup, start_energy)
-            print_c("Energy starting in backedge dst", format_energie_(en3),
+            ipy_utils.print_c("Energy starting in backedge dst", format_energie_(en3),
                     "Corresponding predecessors", format_pred_aut_(aut_degen, pred3), sep="\n")
             if en3[be.src] >= 0:
                 new_energy = min(en3[be.src]+spot.get_weight(aut_degen, be_num), wup)
             else:
                 new_energy = -1
             if new_energy >= start_energy:
-                print_c("We found a non-negative loop using edge", names[be.src],
+                ipy_utils.print_c("We found a non-negative loop using edge", names[be.src],
                         "->", names[be.dst]+" directly.")
-                highlight_c(aut_degen, pred3, opt="tsbrg")
+                ipy_utils.highlight_c(aut_degen, pred3, opt="tsbrg")
                 return BuechiResult(aut, aut_degen, rename, opts, en, pred, be_num, en3, pred3, -1, None, None)
             else:
                 # restart with the new energy
                 if new_energy < 0:
                     continue
-                print_c("We restart with " + str(new_energy)
+                ipy_utils.print_c("We restart with " + str(new_energy)
                         + " energy in state " + names[be.dst] + ".")
 
                 # look again from backedge->destination but with lower start energy
                 en3, pred3 = bf2.FindMaxEnergy(be.dst, wup, new_energy)
-                print_c(en3, pred3)
+                ipy_utils.print_c(en3, pred3)
                 if en3[be.src] >= 0:
                     even_newer_energy = min(en3[be.src] + spot.get_weight(aut_degen, be_num), wup)
                 else:
                     even_newer_energy = -1
-                print_c("We arrived with " + str(even_newer_energy)
+                ipy_utils.print_c("We arrived with " + str(even_newer_energy)
                         + " energy in state " + names[be.dst] + ".")
                 if even_newer_energy >= new_energy:
-                    print_c("We found a non-negative loop using edge", names[be.src],
+                    ipy_utils.print_c("We found a non-negative loop using edge", names[be.src],
                             "->", names[be.dst] + " in the second iteration.")
-                    highlight_c(aut_degen, pred3, opt="tsbrg")
+                    ipy_utils.highlight_c(aut_degen, pred3, opt="tsbrg")
                     return BuechiResult(aut, aut_degen, rename, opts, en, pred, be_num, en3, pred3, -1, None, None)
                 else:
                     for node, energy in enumerate(en3):
                         if energy == wup:
-                            print_c("we should check also from " + str(names[node])+".")
+                            ipy_utils.print_c("we should check also from " + str(names[node])+".")
                             en4, pred4 = bf2.FindMaxEnergy(node, wup, wup)
-                            print_c(en4, pred4)
+                            ipy_utils.print_c(en4, pred4)
                             if en4[be.src] >= 0:
                                 newest_energy = min(en4[be.src] + spot.get_weight(aut_degen, be_num), wup)
-                                print_c("We arrived with ", newest_energy,
+                                ipy_utils.print_c("We arrived with ", newest_energy,
                                         " energy in state ", names[be.dst], ".")
                                 en5, pred5 = bf2.FindMaxEnergy(be.dst, wup, newest_energy)
-                                print_c(en5, pred5)
-                                print_c("We arrived with ", en5[node],
+                                ipy_utils.print_c(en5, pred5)
+                                ipy_utils.print_c("We arrived with ", en5[node],
                                         " energy in state ", names[node], ".")
                                 if en5[node] == wup:
-                                    print_c("We found a non-negative loop using node",
+                                    ipy_utils.print_c("We found a non-negative loop using node",
                                             names[node], "in the third iteration.")
                                     # TODO: look at those highlights, I have no idea
-                                    highlight_c(aut_degen, pred4, opt="tsbrg")
-                                    highlight_c(aut_degen, pred5, opt="tsbrg")
+                                    ipy_utils.highlight_c(aut_degen, pred4, opt="tsbrg")
+                                    ipy_utils.highlight_c(aut_degen, pred5, opt="tsbrg")
                                     # en/pred4 : WUP to be.src; en/pred5 : be.dst to WUP
                                     return BuechiResult(aut, aut_degen, rename, opts, en, pred, be_num, en4, pred4, node, en5, pred5)
 
-    print_c("No feasible Büchi run detected!")
+    ipy_utils.print_c("No feasible Büchi run detected!")
     return BuechiResult()
 
 @dataclass
