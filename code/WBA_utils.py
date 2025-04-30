@@ -513,7 +513,7 @@ def OmegaEnergy(hoa: "HOA automaton",
     # Büchi (can be generalized)
     if acc_cond.is_generalized_buchi():
         print_c("(Generalized) Büchi condition detected.")
-        return BuechiEnergy(hoa, s0, wup, c0, do_display)
+        return BuechiEnergy(hoa, s0, wup, c0, None, None, do_display)
 
     # Co-Büchi
     if acc_cond.is_co_buchi():
@@ -591,7 +591,7 @@ def MinColor(aut: "HOA automaton"):
     
 ## Solve an ɷ-regular energy game in a parity automaton.
 #
-# @param pau (HOA automaton): parity automaton as twa_graph
+# @param hoa (HOA automaton): parity automaton as twa_graph
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
@@ -599,41 +599,105 @@ def MinColor(aut: "HOA automaton"):
 #                    1 Only text is shown\n
 #                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
-def ParityEnergy(pau: "parity automaton",
+def ParityEnergy(hoa: "parity automaton",
                  s0: "state",
                  wup: "weak upper bound",
                  c0: "initial credit",
                  do_display: "show iterations and info" = 0
                  ):
-    parity_status = pau.acc().is_parity()
+    # TODO put these functions somewhere else!
+    def print_c(*args, **kwargs):
+        if do_display > 0:
+            print(*args, **kwargs)
+        return
+
+    def display_c(aut, opt=""):
+        if do_display > 1:
+            display(aut.show(opt))
+        return
+
+    def highlight_c(aut: spot.twa_graph,
+                    pred: List[List[int]],
+                    predColors: List[int] = [1, 2, 3, 4, 5],
+                    opt="") -> None:
+        """
+
+        Args:
+            aut: The automaton
+            pred: List of lists. The list pred[s] contains all predecessors for state s
+            predColors: How many predecessors should be colored and how. The -ith predecessor will be colored with the i-1th color
+            opt: Additional options passed to highlight_edges
+
+        Returns: None
+
+        """
+        if do_display > 1:
+            # Create a list of edges for each color
+            cDict = dict(zip(predColors, [[] for _ in predColors]))
+            for s in range(aut.num_states()):
+                for c, en in zip(predColors, reversed(pred[s])):
+                    cDict[c].append(en)
+            for c, edges in cDict.items():
+                aut.highlight_edges(edges, c)
+        display_c(aut, opt)
+
+    def scc_same_parity(acc_set, look_for_odd):
+        ## Return True if acc_set contains at least one odd set (even set if look_for_odd is set to False), False otherwise.
+        # @param acc_set(mark_t): set of all acceptance sets in a SCC
+        # @param look_for_odd(bool): are we looking for odd sets?
+        return True in [col % 2 == look_for_odd for col in acc_set.sets()]
+
+    parity_status = hoa.acc().is_parity()
     if not parity_status[2]:
         raise ValueError("ParityEnergy must be called with a pure parity automaton.")
 
     is_max = parity_status[1]
     is_odd = parity_status[2]
 
-    current_color = MaxColor(pau) if is_max else MinColor(pau)
+    bf = mod_BF_iter(hoa)
+    # whole automaton
+    # Finds optimal prefix energy for each
+    # state, disregarding the colors
+    assert s0 == hoa.get_init_state_number()
+    en, pred = bf.FindMaxEnergy(hoa.get_init_state_number(), wup, c0)
+    print_c("Prefix energy per state", format_energie_(en),
+             "\nCurrent optimal predecessor", format_pred_aut_(hoa, pred), sep='\n')
+    print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
+    hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
+    highlight_c(hoa, pred, opt="tsbrg")
+
+    ssi = spot.scc_info(hoa)
+    # Loop over all SCCs
+    for i in range(ssi.scc_count()):
+        # Skip SCCs with all-odd acceptance sets in the even case
+        if scc_same_parity(scc.acc_sets_of(i), not is_odd):
+            continue
+        # TODO get SCC edges (cf Büchi)
+        # TODO use simplified acceptance condition
+
+
+    current_color = MaxColor(hoa) if is_max else MinColor(hoa)
     if current_color == -1:
         return BuechiResult()
 
     # TODO current implementation allocates a LOT of memory
     if (current_color % 2 == 0 and is_odd) or (current_color % 2 == 1 and not is_odd):
-        pau_copy = PrunePriority(pau, is_max)
-        return ParityEnergy(pau_copy, s0, wup, c0, do_display)
+        hoa_copy = PrunePriority(hoa, is_max)
+        return ParityEnergy(hoa_copy, s0, wup, c0, do_display)
     else:
         # Create a copy of the current automaton
-        pau_copy = spot.make_twa_graph(pau, spot.twa_prop_set.all())
-        pau_copy.copy_named_properties_of(pau)
+        hoa_copy = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
+        hoa_copy.copy_named_properties_of(hoa)
 
         # Recolor and set the acceptance condition to Büchi
-        for e in pau_copy.edges():
+        for e in hoa_copy.edges():
             e.acc = spot.mark_t({0}) if e.acc.has(current_color) else spot.mark_t()
-        pau_copy.set_buchi()
-        display(pau_copy.show())
+        hoa_copy.set_buchi()
+        display(hoa_copy.show())
 
         # Solve in this new automaton
-        buchi_res = BuechiEnergy(pau_copy, s0, wup, c0, do_display)
-        return buchi_res if buchi_res else ParityEnergy(PrunePriority(pau, is_max),
+        buchi_res = BuechiEnergy(hoa_copy, s0, wup, c0, None, None, do_display)
+        return buchi_res if buchi_res else ParityEnergy(PrunePriority(hoa, is_max),
                                                         s0, wup, c0, do_display)
 
 
@@ -656,10 +720,11 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
     # TODO more visual output
     # TODO this actually doesn't work
     # Algorithm:
-    # For every accepting set a, set the acceptance of every edge to a
-    # if it is not accepting a, or None if it is accepting a.
-    # Also set the accepting condition of this new automaton to buchi.
-    # Run BuechiEnergy on this new automaton
+    # First, calculate the prefixes in the original automaton.
+    # Then, for every accepting set a, remove edges that are accepting a
+    # and set every other edge's acceptance to 0.
+    # Run BuechiEnergy in this new automaton
+    # TODO find a more efficient algorithm
 
     # TODO boilerplate, move this function somewhere else
     def print_c(*args, **kwargs):
@@ -667,20 +732,76 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
             print(*args, **kwargs)
         return
 
+    def display_c(aut, opt=""):
+        if do_display > 1:
+            display(aut.show(opt))
+        return
+
+    def highlight_c(aut: spot.twa_graph,
+                    pred: List[List[int]],
+                    predColors: List[int] = [1, 2, 3, 4, 5],
+                    opt="") -> None:
+        """
+
+        Args:
+            aut: The automaton
+            pred: List of lists. The list pred[s] contains all predecessors for state s
+            predColors: How many predecessors should be colored and how. The -ith predecessor will be colored with the i-1th color
+            opt: Additional options passed to highlight_edges
+
+        Returns: None
+
+        """
+        if do_display > 1:
+            # Create a list of edges for each color
+            cDict = dict(zip(predColors, [[] for _ in predColors]))
+            for s in range(aut.num_states()):
+                for c, en in zip(predColors, reversed(pred[s])):
+                    cDict[c].append(en)
+            for c, edges in cDict.items():
+                aut.highlight_edges(edges, c)
+        display_c(aut, opt)
+
+
+    bf = mod_BF_iter(hoa)
+    # whole automaton
+    # Finds optimal prefix energy for each
+    # state, disregarding the colors
+    assert s0 == hoa.get_init_state_number()
+    en, pred = bf.FindMaxEnergy(hoa.get_init_state_number(), wup, c0)
+    print_c("Prefix energy per state", format_energie_(en),
+             "\nCurrent optimal predecessor", format_pred_aut_(hoa, pred), sep='\n')
+    print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
+    hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
+    highlight_c(hoa, pred, opt="tsbrg")
+
+
     for col in range(hoa.acc().num_sets()):
         print_c(f"Building Büchi automaton for color {str(col)}")
         co_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
         co_hoa.copy_named_properties_of(hoa)
         co_hoa.set_buchi()
 
+        # TODO temporary, edges to be removed are marked with no acceptance sets
         for e in co_hoa.edges():
             e.acc = spot.mark_t() if e.acc.has(col) else spot.mark_t({0})
+
+        # TODO can the edges be remove directly in the previous loop?
+        for i in range(co_hoa.num_states()):
+            it = co_hoa.out_iteraser(i)
+            while it:
+                e = it.current()
+                if e.acc == spot.mark_t():
+                    it.erase()
+                else:
+                    it.advance()
+
         display(co_hoa.show())
 
-        if BuechiEnergy(co_hoa, s0, wup, c0, do_display):
-            # TODO use BuechiResult
-            return True
-        
+        res = BuechiEnergy(co_hoa, s0, wup, c0, en, pred, do_display)
+        if res:
+            return res
+
     return BuechiResult()
 
 
@@ -728,7 +849,7 @@ def RabinEnergy(hoa: "Rabin automaton",
         for buchi_e in buchi_hoa.edges():
             buchi_e.acc = spot.mark_t({0}) if buchi_e.acc.has(i) else spot.mark_t()
 
-        energy = BuechiEnergy(buchi_hoa, s0, wup, c0, do_display)
+        energy = BuechiEnergy(buchi_hoa, s0, wup, c0, None, None, do_display)
         if energy:
             return energy
 
@@ -759,7 +880,7 @@ def TrueEnergy(hoa: "automaton",
     for e in buchi_hoa.edges():
         e.acc = spot.mark_t({0})
 
-    return BuechiEnergy(buchi_hoa, s0, wup, c0, do_display)
+    return BuechiEnergy(buchi_hoa, s0, wup, c0, None, None, do_display)
 
 
 ## Solve an ɷ-regular energy game in a Büchi automaton.
@@ -768,6 +889,9 @@ def TrueEnergy(hoa: "automaton",
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
+# @param en: array containing the prefix energies for each state.
+# If it is not provided, the prefixes are calculated instead.
+# @param pred: array containing the optimal predecessors for each state
 # @param do_display: 0 No information is displayed at all\n
 #                    1 Only text is shown\n
 #                    2 The (sub)-graphs are shown as well, only works from jupyter
@@ -776,7 +900,9 @@ def BuechiEnergy(hoa: "Büchi automaton",
                  s0: "state",
                  wup: "weak upper bound",
                  c0: "initial credit",
-                 do_display: "show iterations and info" = 0
+                 en: "prefix energies array" = None,
+                 pred: "optimal predecessors array" = None,
+                 do_display: "show iterations and info" = 0,
                  ):
     def print_c(*args, **kwargs):
         if do_display > 0:
@@ -824,28 +950,29 @@ def BuechiEnergy(hoa: "Büchi automaton",
     opts = {"wup": wup, "ic": c0, "s0": aut.get_init_state_number()}
 
     print_c("Original automaton")
-    display_c(hoa, "tsbrg")
+    display_c(aut, "tsbrg")
 
-    bf = mod_BF_iter(hoa)
-    # whole automaton
-    # Finds optimal prefix energy for each
-    # state, disregarding the colors
-    assert s0 == aut.get_init_state_number()
-    en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
-    print_c("Prefix energy per state", format_energie_(en),
-             "\nCurrent optimal predecessor", format_pred_aut_(aut, pred), sep='\n')
-    print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
-    aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-    highlight_c(aut, pred, opt="tsbrg")
+    if not en:
+        bf = mod_BF_iter(hoa)
+        # whole automaton
+        # Finds optimal prefix energy for each
+        # state, disregarding the colors
+        assert s0 == aut.get_init_state_number()
+        en, pred = bf.FindMaxEnergy(aut.get_init_state_number(), wup, c0)
+        print_c("Prefix energy per state", format_energie_(en),
+            "\nCurrent optimal predecessor", format_pred_aut_(aut, pred), sep='\n')
+        print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
+        aut.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
+        highlight_c(aut, pred, opt="tsbrg")
 
-    ssi = spot.scc_info(hoa)
+    ssi = spot.scc_info(aut)
     # Loop over all SCCs
     for i in range(ssi.scc_count()):
         if not ssi.is_accepting_scc(i):
             continue
         __bench_stats__["n_scc"] += 1
         print_c("Checking SCC", i)
-        aut_degen, acc_edge, rename = degen_counting(hoa, ssi, i)
+        aut_degen, acc_edge, rename = degen_counting(aut, ssi, i)
         print_c(f"Degeneralized SCC has: {aut_degen.num_states()} states, {aut_degen.num_edges()} edges and {len(acc_edge)} back-edges.")
 
         revrename = {v: k for k, v in rename.items()}
@@ -854,7 +981,7 @@ def BuechiEnergy(hoa: "Büchi automaton",
         names = ["" for _ in range(len(rename))]
         for old, new in rename.items():
             names[new] = str(old)
-        names = names * hoa.get_acceptance().used_sets().max_set()
+        names = names * aut.get_acceptance().used_sets().max_set()
         for i in range(len(names)):
             names[i] = names[i]+":"+str(i//len(rename))
         aut_degen.set_state_names(names)
