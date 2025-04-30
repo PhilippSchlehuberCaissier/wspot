@@ -717,8 +717,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                    c0: "initial credit",
                    do_display: "show iterations and info" = 0
                    ):
-    # TODO more visual output
-    # TODO this actually doesn't work
+    # TODO cleaner visual output
     # Algorithm:
     # First, calculate the prefixes in the original automaton.
     # Then, for every accepting set a, remove edges that are accepting a
