@@ -649,8 +649,8 @@ def ParityEnergy(hoa: "parity automaton",
     for i in range(ssi.scc_count()):
         so = ssi.states_of(i)
         new_states = dict()
-        for i, s in enumerate(so):
-            new_states[s] = i
+        for j, s in enumerate(so):
+            new_states[s] = j
 
         scc = spot.make_twa_graph(hoa.get_dict())
         scc.copy_ap_of(hoa)
@@ -660,25 +660,16 @@ def ParityEnergy(hoa: "parity automaton",
         if scc_one_parity(ssi.acc_sets_of(i), not is_odd):
             continue
 
-        print("Parity is currently broken. TODO fix SCCs")
-        return
-        display(hoa.show())
-
-        # TODO for some reason this segfaults
         for e in ssi.inner_edges_of(i):
-            print(None)
-            break
-            q = 3/0
-            # ne = scc.new_edge(
-            #     new_states[e.src],
-            #     new_states[e.dst],
-            #     e.cond,
-            #     e.acc
-            #     )
-            # spot.set_weight(scc, ne, spot.get_weight(hoa, e))
+            ne = scc.new_edge(
+                new_states[e.src],
+                new_states[e.dst],
+                e.cond,
+                e.acc
+                )
+            spot.set_weight(scc, ne, spot.get_weight(hoa, e))
 
         display(scc.show())
-        q = 3/0
         ipy_utils.print_c("Checking SCC", i)
         ipy_utils.display_c(scc)
 
