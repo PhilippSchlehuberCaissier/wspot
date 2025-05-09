@@ -846,7 +846,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                                          energy + spot.get_weight(sub_hoa, loop_segment)
                                          )
                         ipy_utils.print_c(f"Final energy is {energy} (initial was {en[closing_state]})")
-                        if energy < en[closing_state]:
+                        if energy < en[closing_state] or energy < 0:
                             # Non-accepting loop (energy loss)
                             ipy_utils.print_c("This is not an accepting loop")
                             # Shift the loop
