@@ -797,14 +797,16 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
     V = sub_hoa.num_states()
 
     # "Stack" of states being processed
-    succ = [([], None, s0)]
-    # Whether a state has already been processed
-    discovered = [False for _ in range(V)]
-    # List of used edges during the dfs
-    progression = []
+    # Note that we push couples composed of the state and the energy attained
+    succ = [([], None, (s0, c0))]
+    # List of already seen couples
+    discovered = []
 
     while succ != []:
-        (path, current_edge, current_state) = succ.pop()
+        (path, current_edge, (current_state, current_energy)) = succ.pop(0)
+        ipy_utils.print_c(f"Now processing state {current_state} with inbound energy {current_energy}")
+        print([f"{e.src} > {e.dst}" for e in path])
+                
         # Check if there's a loop
         # By definition of path, there won't be nested loops
         # Also by definition, the last element of path will close the loop
@@ -816,36 +818,48 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                     # Check if the loop is energy-feasible
                     prefix_edges = path[:start_index]
                     loop_edges = path[start_index:]
-                    loop_copy = path[start_index:]
+                    loop_length = len(loop_edges)
                     ipy_utils.print_c(f"Found a candidate loop from state {closing_state} (loop length: {len(loop_edges)} edges)")
                     energy = en[closing_state]
-                    while loop_edges != []:
+
+                    # We need to rotate the loop loop_length times.
+                    # See many_iterations_co_buechi_flattened.hoa,
+                    #     co_buechi_shifted_loop.hoa
+                    # for cases where this procedure is necessary to find a valid loop
+                    for _ in range(loop_length):
                         # Idea: the loop is feasible if, starting from closing_state, the resulting energy (w.r.t. the WUP) is >= to the starting energy.
-                        loop_segment = loop_edges[0]
-                        energy = min(wup,
-                                     energy + spot.get_weight(sub_hoa, loop_segment)
-                                     )
-                        del loop_edges[0]
-                    ipy_utils.print_c(f"Final energy is {energy} (initial was {en[closing_state]})")
-                    if energy < en[closing_state]:
-                        # Non-accepting loop (energy loss)
-                        ipy_utils.print_c("This is not an accepting loop")
-                    else:
-                        # Feasible loop
-                        # TODO return something
-                        ipy_utils.print_c("Found an accepting loop")
-                        return True
+                        for seg in range(loop_length):
+                            loop_segment = loop_edges[seg]
+                            energy = min(wup,
+                                         energy + spot.get_weight(sub_hoa, loop_segment)
+                                         )
+                        ipy_utils.print_c(f"Final energy is {energy} (initial was {en[closing_state]})")
+                        if energy < en[closing_state]:
+                            # Non-accepting loop (energy loss)
+                            ipy_utils.print_c("This is not an accepting loop")
+                            # Shift the loop
+                            loop_edges.append(loop_edges.pop(0))
+                            closing_state = loop_edges[-1].dst
+                            ipy_utils.print_c(f"Shifting the loop, now starting at {closing_state}")
+                            energy = en[closing_state]
+                        else:
+                            # Feasible loop
+                            # TODO return a BuechiResult
+                            ipy_utils.print_c("Found an accepting loop")
+                            return True
+                    print("This loop has been entirely shifted, proceeding to next candidate loop")
 
         # Continue dfs if no accepting loop was found earlier
-        if not discovered[current_state]:
-            discovered[current_state] = True
+        # TODO Is this efficient compared to a "brutal" Büchi conversion?
+        if (current_state, current_energy) not in discovered:
+            discovered.append((current_state, current_energy))
             # Get successors and edges leading to them
             # TODO this is suboptimal
             for e in sub_hoa.edges():
                 if e.src != current_state:
                     continue
-                succ.append((path + [e], e, e.dst))
-        print([f"{e.src} > {e.dst}" for e in path])
+                next_energy = min(wup, current_energy + spot.get_weight(sub_hoa, e))
+                succ.append((path + [e], e, (e.dst, next_energy)))
             
     # for s in range(hoa.num_states()):
     #     print(f"Starting state {s}")
