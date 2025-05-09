@@ -1,0 +1,27 @@
+HOA: v1
+States: 4
+Start: 0
+AP: 1 "a"
+acc-name: generalized-Buchi 2
+Acceptance: 2 Inf(0)&Inf(1)
+properties: trans-labels explicit-labels trans-acc weak
+--BODY--
+State: 0
+[t] 0 <0> {0}
+[t] 1 <-5>
+[t] 2 <-50> {0}
+State: 1
+[t] 0 <-20> {0}
+[t] 1 <1>
+[t] 2 <-40> {0}
+[t] 3 <-70>
+State: 2
+[t] 0 <-90> {0 1}
+[t] 1 <-50>
+[t] 2 <0> {0}
+State: 3
+[t] 0 <-70> {0}
+[t] 1 <-55>
+[t] 2 <0> {0}
+[t] 3 <1>
+--END--
