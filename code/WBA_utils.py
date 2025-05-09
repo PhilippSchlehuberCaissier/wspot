@@ -702,6 +702,46 @@ def ParityEnergy(hoa: "parity automaton",
             return buchi_res if buchi_res else ParityEnergy(PrunePriority(scc, is_max), s0, wup, c0)
 
 
+## Legacy version of CoBuechiEnergy. Do NOT use outside of benchmarks.
+# Comments are deliberately as minimal as possible.
+def LEGACY_CoBuechiEnergy(hoa, s0, wup, c0):
+    bf = mod_BF_iter(hoa)
+    assert s0 == hoa.get_init_state_number()
+    en, pred = bf.FindMaxEnergy(hoa.get_init_state_number(), wup, c0)
+    ipy_utils.print_c("Prefix energy per state", format_energie_(en),
+             "\nCurrent optimal predecessor", format_pred_aut_(hoa, pred), sep='\n')
+    ipy_utils.print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
+    hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
+    ipy_utils.highlight_c(hoa, pred, opt="tsbrg")
+
+    # "Brutal" approach (rebuild a Büchi automaton for each color)
+    for col in range(hoa.acc().num_sets()):
+        ipy_utils.print_c(f"Building Büchi automaton for color {str(col)}")
+        co_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
+        co_hoa.copy_named_properties_of(hoa)
+        co_hoa.set_buchi()
+
+        # TODO temporary, edges to be removed are marked with no acceptance sets
+        for e in co_hoa.edges():
+            e.acc = spot.mark_t() if e.acc.has(col) else spot.mark_t({0})
+
+        # TODO can the edges be remove directly in the previous loop?
+        for i in range(co_hoa.num_states()):
+            it = co_hoa.out_iteraser(i)
+            while it:
+                e = it.current()
+                if e.acc == spot.mark_t():
+                    it.erase()
+                else:
+                    it.advance()
+
+        ipy_utils.display_c(co_hoa)
+
+        res = BuechiEnergy(co_hoa, s0, wup, c0, en, pred)
+        if res:
+            return res
+
+
 ## Solve an ɷ-regular energy game in a co-Büchi automaton.
 #
 # @param hoa (HOA automaton): generalized weighted co-büchi automaton as twa_graph
@@ -714,7 +754,6 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                    wup: "weak upper bound",
                    c0: "initial credit"
                    ):
-    # TODO cleaner visual output
     # Algorithm:
     # First, calculate the prefixes in the original automaton.
     # Then, for every accepting set a, remove edges that are accepting a
@@ -733,33 +772,6 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
     ipy_utils.print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
     hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
     ipy_utils.highlight_c(hoa, pred, opt="tsbrg")
-
-    # "Brutal" approach (rebuild a Büchi automaton for each color)
-    # for col in range(hoa.acc().num_sets()):
-    #     ipy_utils.print_c(f"Building Büchi automaton for color {str(col)}")
-    #     co_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
-    #     co_hoa.copy_named_properties_of(hoa)
-    #     co_hoa.set_buchi()
-
-    #     # TODO temporary, edges to be removed are marked with no acceptance sets
-    #     for e in co_hoa.edges():
-    #         e.acc = spot.mark_t() if e.acc.has(col) else spot.mark_t({0})
-
-    #     # TODO can the edges be remove directly in the previous loop?
-    #     for i in range(co_hoa.num_states()):
-    #         it = co_hoa.out_iteraser(i)
-    #         while it:
-    #             e = it.current()
-    #             if e.acc == spot.mark_t():
-    #                 it.erase()
-    #             else:
-    #                 it.advance()
-
-    #     display(co_hoa.show())
-
-    #     res = BuechiEnergy(co_hoa, s0, wup, c0, en, pred)
-    #     if res:
-    #         return res
 
     # "Smart" approach
     # Algorithm:
@@ -805,7 +817,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
     while succ != []:
         (path, current_edge, (current_state, current_energy)) = succ.pop(0)
         ipy_utils.print_c(f"Now processing state {current_state} with inbound energy {current_energy}")
-        print([f"{e.src} > {e.dst}" for e in path])
+        ipy_utils.print_c([f"{e.src} > {e.dst}" for e in path])
                 
         # Check if there's a loop
         # By definition of path, there won't be nested loops
@@ -847,7 +859,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                             # TODO return a BuechiResult
                             ipy_utils.print_c("Found an accepting loop")
                             return True
-                    print("This loop has been entirely shifted, proceeding to next candidate loop")
+                    ipy_utils.print_c("This loop has been entirely shifted, proceeding to next candidate loop")
 
         # Continue dfs if no accepting loop was found earlier
         # TODO Is this efficient compared to a "brutal" Büchi conversion?
@@ -860,21 +872,6 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                     continue
                 next_energy = min(wup, current_energy + spot.get_weight(sub_hoa, e))
                 succ.append((path + [e], e, (e.dst, next_energy)))
-            
-    # for s in range(hoa.num_states()):
-    #     print(f"Starting state {s}")
-    #     dists = [float('-inf') if i != s else 0 for i in range(V)]
-    #     # Save the paths used to get the highest weights
-    #     paths = [[] for _ in range(V)]
-
-    #     for k in range(V-1):
-    #         for e in sub_hoa.edges():
-    #             if dists[e.src] + spot.get_weight(sub_hoa, e) > dists[e.dst]:
-    #                 dists[e.dst] = dists[e.src] + spot.get_weight(sub_hoa, e)
-    #                 paths[e.dst].append(e.src)
-
-    #     print(dists)
-    #     print(paths)
 
     return BuechiResult()
 
