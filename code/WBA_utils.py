@@ -813,6 +813,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
     succ = [([], None, (s0, c0))]
     # List of already seen couples
     discovered = []
+    examined_loops = []
 
     while succ != []:
         (path, current_edge, (current_state, current_energy)) = succ.pop(0)
@@ -822,9 +823,10 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
         # Check if there's a loop
         # By definition of path, there won't be nested loops
         # Also by definition, the last element of path will close the loop
+        loop_already_seen = False
         if len(path) != 0:
             closing_state = path[-1].dst
-            for start_index in range(-1, -len(path), -1):
+            for start_index in range(-1, -len(path) - 1, -1):
                 if path[start_index].src == closing_state:
                     # We found a loop
                     # Check if the loop is energy-feasible
@@ -832,12 +834,26 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                     loop_edges = path[start_index:]
                     loop_length = len(loop_edges)
                     ipy_utils.print_c(f"Found a candidate loop from state {closing_state} (loop length: {len(loop_edges)} edges)")
+
+                    # We won't process already examined loops
+                    # We need to take into account shifted loops
+                    for loop in examined_loops:
+                        for _ in range(len(loop)):
+                            loop.append(loop.pop(0))
+                            if loop == loop_edges:
+                                ipy_utils.print_c("We know this is a negative loop")
+                                loop_already_seen = True
+                    if loop_already_seen:
+                        break
+                    
+                    examined_loops.append(loop_edges)
                     energy = en[closing_state]
 
                     # We need to rotate the loop loop_length times.
                     # See many_iterations_co_buechi_flattened.hoa,
                     #     co_buechi_shifted_loop.hoa
                     # for cases where this procedure is necessary to find a valid loop
+                    # Also see lemma 4.4 in the paper
                     for _ in range(loop_length):
                         # Idea: the loop is feasible if, starting from closing_state, the resulting energy (w.r.t. the WUP) is >= to the starting energy.
                         for seg in range(loop_length):
@@ -862,8 +878,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                     ipy_utils.print_c("This loop has been entirely shifted, proceeding to next candidate loop")
 
         # Continue dfs if no accepting loop was found earlier
-        # TODO Is this efficient compared to a "brutal" Büchi conversion?
-        if (current_state, current_energy) not in discovered:
+        if (current_state, current_energy) not in discovered and not loop_already_seen:
             discovered.append((current_state, current_energy))
             # Get successors and edges leading to them
             # TODO this is suboptimal
@@ -871,7 +886,11 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                 if e.src != current_state:
                     continue
                 next_energy = min(wup, current_energy + spot.get_weight(sub_hoa, e))
-                succ.append((path + [e], e, (e.dst, next_energy)))
+                if next_energy >= 0:
+                    ipy_utils.print_c(f"Pushing next state {e.dst} with target energy {next_energy} (reached from ({current_state}, {current_energy}))")
+                    succ.append((path + [e], e, (e.dst, next_energy)))
+
+        ipy_utils.print_c(f"End processing ({current_state}, {current_energy})")
 
     return BuechiResult()
 
