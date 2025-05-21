@@ -278,7 +278,7 @@ class mod_BF_iter:
 
         while self.onLoop_[sprime] == 0:
             self.onLoop_[sprime] = 1
-            assert self.Pred_[sprime],"Has no predecessor -> Can not be on a loop"
+            assert self.Pred_[sprime], "Has no predecessor -> Can not be on a loop"
             # Works on the last predecessor set
             sprime = self.g_.edge_storage(self.Pred_[sprime][-1]).src
 
@@ -481,7 +481,7 @@ class BuechiResult:
     def __bool__(self) -> bool:
         return self.g is not None
 
-    
+
 # Whole picture
 # This is algorithm 1
 # todo: Fix we do not need s0
@@ -577,7 +577,7 @@ def PrunePriority(aut: "HOA automaton",
 
     return aut_new
 
-    
+
 ## Return the highest priority in an automaton.
 #
 # @param aut (HOA automaton)
@@ -590,7 +590,7 @@ def MaxColor(aut: "HOA automaton"):
     except ValueError:
         return -1
 
-    
+
 ## Return the lowest priority in an automaton.
 #
 # @param aut (HOA automaton)
@@ -603,7 +603,7 @@ def MinColor(aut: "HOA automaton"):
     except ValueError:
         return -1
 
-    
+
 ## Solve an ɷ-regular energy game in a parity automaton.
 #
 # @param hoa (HOA automaton): parity automaton as twa_graph
@@ -669,7 +669,7 @@ def ParityEnergy(hoa: "parity automaton",
                 )
             spot.set_weight(scc, ne, spot.get_weight(hoa, e))
 
-        display(scc.show())
+        ipy_utils.display_c(scc.show())
         ipy_utils.print_c("Checking SCC", i)
         ipy_utils.display_c(scc)
 
@@ -689,7 +689,7 @@ def ParityEnergy(hoa: "parity automaton",
             # Create a copy of the current automaton
             scc_copy = spot.make_twa_graph(scc, spot.twa_prop_set.all())
             scc_copy.copy_named_properties_of(scc)
-            
+
             # Recolor and set the acceptance condition to Büchi
             for e in scc_copy.edges():
                 e.acc = spot.mark_t({0}) if e.acc.has(current_color) else spot.mark_t()
@@ -700,46 +700,6 @@ def ParityEnergy(hoa: "parity automaton",
             # Solve in this new automaton
             buchi_res = BuechiEnergy(scc_copy, s0, wup, c0, None, None)
             return buchi_res if buchi_res else ParityEnergy(PrunePriority(scc, is_max), s0, wup, c0)
-
-
-## Legacy version of CoBuechiEnergy. Do NOT use outside of benchmarks.
-# Comments are deliberately as minimal as possible.
-def LEGACY_CoBuechiEnergy(hoa, s0, wup, c0):
-    bf = mod_BF_iter(hoa)
-    assert s0 == hoa.get_init_state_number()
-    en, pred = bf.FindMaxEnergy(hoa.get_init_state_number(), wup, c0)
-    ipy_utils.print_c("Prefix energy per state", format_energie_(en),
-             "\nCurrent optimal predecessor", format_pred_aut_(hoa, pred), sep='\n')
-    ipy_utils.print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
-    hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
-    ipy_utils.highlight_c(hoa, pred, opt="tsbrg")
-
-    # "Brutal" approach (rebuild a Büchi automaton for each color)
-    for col in range(hoa.acc().num_sets()):
-        ipy_utils.print_c(f"Building Büchi automaton for color {str(col)}")
-        co_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
-        co_hoa.copy_named_properties_of(hoa)
-        co_hoa.set_buchi()
-
-        # TODO temporary, edges to be removed are marked with no acceptance sets
-        for e in co_hoa.edges():
-            e.acc = spot.mark_t() if e.acc.has(col) else spot.mark_t({0})
-
-        # TODO can the edges be remove directly in the previous loop?
-        for i in range(co_hoa.num_states()):
-            it = co_hoa.out_iteraser(i)
-            while it:
-                e = it.current()
-                if e.acc == spot.mark_t():
-                    it.erase()
-                else:
-                    it.advance()
-
-        ipy_utils.display_c(co_hoa)
-
-        res = BuechiEnergy(co_hoa, s0, wup, c0, en, pred)
-        if res:
-            return res
 
 
 ## Solve an ɷ-regular energy game in a co-Büchi automaton.
@@ -819,7 +779,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
         (path, current_edge, (current_state, current_energy)) = succ.pop(0)
         ipy_utils.print_c(f"Now processing state {current_state} with inbound energy {current_energy}")
         ipy_utils.print_c([f"{e.src} > {e.dst}" for e in path])
-                
+
         # Check if there's a loop
         # By definition of path, there won't be nested loops
         # Also by definition, the last element of path will close the loop
@@ -845,7 +805,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                                 loop_already_seen = True
                     if loop_already_seen:
                         break
-                    
+
                     examined_loops.append(loop_edges)
                     energy = en[closing_state]
 
@@ -1107,6 +1067,7 @@ def BuechiEnergy(aut: "Büchi automaton",
 
     ipy_utils.print_c("No feasible Büchi run detected!")
     return BuechiResult()
+
 
 @dataclass
 class transition:
