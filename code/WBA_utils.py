@@ -669,7 +669,7 @@ def ParityEnergy(hoa: "parity automaton",
                 )
             spot.set_weight(scc, ne, spot.get_weight(hoa, e))
 
-        ipy_utils.display_c(scc.show())
+        ipy_utils.display_c(scc)
         ipy_utils.print_c("Checking SCC", i)
         ipy_utils.display_c(scc)
 
@@ -702,23 +702,23 @@ def ParityEnergy(hoa: "parity automaton",
             return buchi_res if buchi_res else ParityEnergy(PrunePriority(scc, is_max), s0, wup, c0)
 
 
-## Solve an ɷ-regular energy game in a co-Büchi automaton.
+## Solve an ɷ-regular energy game in a co-Büchi automaton (legacy algorithm).
 #
 # @param hoa (HOA automaton): generalized weighted co-büchi automaton as twa_graph
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
-def CoBuechiEnergy(hoa: "co-Büchi automaton",
+def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
                    s0: "state",
                    wup: "weak upper bound",
                    c0: "initial credit"
                    ):
     # Algorithm:
     # First, calculate the prefixes in the original automaton.
-    # Then, for every accepting set a, remove edges that are accepting a
-    # and set every other edge's acceptance to 0.
-    # Run BuechiEnergy in this new automaton
+    # Then, try to find an accepting loop in the automaton
+    # created by removing every edge accepting a color k for every color
+    # and setting every other edge's acceptance to 0.
     # TODO find a more efficient algorithm
 
     bf = mod_BF_iter(hoa)
@@ -851,6 +851,163 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                     succ.append((path + [e], e, (e.dst, next_energy)))
 
         ipy_utils.print_c(f"End processing ({current_state}, {current_energy})")
+
+    return BuechiResult()
+
+
+## Solve an ɷ-regular energy game in a co-Büchi automaton.
+#
+# @param hoa (HOA automaton): generalized weighted co-büchi automaton as twa_graph
+# @param s0 (int): initial state
+# @param wup (int): weak upper bound
+# @param c0 (int): initial credit
+# @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
+def CoBuechiEnergy(hoa: "co-Büchi automaton",
+                   s0: "state",
+                   wup: "weak upper bound",
+                   c0: "initial credit"
+                   ):
+    # Algorithm:
+    # First, calculate the prefixes in the original automaton.
+    # Then, try to find an accepting loop in the automaton
+    # created by removing every edge accepting a color k for every color
+    # and setting every other edge's acceptance to 0.
+    # TODO find a more efficient algorithm
+
+    bf = mod_BF_iter(hoa)
+    # whole automaton
+    # Finds optimal prefix energy for each
+    # state, disregarding the colors
+    assert s0 == hoa.get_init_state_number()
+    en, pred = bf.FindMaxEnergy(hoa.get_init_state_number(), wup, c0)
+    ipy_utils.print_c("Prefix energy per state", format_energie_(en),
+             "\nCurrent optimal predecessor", format_pred_aut_(hoa, pred), sep='\n')
+    ipy_utils.print_c("""State names are: "state number, max energy"\nOptimal predecessor is highlighted in pink""")
+    hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
+    ipy_utils.highlight_c(hoa, pred, opt="tsbrg")
+
+    # "Smart" approach
+    # Algorithm:
+    # we first calculate the prefixes regardless of acceptance sets
+    # For each color, we then remove the associated edges
+    # and try to find >= 0 loops using a dfs
+    # We then check if at least one of these loops is energy accepting
+    # (Example: this won't work
+    #     5        5
+    # a -----> b -----> c -\
+    # ^                    |
+    # \--------------------/
+    #         -8
+    # if the wup is 5, even though it is a positive loop)
+
+    for col in range(hoa.acc().num_sets()):
+        ipy_utils.print_c(f"Examining color {str(col)}")
+        sub_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
+        sub_hoa.copy_named_properties_of(hoa)
+        sub_hoa.set_acceptance(spot.acc_cond("t"))
+
+        for i in range(sub_hoa.num_states()):
+            it = sub_hoa.out_iteraser(i)
+            while it:
+                e = it.current()
+                if e.acc.has(col):
+                    it.erase()
+                else:
+                    it.advance()
+
+    ipy_utils.display_c(sub_hoa)
+    ipy_utils.print_c("Finding potential loops in this automaton")
+
+    # TODO this might not work if there are jumps in state numbering
+    V = sub_hoa.num_states()
+
+    # "Stack" of states being processed
+    # Note that we push couples composed of the state and the energy attained
+    succ = [([], None, (s0, c0))]
+    # List of already seen states along with their predecessors
+    discovered = []
+
+    while succ != []:
+        (path, current_edge, (current_state, predecessor)) = succ.pop(0)
+        ipy_utils.print_c(f"Now processing state {current_state} reached from {predecessor}")
+        ipy_utils.print_c([f"{e.src} > {e.dst}" for e in path])
+
+        # Check if there's a loop
+        # By definition of path, there won't be nested loops
+        # Also by definition, the last element of path will close the loop
+        loop_already_seen = False
+        if len(path) != 0:
+            closing_state = path[-1].dst
+            for start_index in range(-1, -len(path) - 1, -1):
+                if path[start_index].src == closing_state:
+                    # We found a loop
+                    # Check if the loop is energy-feasible
+                    prefix_edges = path[:start_index]
+                    loop_edges = path[start_index:]
+                    loop_length = len(loop_edges)
+                    ipy_utils.print_c(f"Found a candidate loop from state {closing_state} (loop length: {len(loop_edges)} edges)")
+
+                    # Pump this loop twice
+                    E = {}
+                    for e in loop_edges:
+                        E[e.src] = -1
+                    E[closing_state] = en[closing_state]
+                    ipy_utils.print_c(f"Initial energy at {closing_state} is {E[closing_state]}")
+                    ipy_utils.print_c("Pumping loop")
+                    loop_ok = False
+
+                    for k in range(2):
+                        while 1:
+                            for e in loop_edges:
+                                eprime = max(0, min(
+                                    wup,
+                                    E[e.src] + spot.get_weight(sub_hoa, e)
+                                )
+                                             )
+                                if eprime == E[e.dst]:
+                                    loop_ok = True
+                                    break
+                                E[e.dst] = eprime
+                            if loop_ok:
+                                break
+
+                        ipy_utils.print_c(f"Final energy after pumping at {closing_state} is {E[closing_state]}")
+                        ipy_utils.print_c(E)
+
+                    final_energy = E[closing_state]
+
+                    # Backtrack the loop
+                    # We don't have to worry about energy being less than 0,
+                    # since we wouldn't be able to loop back to this state otherwise
+                    energy = E[closing_state]
+                    for i in range(len(loop_edges) - 1, -1, -1):
+                        e = loop_edges[i]
+                        energy = min(
+                            wup,
+                            energy - spot.get_weight(sub_hoa, e)
+                            )
+                    ipy_utils.print_c(f"Starting energy after backtracking the loop at {closing_state} is {energy}")
+
+                    if energy > final_energy:
+                        ipy_utils.print_c("This is not an accepting loop")
+                    else:
+                        # Feasible loop
+                        # TODO return a BuechiResult
+                        ipy_utils.print_c("Found an accepting loop")
+                        return True
+                    
+        # Continue dfs if no accepting loop was found earlier
+        if (current_state, predecessor) not in discovered:
+            discovered.append((current_state, predecessor))
+            # Get successors and edges leading to them
+            # TODO this is suboptimal
+            for e in sub_hoa.edges():
+                if e.src != current_state:
+                    continue
+                ipy_utils.print_c(f"Pushing next state {e.dst} (reached from {current_state})")
+                succ.append((path + [e], e, (e.dst, e.src)))
+
+        ipy_utils.print_c(f"End processing {current_state}")
 
     return BuechiResult()
 
