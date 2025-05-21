@@ -3,15 +3,21 @@
 import spot, buddy, WBA_utils as wu
 import time
 
-hoa = spot.automaton("../tests/large_co_buechi_flattened.hoa")
+files = [
+    "../tests/nested_loops.hoa",
+    "../tests/large_co_buechi_flattened.hoa"
+    ]
 
-print("Solving using the new algorithm")
-start = time.time()
-wu.OmegaEnergy(hoa, 0, 10, 0, 0)
-print(f"Time: {time.time() - start}")
+for this in files:
+    hoa = spot.automaton(this)
 
-print("======================================")
-print("Solving using the legacy algorithm")
-start = time.time()
-wu.LEGACY_CoBuechiEnergy(hoa, 0, 10, 0)
-print(f"Time: {time.time() - start}")
+    print(f"Solving {this} using the new algorithm")
+    start = time.time()
+    wu.OmegaEnergy(hoa, 0, 10, 0, 0)
+    print(f"Time: {time.time() - start}")
+
+    print("======================================")
+    print(f"Solving {this} using the legacy algorithm")
+    start = time.time()
+    wu.LEGACY_CoBuechiEnergy(hoa, 0, 10, 0)
+    print(f"Time: {time.time() - start}")

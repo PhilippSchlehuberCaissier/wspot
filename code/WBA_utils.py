@@ -935,7 +935,6 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
         # Check if there's a loop
         # By definition of path, there won't be nested loops
         # Also by definition, the last element of path will close the loop
-        loop_already_seen = False
         if len(path) != 0:
             closing_state = path[-1].dst
             for start_index in range(-1, -len(path) - 1, -1):
@@ -1003,6 +1002,8 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
             # TODO this is suboptimal
             for e in sub_hoa.edges():
                 if e.src != current_state:
+                    continue
+                if (e.dst, e.src) in discovered:
                     continue
                 ipy_utils.print_c(f"Pushing next state {e.dst} (reached from {current_state})")
                 succ.append((path + [e], e, (e.dst, e.src)))
