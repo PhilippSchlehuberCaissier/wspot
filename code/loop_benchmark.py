@@ -13,11 +13,13 @@ for this in files:
 
     print(f"Solving {this} using the new algorithm")
     start = time.time()
-    wu.OmegaEnergy(hoa, 0, 10, 0, 0)
+    for _ in range(1000):
+        wu.OmegaEnergy(hoa, 0, 10, 0, 0)
     print(f"Time: {time.time() - start}")
 
     print("======================================")
     print(f"Solving {this} using the legacy algorithm")
     start = time.time()
-    wu.LEGACY_CoBuechiEnergy(hoa, 0, 10, 0)
+    for _ in range(1000):
+        wu.LEGACY_CoBuechiEnergy(hoa, 0, 10, 0)
     print(f"Time: {time.time() - start}")
