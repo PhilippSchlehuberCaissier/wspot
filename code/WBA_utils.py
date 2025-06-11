@@ -1251,10 +1251,13 @@ class EnergySegment:
         str_b = '' if self.a and not self.b else str(self.b) if not self.a else f" + {self.b}"
         return f"{str_def} ; e_in |---> {str_a}{str_b}" + f" (from {self.pred})"
 
+    def is_in_domain(self, x):
+        if x not in range(self.lowerBound, self.upperBound + 1):
+            raise ValueError(f"x = {x} is out of the domain of the segment: {self}")
+
     def evaluate(self, e_in):
         # TODO This works while our weights are integers
-        if e_in not in range(self.lowerBound, self.upperBound + 1):
-            raise ValueError()
+        self.is_in_domain(e_in)
         return self.a * e_in + self.b
 
     def restriction(self, low, upp):
@@ -1263,6 +1266,10 @@ class EnergySegment:
     @staticmethod
     def nil(low, upp, pred):
         return EnergySegment(low, upp, pred, 0, -1)
+
+    @staticmethod
+    def is_nil(seg):
+        return seg == EnergySegment.nil(seg.lowerBound, seg.upperBound, seg.pred)
 
     @staticmethod
     def identity(low, upp, pred):
@@ -1285,6 +1292,10 @@ class EnergyFunction:
     wup: int
 
     @staticmethod
+    def identity(low, upp, wup):
+        return EnergyFunction([EnergySegment.identity(low, upp, None)], wup)
+
+    @staticmethod
     def nil(low, upp, wup):
         return EnergyFunction([EnergySegment.nil(low, upp, None)], wup)
 
@@ -1298,7 +1309,9 @@ class EnergyFunction:
     def discontinuities(self):
         # Assuming segments are ordered
         # IMPORTANT: Global lower and upper bounds are also considered as discontinuities!
-        return [seg.lowerBound for seg in self.segments] + [self.segments[-1].upperBound]
+        final = [seg.lowerBound for seg in self.segments] + [self.segments[-1].upperBound]
+        final.sort()
+        return final
 
     def is_in_domain(self, x):
         if x not in self.domain:
@@ -1322,11 +1335,10 @@ class EnergyFunction:
 
     @staticmethod
     def clean(f):
-        print(f"to clean: {f}")
         new_segs = []
         next_seg = None
         for old_seg in f.segments:
-            print(f"processing: {old_seg}")
+            # print(f"processing: {old_seg}")
             if next_seg is None:
                 next_seg = old_seg
                 continue
@@ -1335,22 +1347,27 @@ class EnergyFunction:
                 continue
 
             # Merge segments with the same equation
-            if old_seg.a == next_seg.a and old_seg.b == next_seg.b:
+            if old_seg.a == next_seg.a and old_seg.b == next_seg.b and old_seg.pred == next_seg.pred:
                 next_seg.upperBound = old_seg.upperBound
-                print(f"merging segments, new segment: {next_seg}")
+                # print(f"merging segments, new segment: {next_seg}")
             else:
-                print(f"next segment: {next_seg}")
+                # print(f"next segment: {next_seg}")
                 new_segs.append(next_seg)
                 next_seg = old_seg
         new_segs.append(next_seg)
         return EnergyFunction(new_segs, f.wup)
+        # final = EnergyFunction(new_segs, f.wup)
+        # return final
 
     @staticmethod
     def max(f1, f2):
+        print(f"comparing:\n{f1}\n{f2}")
+
         new_segs = []
         # The discontinuities of the max are the union of those of the 2 functions
         discs = list(set(f1.discontinuities + f2.discontinuities))
         discs.sort()
+        print(f"new f is discontinuous at {discs}")
         for i in range(len(discs) - 1):
             lower = discs[i]
             upper = discs[i+1]
@@ -1359,7 +1376,10 @@ class EnergyFunction:
             seg2 = f2.get_segment(lower)
 
             if seg1.a == seg2.a:
-                next_seg = seg1 if seg1.b > seg2.b else seg2
+                if seg1.b == seg2.b:
+                    next_seg = seg1 if seg2.pred is None else seg2
+                else:
+                    next_seg = seg1 if seg1.b > seg2.b else seg2
                 new_segs.append(next_seg.restriction(lower, upper))
             else:
                 # Segments might be intersecting
@@ -1379,32 +1399,55 @@ class EnergyFunction:
                     new_segs.append(next_seg.restriction(lower, upper))
 
         f = EnergyFunction(new_segs, f1.wup)
+        print(f"the max is {EnergyFunction.clean(f)}")
         return EnergyFunction.clean(f)
+
+    @property
+    def is_above_identity(self):
+        dom = self.domain
+        return EnergyFunction.max(self,
+                                  EnergyFunction.identity(min(dom), max(dom), self.wup)) != EnergyFunction.identity(min(dom), max(dom), self.wup)
 
     def __add__(self, other):
         new_segs = []
-        for i in range(len(self.discontinuities) - 1):
-            lower = self.discontinuities[i]
-            upper = self.discontinuities[i+1]
+
+        discs = list(set(self.discontinuities + other.discontinuities))
+        discs.sort()
+        print(f"new f is discontinuous at {discs}")
+        for i in range(len(discs) - 1):
+            lower = discs[i]
+            upper = discs[i+1]
+
             this_seg = self.get_segment(lower)
             other_seg = other.get_segment(lower)
+
+            # If this_seg is null then the final segment will be null since the intermediate state is not reachable
+            if EnergySegment.is_nil(this_seg):
+                new_segs.append(
+                    EnergySegment.nil(lower,
+                                      upper,
+                                      None)
+                    )
+                continue
 
             # New equation is f(x) = a2(a1*x + b1) + b2
             # This is not commutative
             new_a = other_seg.a * this_seg.a
             new_b = other_seg.a * this_seg.b + other_seg.b
+            print(f"f:x |--> {new_a}x + {new_b}")
             if new_a == 0:
                 new_segs.append(
                     EnergySegment.const(lower,
                                         upper,
-                                        this_seg.pred,
+                                        other_seg.pred,
                                         min(new_b, self.wup))
                 )
             else:
-                # Create new discontinuities if the result is < 0 or > wup
+                # There may be new discontinuities (result < 0 or > wup).
+                # If they occur within the [lower, upper] segment then we must create other segments
                 disc1 = -new_b
                 disc2 = self.wup - new_b
-                if disc1 > 0:
+                if disc1 > lower:
                     new_segs.append(
                         EnergySegment.const(lower,
                                             disc1,
@@ -1417,16 +1460,16 @@ class EnergyFunction:
                                        this_seg.pred,
                                        new_b)
                     )
-                if disc2 < self.wup:
+                if disc2 < upper:
                     new_segs.append(
                         EnergySegment.const(disc2,
                                             self.wup,
                                             this_seg.pred,
-                                            self.wup)
+                                            min(new_b, self.wup))
                         )
 
         f = EnergyFunction(new_segs, self.wup)
-        print(str(f))
+        print(f"{self} + {other} = {f}")
         return EnergyFunction.clean(f)
 
     def __str__(self):
@@ -1466,23 +1509,34 @@ def CoBuechi_FW(hoa: "co-Büchi automaton",
                 EnergySegment.identity(0, wup, e.src)
                 ]
         f = EnergyFunction(segs, wup)
-        print(f"building function {f} @ ({e.src}, {e.dst})")
         M[e.src][e.dst] = EnergyFunction.clean(f)
     for v in range(V):
         M[v][v] = EnergyFunction.clean(EnergyFunction(
             [
-                EnergySegment.identity(0, wup, v)
+                EnergySegment.identity(0, wup, None)
             ],
             wup))
     for k in range(V):
         for i in range(V):
             for j in range(V):
+                print(f"Examining {i} to {j} via {k}")
                 M[i][j] = EnergyFunction.max(M[i][j], M[i][k] + M[k][j]) if M[i][k] != EnergyFunction.nil(0, wup, wup) else M[i][j]
 
     for li in range(len(M)):
         print(f"====== From {li} ======")
         for col in range(len(M[li])):
             print(f"to {col}: {str(M[li][col])}")
+
+    # Check the diagonal
+    for k in range(V):
+        fun = M[k][k]
+        if fun.is_above_identity:
+            print(f"There is a positive loop starting from {k}! ({fun})")
+            # TODO return BuechiResult
+            return True
+
+    print("There is no positive loop")
+    return BuechiResult()
 
 @dataclass
 class transition:
