@@ -1245,6 +1245,17 @@ class EnergySegment:
     def domain(self):
         return range(self.lowerBound, self.upperBound)
 
+    @property
+    def image(self):
+        if self.a == 0:
+            return range(self.b, self.b+1)
+        else:
+            # It is guaranteed that the image of an energy segment is in [0,wup]
+            return range(
+                self.lowerBound + self.b,
+                self.upperBound + self.b + 1
+                )
+
     def __str__(self):
         str_def = f"[{self.lowerBound}, {self.upperBound}] -> IR"
         str_a = 'e_in' if self.a else ''
@@ -1434,14 +1445,23 @@ class EnergyFunction:
             # This is not commutative
             new_a = other_seg.a * this_seg.a
             new_b = other_seg.a * this_seg.b + other_seg.b
-            print(f"f:x |--> {new_a}x + {new_b}")
+            print(f"f:x |--> {new_a}x + {new_b} with {this_seg} and {other_seg}")
             if new_a == 0:
-                new_segs.append(
-                    EnergySegment.const(lower,
-                                        upper,
-                                        other_seg.pred,
-                                        min(new_b, self.wup))
-                )
+                # Addition is defined if the image of the first segment is in [lower,upper]
+                if min(this_seg.image) >= lower and max(this_seg.image) <= upper:
+                    new_segs.append(
+                        EnergySegment.const(lower,
+                                            upper,
+                                            other_seg.pred,
+                                            min(new_b, self.wup))
+                        )
+                else:
+                    print("Addition is not defined!")
+                    new_segs.append(
+                        EnergySegment.nil(lower,
+                                          upper,
+                                          other_seg.pred)
+                        )                
             else:
                 # There may be new discontinuities (result < 0 or > wup).
                 # If they occur within the [lower, upper] segment then we must create other segments
@@ -1461,12 +1481,17 @@ class EnergyFunction:
                                        new_b)
                     )
                 if disc2 < upper:
-                    new_segs.append(
-                        EnergySegment.const(disc2,
-                                            self.wup,
-                                            this_seg.pred,
-                                            min(new_b, self.wup))
-                        )
+                    # The addition is defined if the discontinuity lies in ]lower, upper[
+                    if disc2 > lower:
+                        next_seg = EnergySegment.const(disc2,
+                                                       self.wup,
+                                                       this_seg.pred,
+                                                       min(new_b, self.wup))
+                    else:
+                        next_seg = EnergySegment.nil(disc2,
+                                                     self.wup,
+                                                     this_seg.pred)
+                    new_segs.append(next_seg)
 
         f = EnergyFunction(new_segs, self.wup)
         print(f"{self} + {other} = {f}")
@@ -1477,12 +1502,16 @@ class EnergyFunction:
 
 
 ## Solve an ɷ-regular energy game in a co-Büchi automaton using Floyd-Warshall on energy functions.
-def CoBuechi_FW(hoa: "co-Büchi automaton",
+def CoBuechi_FW(aut: "co-Büchi automaton",
                 s0: "state",
                 wup: "weak upper bound",
                 c0: "initial credit"
                 ):
-    hoa = spot.automaton(hoa)
+    if isinstance(aut, str):
+        hoa = spot.automaton(aut)
+    else:
+        hoa = aut
+
     V = hoa.num_states()
     M = [
         [EnergyFunction([EnergySegment.const(0, wup, None, -1)], wup) for _ in range(V)] for _ in range(V)]
@@ -1519,7 +1548,7 @@ def CoBuechi_FW(hoa: "co-Büchi automaton",
     for k in range(V):
         for i in range(V):
             for j in range(V):
-                print(f"Examining {i} to {j} via {k}")
+                print(f"\nExamining {i} to {j} via {k}")
                 M[i][j] = EnergyFunction.max(M[i][j], M[i][k] + M[k][j]) if M[i][k] != EnergyFunction.nil(0, wup, wup) else M[i][j]
 
     for li in range(len(M)):
