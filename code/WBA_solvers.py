@@ -127,7 +127,7 @@ def degen_counting(aut, ssi, idx):
 # @param is_max (bool): is this a parity-max automaton? (defaults to True for non-parity automata)
 # @return a new automaton without highest-priority transitions, or an empty automaton if there is only one color
 def PrunePriority(aut: "HOA automaton",
-                  is_max: "bool" = True):
+                  is_max: bool = True):
     aut_new = spot.make_twa_graph(aut, spot.twa_prop_set.all())
     aut_new.copy_named_properties_of(aut)
 
@@ -151,7 +151,7 @@ def PrunePriority(aut: "HOA automaton",
 #
 # @param aut (HOA automaton)
 # @return the highest priority used in aut, -1 if no priorities were found
-def MaxColor(aut: "HOA automaton"):
+def MaxColor(aut: "HOA automaton") -> int:
     try:
         return max([acc_set
                     for e in aut.edges()
@@ -164,7 +164,7 @@ def MaxColor(aut: "HOA automaton"):
 #
 # @param aut (HOA automaton)
 # @return the lowest priority used in aut, -1 if no priorities were found
-def MinColor(aut: "HOA automaton"):
+def MinColor(aut: "HOA automaton") -> int:
     try:
         return min([acc_set
                     for e in aut.edges()
@@ -181,10 +181,10 @@ def MinColor(aut: "HOA automaton"):
 # @param c0 (int): initial credit
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def ParityEnergy(hoa: "parity automaton",
-                 s0: "state",
-                 wup: "weak upper bound",
-                 c0: "initial credit"
-                 ):
+                 s0: int,
+                 wup: int,
+                 c0: int
+                 ) -> BuechiResult:
     def scc_one_parity(acc_set, look_for_odd):
         ## Return True if acc_set contains only odd sets (even sets if look_for_odd is set to False), False otherwise.
         # @param acc_set(mark_t): set of all acceptance sets in a SCC
@@ -432,10 +432,10 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
 # @param c0 (int): initial credit
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def CoBuechiEnergy(hoa: "co-Büchi automaton",
-                   s0: "state",
-                   wup: "weak upper bound",
-                   c0: "initial credit"
-                   ):
+                   s0: int,
+                   wup: int,
+                   c0: int
+                   ) -> BuechiResult:
     # Algorithm:
     # First, calculate the prefixes in the original automaton.
     # Then, try to find an accepting loop in the automaton
@@ -592,10 +592,10 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def RabinEnergy(hoa: "Rabin automaton",
                 p: int,
-                s0: "state",
-                wup: "weak upper bound",
-                c0: "initial credit"
-                ):
+                s0: int,
+                wup: int,
+                c0: int
+                ) -> BuechiResult:
     # TODO Try to find a more efficient algorithm
     # Algorithm:
     # for each accepting state pair (f, i), check if hoa with Büchi condition Inf(i) has a Büchi accepting path when removing every edge that accepts f
@@ -637,10 +637,10 @@ def RabinEnergy(hoa: "Rabin automaton",
 # @param c0 (int): initial credit
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def TrueEnergy(hoa: "automaton",
-               s0: "state",
-               wup: "weak upper bound",
-               c0: "initial credit"
-               ):
+               s0: int,
+               wup: int,
+               c0: int
+               ) -> BuechiResult:
     # Algorithm: promote every edge to back edge and run BuechiEnergy on the new automaton
     buchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
     buchi_hoa.copy_named_properties_of(hoa)
@@ -654,7 +654,7 @@ def TrueEnergy(hoa: "automaton",
 
 ## Solve an ɷ-regular energy game in a Büchi automaton.
 #
-# @param hoa (HOA automaton): generalized weighted büchi automaton as twa_graph
+# @param aut (HOA automaton): generalized weighted büchi automaton as twa_graph
 # @param s0 (int): initial state
 # @param wup (int): weak upper bound
 # @param c0 (int): initial credit
@@ -662,13 +662,13 @@ def TrueEnergy(hoa: "automaton",
 # If it is not provided, the prefixes are calculated instead.
 # @param pred: array containing the optimal predecessors for each state
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
-def BuechiEnergy(aut: "Büchi automaton",
-                 s0: "state",
-                 wup: "weak upper bound",
-                 c0: "initial credit",
+def BuechiEnergy(aut,
+                 s0: int,
+                 wup: int,
+                 c0: int,
                  en: "prefix energies array" = None,
                  pred: "optimal predecessors array" = None
-                 ):
+                 ) -> BuechiResult:
     if not (aut.acc().num_sets() >= 1) and aut.acc().is_generalized_buchi():
         raise RuntimeError("Automaton does not have a generalized buechi acceptance.")
 
