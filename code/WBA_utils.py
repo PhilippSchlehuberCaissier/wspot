@@ -34,10 +34,11 @@ ipy_utils = ipy.IPythonUtils()
 #                    2 The (sub)-graphs are shown as well, only works from jupyter
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def OmegaEnergy(aut: "HOA automaton",
-                s0: "state",
-                wup: "weak upper bound",
-                c0: "initial credit",
-                do_display: "show iterations and info" = 0) -> BuechiResult:
+                s0: int,
+                wup: int,
+                c0: int,
+                do_display: int = 0
+                ) -> BuechiResult:
     """Searches for energy feasible lasso in the given automaton from the initial state
     with a weak upper bound of \a wup and an initial credit of \a c0
 
@@ -91,10 +92,10 @@ def OmegaEnergy(aut: "HOA automaton",
 
 ## Solve an ɷ-regular energy game in a co-Büchi automaton using Floyd-Warshall on energy functions.
 def CoBuechi_FW(aut: "co-Büchi automaton",
-                s0: "state",
-                wup: "weak upper bound",
-                c0: "initial credit"
-                ):
+                s0: int,
+                wup: int,
+                c0: int
+                ) -> BuechiResult:
     if isinstance(aut, str):
         hoa = spot.automaton(aut)
     else:
