@@ -1,6 +1,18 @@
 from typing import List
 from dataclasses import dataclass
 
+from semiring import Semiring
+
+# We use a global wup
+@dataclass
+class WUP:
+    value = 10
+
+
+def set_wup(wup):
+    WUP.value = wup
+
+
 @dataclass
 ## Class for representing energy functions segments.
 class EnergySegment:
@@ -45,19 +57,23 @@ class EnergySegment:
         self.is_in_domain(e_in)
         return self.a * e_in + self.b
 
+    @property
+    def is_above_one(self):
+        return self.evaluate(self.lowerBound) >= self.lowerBound and self.pred is not None
+
     def restriction(self, low, upp):
         return EnergySegment(low, upp, self.pred, self.a, self.b)
 
     @staticmethod
-    def nil(low, upp, pred):
+    def zero(low, upp, pred):
         return EnergySegment(low, upp, pred, 0, -1)
 
-    @staticmethod
-    def is_nil(seg):
-        return seg == EnergySegment.nil(seg.lowerBound, seg.upperBound, seg.pred)
+    @property
+    def is_zero(self):
+        return self == EnergySegment.zero(self.lowerBound, self.upperBound, self.pred)
 
     @staticmethod
-    def identity(low, upp, pred):
+    def one(low, upp, pred):
         return EnergySegment(low, upp, pred, 1, 0)
 
     @staticmethod
@@ -71,18 +87,24 @@ class EnergySegment:
 
 @dataclass
 ## Class for representing an energy function.
-class EnergyFunction:
+class EnergyFunction(Semiring):
     segments: List[EnergySegment]
-    # TODO maybe put the wup somewhere else, class property maybe?
-    wup: int
+
+    def __str__(self):
+        return " U ".join([str(seg) for seg in self.segments])
 
     @staticmethod
-    def identity(low, upp, wup):
-        return EnergyFunction([EnergySegment.identity(low, upp, None)], wup)
+    def one(low, upp):
+        return EnergyFunction([EnergySegment.one(low, upp, None)])
 
     @staticmethod
-    def nil(low, upp, wup):
-        return EnergyFunction([EnergySegment.nil(low, upp, None)], wup)
+    def zero(low, upp):
+        return EnergyFunction([EnergySegment.zero(low, upp, None)])
+
+    @property
+    def is_zero(self):
+        # We can evaluate the segment in 0 since "normal" segments cannot get below 0
+        return len(self.segments) == 1 and self.segments[0].evaluate(0) == -1
 
     @property
     def domain(self):
@@ -122,13 +144,80 @@ class EnergyFunction:
     def clean(f):
         new_segs = []
         next_seg = None
+        # Whether we need to make another pass
+        to_clean = False
+
+        # f must be defined on [0, wup]
+        if f.segments[0].lowerBound > 0:
+            f.segments.insert(0, EnergySegment.zero(0,
+                                                    f.segments[0].lowerBound,
+                                                    None))
+        if f.segments[-1].upperBound < WUP.value:
+            f.segments.append(EnergySegment.zero(f.segments[-1].upperBound,
+                                                 WUP.value,
+                                                 None))
+
         for old_seg in f.segments:
-            # print(f"processing: {old_seg}")
+            # Cap every segment to wup
+            if old_seg.evaluate(old_seg.upperBound) > WUP.value:
+                print(f"overflow for segment {old_seg}")
+                if next_seg is not None:
+                    new_segs.append(next_seg)
+                    next_seg = None
+                to_clean = True
+
+                if old_seg.a == 0:
+                    new_segs.append(EnergySegment.const(old_seg.lowerBound,
+                                                        old_seg.upperBound,
+                                                        old_seg.pred,
+                                                        WUP.value
+                                                        ))
+                else:
+                    disc = int((WUP.value - old_seg.b) / old_seg.a)
+                    new_segs.append(EnergySegment.incr(old_seg.lowerBound,
+                                                       disc,
+                                                       old_seg.pred,
+                                                       old_seg.b
+                                                       ))
+                    new_segs.append(EnergySegment.const(disc,
+                                                        old_seg.upperBound,
+                                                        old_seg.pred,
+                                                        WUP.value
+                                                        ))
+                continue
+
+            # Same procedure: nullify non-null segments below zero
+            if old_seg.evaluate(old_seg.lowerBound) < 0 and not old_seg.is_zero:
+                print(f"underflow for segment {old_seg}")
+                if next_seg is not None:
+                    new_segs.append(next_seg)
+                    next_seg = None
+                to_clean = True
+
+                if old_seg.a == 0:
+                    new_segs.append(EnergySegment.zero(old_seg.lowerBound,
+                                                       old_seg.upperBound,
+                                                       old_seg.pred
+                                                       ))
+                else:
+                    disc = int(-old_seg.b / old_seg.a)
+                    new_segs.append(EnergySegment.zero(old_seg.lowerBound,
+                                                       disc,
+                                                       old_seg.pred,
+                                                       ))
+                    new_segs.append(EnergySegment.incr(disc,
+                                                       old_seg.upperBound,
+                                                       old_seg.pred,
+                                                       old_seg.b
+                                                       ))
+                continue
+
             if next_seg is None:
                 next_seg = old_seg
                 continue
+
             # Remove zero-length segments EXCEPT if they are defined for wup
-            if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound == f.wup:
+            if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound == WUP.value:
                 continue
 
             # Merge segments with the same equation
@@ -139,10 +228,10 @@ class EnergyFunction:
                 # print(f"next segment: {next_seg}")
                 new_segs.append(next_seg)
                 next_seg = old_seg
-        new_segs.append(next_seg)
-        return EnergyFunction(new_segs, f.wup)
-        # final = EnergyFunction(new_segs, f.wup)
-        # return final
+        if next_seg is not None:
+            new_segs.append(next_seg)
+        f = EnergyFunction(new_segs)
+        return EnergyFunction.clean(f) if to_clean else f
 
     @staticmethod
     def max(f1, f2):
@@ -183,23 +272,76 @@ class EnergyFunction:
                     next_seg = seg1 if seg1.evaluate(upper) > seg2.evaluate(upper) else seg2
                     new_segs.append(next_seg.restriction(lower, upper))
 
-        f = EnergyFunction(new_segs, f1.wup)
+        f = EnergyFunction(new_segs)
         print(f"the max is {EnergyFunction.clean(f)}")
         return EnergyFunction.clean(f)
 
     @property
-    def is_above_identity(self):
-        dom = self.domain
-        return EnergyFunction.max(self,
-                                  EnergyFunction.identity(min(dom), max(dom), self.wup)) != EnergyFunction.identity(min(dom), max(dom), self.wup)
+    def is_above_one(self):
+        for seg in self.segments:
+            if seg.is_above_one:
+                return True
+        return False
 
     def __add__(self, other):
-        # TODO we don't have to fragment the other function into segments
+        # TODO clean this!!
+        print(f"composing {self} with {other}")
         new_segs = []
 
+        if self.is_zero or other.is_zero:
+            return EnergyFunction.zero(0, WUP.value)
+
+        for seg in self.segments:
+            if seg.is_zero:
+                new_segs.append(seg)
+                continue
+
+            lower = seg.lowerBound
+            upper = seg.upperBound
+            im_lower = seg.evaluate(lower)
+            im_upper = seg.evaluate(upper)
+
+            print(f"Image of the first segment is [{im_lower}, {im_upper}]")
+
+            # Case f is constant
+            if im_lower == im_upper:
+                next_seg = EnergySegment.const(lower,
+                                               upper,
+                                               seg.pred,
+                                               other.evaluate(im_lower))
+                print(f"next constant seg from {seg} is {next_seg}")
+                new_segs.append(next_seg)
+                continue
+
+            # Case f is ascending
+            # For all segments of g, if the segment intersects with the image of f then apply this segment to the relevant part of the image
+            for other_seg in other.segments:
+                other_lower = other_seg.lowerBound
+                other_upper = other_seg.upperBound
+                if other_lower < im_upper and other_upper > im_lower:
+                    # We need to stay in the image
+                    corr_lower = max(im_lower, other_lower)
+                    corr_upper = min(im_upper, other_upper)
+
+                    # Find the inverse by f
+                    inv_lower = int((corr_lower - seg.b) / seg.a)
+                    inv_upper = int((corr_upper - seg.b) / seg.a)
+
+                    new_a = seg.a * other_seg.a
+                    new_b = other_seg.a * seg.b + other_seg.b
+                    next_seg = EnergySegment.incr(inv_lower, inv_upper, seg.pred, new_b) if new_a == 1 else EnergySegment.const(inv_lower, inv_upper, seg.pred, new_b)
+                    print(f"next seg from {seg} and {other_seg} is {next_seg}")
+                    new_segs.append(next_seg)
+
+        f = EnergyFunction(new_segs)
+        print(f"{self} + {other} = {EnergyFunction.clean(f)}")
+        return EnergyFunction.clean(f)
+
+"""
         discs = list(set(self.discontinuities + other.discontinuities))
         discs.sort()
         print(f"new f is discontinuous at {discs}")
+
         for i in range(len(discs) - 1):
             lower = discs[i]
             upper = discs[i+1]
@@ -208,11 +350,11 @@ class EnergyFunction:
             other_seg = other.get_segment(lower)
 
             # If this_seg is null then the final segment will be null since the intermediate state is not reachable
-            if EnergySegment.is_nil(this_seg):
+            if EnergySegment.is_zero(this_seg):
                 new_segs.append(
-                    EnergySegment.nil(lower,
-                                      upper,
-                                      None)
+                    EnergySegment.zero(lower,
+                                       upper,
+                                       None)
                     )
                 continue
 
@@ -228,20 +370,20 @@ class EnergyFunction:
                         EnergySegment.const(lower,
                                             upper,
                                             other_seg.pred,
-                                            min(new_b, self.wup))
+                                            min(new_b, WUP.value))
                         )
                 else:
                     print("Addition is not defined!")
                     new_segs.append(
-                        EnergySegment.nil(lower,
-                                          upper,
-                                          other_seg.pred)
+                        EnergySegment.zero(lower,
+                                           upper,
+                                           other_seg.pred)
                         )                
             else:
                 # There may be new discontinuities (result < 0 or > wup).
                 # If they occur within the [lower, upper] segment then we must create other segments
                 disc1 = -new_b
-                disc2 = self.wup - new_b
+                disc2 = WUP.value - new_b
                 if disc1 > lower:
                     new_segs.append(
                         EnergySegment.const(lower,
@@ -258,14 +400,8 @@ class EnergyFunction:
                     )
                 if disc2 < upper:
                     next_seg = EnergySegment.const(disc2,
-                                                   self.wup,
+                                                   WUP.value,
                                                    this_seg.pred,
-                                                   min(new_b, self.wup))
+                                                   min(new_b, WUP.value))
                     new_segs.append(next_seg)
-
-        f = EnergyFunction(new_segs, self.wup)
-        print(f"{self} + {other} = {f}")
-        return EnergyFunction.clean(f)
-
-    def __str__(self):
-        return " U ".join([str(seg) for seg in self.segments])
+"""

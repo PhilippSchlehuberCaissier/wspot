@@ -2,6 +2,7 @@ from typing import List
 from buechi import BuechiResult
 import BF1
 from BF1 import mod_BF_iter
+from energy import EnergyFunction, EnergySegment
 
 import spot
 
@@ -121,8 +122,28 @@ def degen_counting(aut, ssi, idx):
     return aut_degen, acc_edge, rename
 
 
+## Remove a specified color (acceptance set) in an automaton.
+# @param aut (HOA automaton): automaton as twa_graph
+# @param col (int): the color to remove
+# @return a new automaton without transitions accepting col
+def RemoveColor(aut: "HOA automaton",
+                col: int):
+    aut_new = spot.make_twa_graph(aut, spot.twa_prop_set.all())
+    aut_new.copy_named_properties_of(aut)
+    for s in range(aut_new.num_states()):
+        it = aut_new.out_iteraser(s)
+        while it:
+            e = it.current()
+            if e.acc.has(col):
+                it.erase()
+            else:
+                it.advance()
+
+    return aut_new
+
+    
 ## Remove every transition with maximal priority in an automaton.
-#
+# TODO refactor with RemoveColor
 # @param aut (HOA automaton): automaton as twa_graph
 # @param is_max (bool): is this a parity-max automaton? (defaults to True for non-parity automata)
 # @return a new automaton without highest-priority transitions, or an empty automaton if there is only one color
@@ -579,6 +600,85 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
 
         ipy_utils.print_c(f"End processing {current_state}")
 
+    return BuechiResult()
+
+
+## Solve an ɷ-regular energy game in a co-Büchi automaton using Floyd-Warshall on energy functions.
+def CoBuechi_FW(aut: "co-Büchi automaton",
+                s0: int,
+                wup: int,
+                c0: int
+                ) -> BuechiResult:
+    if isinstance(aut, str):
+        hoa = spot.automaton(aut)
+    else:
+        hoa = aut
+
+    for col in range(hoa.acc().num_sets()):
+        ipy_utils.print_c(f"Examining color {str(col)}")
+        sub_hoa = RemoveColor(hoa, col)
+
+        V = sub_hoa.num_states()
+        M = [
+            [EnergyFunction.zero(0, wup) for _ in range(V)] for _ in range(V)]
+
+        for e in sub_hoa.edges():
+            # 3 cases:
+            # edge weight is 0 -> identity
+            # edge weight is > 0 -> increasing function + constant
+            # edge weight is < 0 -> undefined + increasing
+            weight = spot.get_weight(sub_hoa, e)
+            segs = []
+            if weight > 0:
+                segs = [
+                    EnergySegment.incr(0, wup - weight, e.src, weight),
+                    EnergySegment.const(wup - weight, wup, e.src, wup)
+                    ]
+            elif weight < 0:
+                segs = [
+                    EnergySegment.const(0, -weight, e.src, -1),
+                    EnergySegment.incr(-weight, wup, e.src, weight)
+                    ]
+            else:
+                segs = [
+                    EnergySegment.one(0, wup, e.src)
+                    ]
+            f = EnergyFunction(segs)
+            M[e.src][e.dst] = EnergyFunction.clean(f)
+            print(f"Initial function from {e.src} to {e.dst} is {f}")
+        for v in range(V):
+            if M[v][v] == EnergyFunction.zero(0, wup):
+                M[v][v] = EnergyFunction.clean(EnergyFunction(
+                    [
+                        EnergySegment.one(0, wup, None)
+                    ]))
+                print(f"Putting {M[v][v]} on the diagonal at {v}")
+        for k in range(V):
+            for i in range(V):
+                for j in range(V):
+                    print(f"\nExamining {i} to {j} via {k}")
+                    M[i][j] = EnergyFunction.max(M[i][j], M[i][k] + M[k][j]) if M[i][k] != EnergyFunction.zero(0, wup) else M[i][j]
+                    if i == j:
+                        if M[i][j].is_above_one:
+                            print(f"There is a positive loop starting from {i}! ({M[i][j]})")
+                            # TODO return BuechiResult
+                            return True
+
+
+        for li in range(len(M)):
+            print(f"====== From {li} ======")
+            for col in range(len(M[li])):
+                print(f"to {col}: {str(M[li][col])}")
+
+        # Check the diagonal
+        for k in range(V):
+            fun = M[k][k]
+            if fun.is_above_one:
+                print(f"There is a positive loop starting from {k}! ({fun})")
+                # TODO return BuechiResult
+                return True
+
+    print("There is no positive loop")
     return BuechiResult()
 
 
