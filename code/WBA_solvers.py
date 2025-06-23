@@ -7,6 +7,7 @@ from energy import EnergyFunction, EnergySegment
 import spot
 
 import ipython_utils as ipy
+import WBA_FW as wf
 ipy_utils = ipy.IPythonUtils()
 
 
@@ -685,40 +686,61 @@ def CoBuechi_FW(aut: "co-Büchi automaton",
                     ]
             f = EnergyFunction(segs)
             M[e.src][e.dst] = EnergyFunction.clean(f)
-            print(f"Initial function from {e.src} to {e.dst} is {f}")
         for v in range(V):
             if M[v][v] == EnergyFunction.zero(0, wup):
                 M[v][v] = EnergyFunction.clean(EnergyFunction(
                     [
                         EnergySegment.one(0, wup, None)
                     ]))
-                print(f"Putting {M[v][v]} on the diagonal at {v}")
         for k in range(V):
             for i in range(V):
                 for j in range(V):
-                    print(f"\nExamining {i} to {j} via {k}")
-                    M[i][j] = EnergyFunction.max(M[i][j], M[i][k] + M[k][j]) if M[i][k] != EnergyFunction.zero(0, wup) else M[i][j]
+                    M[i][j] = M[i][j] + (M[i][k] * M[k][j]) if M[i][k] != EnergyFunction.zero(0, wup) else M[i][j]
                     if i == j:
                         if M[i][j].is_above_one:
-                            print(f"There is a positive loop starting from {i}! ({M[i][j]})")
+                            ipy_utils.print_c(f"There is a positive loop starting from {i}! ({M[i][j]})")
                             # TODO return BuechiResult
                             return True
-
-
-        for li in range(len(M)):
-            print(f"====== From {li} ======")
-            for col in range(len(M[li])):
-                print(f"to {col}: {str(M[li][col])}")
 
         # Check the diagonal
         for k in range(V):
             fun = M[k][k]
             if fun.is_above_one:
-                print(f"There is a positive loop starting from {k}! ({fun})")
+                ipy_utils.print_c(f"There is a positive loop starting from {k}! ({fun})")
                 # TODO return BuechiResult
                 return True
 
-    print("There is no positive loop")
+    ipy_utils.print_c("There is no positive loop")
+    return BuechiResult()
+
+
+## Solve an ɷ-regular energy game in a co-Büchi automaton using Floyd-Warshall on energy functions.
+def CoBuechi_FW_new(aut: "co-Büchi automaton",
+                    s0: int,
+                    wup: int,
+                    c0: int
+                    ) -> BuechiResult:
+    if isinstance(aut, str):
+        hoa = spot.automaton(aut)
+    else:
+        hoa = aut
+
+    for col in range(hoa.acc().num_sets()):
+        ipy_utils.print_c(f"Examining color {str(col)}")
+        sub_hoa = RemoveColor(hoa, col)
+
+        def diag_is_above_one(M, i, j):
+            if i == j:
+                if M[i][j].is_above_one:
+                    ipy_utils.print_c(f"There is a positive loop starting from {i}! ({M[i][j]})")
+                    # TODO return BuechiResult
+                    return True
+
+        res = wf.FWhoa(sub_hoa, EnergyFunction, s0, diag_is_above_one)
+        if res:
+            return res
+
+    ipy_utils.print_c("There is no positive loop")
     return BuechiResult()
 
 

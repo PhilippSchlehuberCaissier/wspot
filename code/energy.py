@@ -94,11 +94,11 @@ class EnergyFunction(Semiring):
         return " U ".join([str(seg) for seg in self.segments])
 
     @staticmethod
-    def one(low, upp):
+    def one(low=0, upp=WUP.value):
         return EnergyFunction([EnergySegment.one(low, upp, None)])
 
     @staticmethod
-    def zero(low, upp):
+    def zero(low=0, upp=WUP.value):
         return EnergyFunction([EnergySegment.zero(low, upp, None)])
 
     @property
@@ -160,7 +160,6 @@ class EnergyFunction(Semiring):
         for old_seg in f.segments:
             # Cap every segment to wup
             if old_seg.evaluate(old_seg.upperBound) > WUP.value:
-                print(f"overflow for segment {old_seg}")
                 if next_seg is not None:
                     new_segs.append(next_seg)
                     next_seg = None
@@ -188,7 +187,6 @@ class EnergyFunction(Semiring):
 
             # Same procedure: nullify non-null segments below zero
             if old_seg.evaluate(old_seg.lowerBound) < 0 and not old_seg.is_zero:
-                print(f"underflow for segment {old_seg}")
                 if next_seg is not None:
                     new_segs.append(next_seg)
                     next_seg = None
@@ -233,15 +231,11 @@ class EnergyFunction(Semiring):
         f = EnergyFunction(new_segs)
         return EnergyFunction.clean(f) if to_clean else f
 
-    @staticmethod
-    def max(f1, f2):
-        print(f"comparing:\n{f1}\n{f2}")
-
+    def __add__(f1, f2):
         new_segs = []
         # The discontinuities of the max are the union of those of the 2 functions
         discs = list(set(f1.discontinuities + f2.discontinuities))
         discs.sort()
-        print(f"new f is discontinuous at {discs}")
         for i in range(len(discs) - 1):
             lower = discs[i]
             upper = discs[i+1]
@@ -273,7 +267,6 @@ class EnergyFunction(Semiring):
                     new_segs.append(next_seg.restriction(lower, upper))
 
         f = EnergyFunction(new_segs)
-        print(f"the max is {EnergyFunction.clean(f)}")
         return EnergyFunction.clean(f)
 
     @property
@@ -283,9 +276,8 @@ class EnergyFunction(Semiring):
                 return True
         return False
 
-    def __add__(self, other):
+    def __mul__(self, other):
         # TODO clean this!!
-        print(f"composing {self} with {other}")
         new_segs = []
 
         if self.is_zero or other.is_zero:
@@ -301,15 +293,12 @@ class EnergyFunction(Semiring):
             im_lower = seg.evaluate(lower)
             im_upper = seg.evaluate(upper)
 
-            print(f"Image of the first segment is [{im_lower}, {im_upper}]")
-
             # Case f is constant
             if im_lower == im_upper:
                 next_seg = EnergySegment.const(lower,
                                                upper,
                                                seg.pred,
                                                other.evaluate(im_lower))
-                print(f"next constant seg from {seg} is {next_seg}")
                 new_segs.append(next_seg)
                 continue
 
@@ -330,9 +319,27 @@ class EnergyFunction(Semiring):
                     new_a = seg.a * other_seg.a
                     new_b = other_seg.a * seg.b + other_seg.b
                     next_seg = EnergySegment.incr(inv_lower, inv_upper, seg.pred, new_b) if new_a == 1 else EnergySegment.const(inv_lower, inv_upper, seg.pred, new_b)
-                    print(f"next seg from {seg} and {other_seg} is {next_seg}")
                     new_segs.append(next_seg)
 
         f = EnergyFunction(new_segs)
-        print(f"{self} + {other} = {EnergyFunction.clean(f)}")
+        return EnergyFunction.clean(f)
+
+    @staticmethod
+    def transition_to_sr(e, weight):
+        segs = []
+        if weight > 0:
+            segs = [
+                EnergySegment.incr(0, WUP.value - weight, e.src, weight),
+                EnergySegment.const(WUP.value - weight, WUP.value, e.src, WUP.value)
+            ]
+        elif weight < 0:
+            segs = [
+                EnergySegment.const(0, -weight, e.src, -1),
+                EnergySegment.incr(-weight, WUP.value, e.src, weight)
+            ]
+        else:
+            segs = [
+                EnergySegment.one(0, WUP.value, e.src)
+            ]
+        f = EnergyFunction(segs)
         return EnergyFunction.clean(f)
