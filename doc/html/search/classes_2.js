@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['mod_5fbf_5fiter_0',['mod_BF_iter',['../classWBA__utils_1_1mod__BF__iter.html',1,'WBA_utils']]]
+  ['integer_0',['Integer',['../classcode_1_1integer_1_1Integer.html',1,'code::integer']]],
+  ['ipythonutils_1',['IPythonUtils',['../classcode_1_1ipython__utils_1_1IPythonUtils.html',1,'code::ipython_utils']]],
+  ['ipythonutilsmeta_2',['IPythonUtilsMeta',['../classcode_1_1ipython__utils_1_1IPythonUtilsMeta.html',1,'code::ipython_utils']]]
 ];

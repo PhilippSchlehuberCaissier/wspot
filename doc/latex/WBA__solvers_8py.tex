@@ -1,0 +1,51 @@
+\doxysection{WBA\+\_\+solvers.\+py File Reference}
+\hypertarget{WBA__solvers_8py}{}\label{WBA__solvers_8py}\index{WBA\_solvers.py@{WBA\_solvers.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacecode}{code}}
+\item 
+namespace \mbox{\hyperlink{namespacecode_1_1WBA__solvers}{code.\+WBA\+\_\+solvers}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a2e067f8ffd07ea704e15e3608f27cd30}{code.\+WBA\+\_\+solvers.\+format\+\_\+energie\+\_\+}} (List\mbox{[}int\mbox{]} en)
+\item 
+str \mbox{\hyperlink{namespacecode_1_1WBA__solvers_ac118adeee57f36b16aaa2eb868a2f43f}{code.\+WBA\+\_\+solvers.\+format\+\_\+pred\+\_\+aut\+\_\+}} (spot.\+twa\+\_\+graph aut, List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]} pred)
+\item 
+\mbox{\hyperlink{namespacecode_1_1WBA__solvers_aa3873162c67f49060931eb52c3824510}{code.\+WBA\+\_\+solvers.\+get\+\_\+entering\+\_\+states}} (aut, ssi, idx)
+\begin{DoxyCompactList}\small\item\em Find the entering states of a WBA\textquotesingle{}s SCC. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacecode_1_1WBA__solvers_ad0bf8b753c3ba7d8617180a97c937925}{code.\+WBA\+\_\+solvers.\+degen\+\_\+counting}} (aut, ssi, idx)
+\begin{DoxyCompactList}\small\item\em Degeneralise a given SCC. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacecode_1_1WBA__solvers_afcc84db0b98159a65a5183f5c5690f7b}{code.\+WBA\+\_\+solvers.\+Remove\+Color}} ("{}HOA automaton"{} aut, int col)
+\begin{DoxyCompactList}\small\item\em Remove a specified color (acceptance set) in an automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacecode_1_1WBA__solvers_a108b5dbf54c923bc83029de231ced6eb}{code.\+WBA\+\_\+solvers.\+Prune\+Priority}} ("{}HOA automaton"{} aut, bool is\+\_\+max=True)
+\begin{DoxyCompactList}\small\item\em Remove every transition with maximal priority in an automaton. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a04ba12bfab7dfde54bdfdadf3f071ad3}{code.\+WBA\+\_\+solvers.\+Max\+Color}} ("{}HOA automaton"{} aut)
+\begin{DoxyCompactList}\small\item\em Return the highest priority in an automaton. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacecode_1_1WBA__solvers_ac6a413dee01605539abec851eacdd567}{code.\+WBA\+\_\+solvers.\+Min\+Color}} ("{}HOA automaton"{} aut)
+\begin{DoxyCompactList}\small\item\em Return the lowest priority in an automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a6eb4391ab22206de7f9c22294bde13c4}{code.\+WBA\+\_\+solvers.\+Parity\+Energy}} ("{}parity automaton"{} hoa, int s0, int wup, int c0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a parity automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacecode_1_1WBA__solvers_adec6e180d50af97ff152b77804e7bb32}{code.\+WBA\+\_\+solvers.\+Naive\+Co\+Buechi}} (hoa, s0, wup, c0)
+\begin{DoxyCompactList}\small\item\em DEPRECATED Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton using a naive algorithm. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacecode_1_1WBA__solvers_a801b2715d2c8358c4794e0c9fba9941d}{code.\+WBA\+\_\+solvers.\+LEGACY\+\_\+\+Co\+Buechi\+Energy}} ("{}co-\/Büchi automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton (legacy algorithm). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_ada5e085cd2a87aee65b240e03831d3fe}{code.\+WBA\+\_\+solvers.\+Co\+Buechi\+Energy}} ("{}co-\/Büchi automaton"{} hoa, int s0, int wup, int c0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_abd7892e3dab5aa15ed70bbe7f41b6e9d}{code.\+WBA\+\_\+solvers.\+Co\+Buechi\+\_\+\+FW}} ("{}co-\/Büchi automaton"{} aut, int s0, int wup, int c0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton using Floyd-\/\+Warshall on energy functions. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a0e95b42269d6bd22a8c0fdbdbbc3d9c5}{code.\+WBA\+\_\+solvers.\+Co\+Buechi\+\_\+\+FW\+\_\+new}} ("{}co-\/Büchi automaton"{} aut, int s0, int wup, int c0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton using Floyd-\/\+Warshall on energy functions. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a70176db7a3f7a35a191bc83ad862d59a}{code.\+WBA\+\_\+solvers.\+Rabin\+Energy}} ("{}Rabin automaton"{} hoa, int p, int s0, int wup, int c0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a Rabin automaton. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a3ca3c117ff682c0a448fbeab74ea68c9}{code.\+WBA\+\_\+solvers.\+True\+Energy}} ("{}automaton"{} hoa, int s0, int wup, int c0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in an automaton with an acceptance condition of t. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_ac8a0a8b668b4e84202a92f5291cc5142}{code.\+WBA\+\_\+solvers.\+Buechi\+Energy}} (aut, int s0, int wup, int c0, "{}prefix energies array"{} en=None, "{}optimal predecessors array"{} pred=None)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a Büchi automaton. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecode_1_1WBA__solvers_af6759082608ba5415dd714520a8b6e5a}{code.\+WBA\+\_\+solvers.\+ipy\+\_\+utils}} = ipy.\+IPython\+Utils()
+\end{DoxyCompactItemize}

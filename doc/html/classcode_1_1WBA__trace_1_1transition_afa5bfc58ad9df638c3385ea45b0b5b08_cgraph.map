@@ -1,0 +1,9 @@
+<map id="code.WBA_trace.transition.__iter__" name="code.WBA_trace.transition.__iter__">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,47,204,87"/>
+<area shape="rect" id="Node000002" href="$classcode_1_1WBA__trace_1_1transition.html#aa8fd63e8cefea40dd476733eacf47be1" title=" " alt="" coords="252,5,471,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,46,281,31,282,36,205,51"/>
+<area shape="rect" id="Node000003" href="$classcode_1_1WBA__trace_1_1transition.html#a532d53afc4035493d2b3dae9208e209d" title=" " alt="" coords="253,55,470,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="204,65,239,65,239,70,204,70"/>
+<area shape="rect" id="Node000004" href="$classcode_1_1WBA__trace_1_1transition.html#afa3afce33ce2538d2da77a27ca136033" title=" " alt="" coords="257,104,466,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="205,84,282,99,281,104,204,89"/>
+</map>

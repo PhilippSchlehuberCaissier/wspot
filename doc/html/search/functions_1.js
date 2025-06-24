@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['cobuechienergy_0',['CoBuechiEnergy',['../namespaceWBA__utils.html#a38bae131afece238af3b6285262111ec',1,'WBA_utils']]],
-  ['compresspath_1',['compressPath',['../namespaceWBA__utils.html#a679aea2a5dbfeac9f1f12d53a348f1df',1,'WBA_utils']]]
+  ['add_5fedge_0',['add_edge',['../classcode_1_1simple__1CTA_1_1ZG2HOABuilder.html#af288ae58d74a0927c273dfcae9b15d20',1,'code::simple_1CTA::ZG2HOABuilder']]],
+  ['add_5fstate_1',['add_state',['../classcode_1_1simple__1CTA_1_1ZG2HOABuilder.html#adf255f9bb74f427de32979d0d6205d60',1,'code::simple_1CTA::ZG2HOABuilder']]]
 ];

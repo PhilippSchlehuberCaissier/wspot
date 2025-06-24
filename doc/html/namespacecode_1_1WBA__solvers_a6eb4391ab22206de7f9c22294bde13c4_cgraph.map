@@ -1,0 +1,24 @@
+<map id="code.WBA_solvers.ParityEnergy" name="code.WBA_solvers.ParityEnergy">
+<area shape="rect" id="Node000001" title="Solve an ɷ&#45;regular energy game in a parity automaton." alt="" coords="5,153,233,178"/>
+<area shape="poly" id="edge10_Node000001_Node000001" title=" " alt="" coords="75,154,65,144,70,134,88,128,119,126,160,130,170,135,174,142,169,144,167,139,158,135,119,131,89,133,73,138,70,144,78,151"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#ac8a0a8b668b4e84202a92f5291cc5142" title="Solve an ɷ&#45;regular energy game in a Büchi automaton." alt="" coords="281,77,516,102"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,150,337,103,338,108,168,155"/>
+<area shape="rect" id="Node000005" href="$namespacecode_1_1WBA__solvers.html#a2e067f8ffd07ea704e15e3608f27cd30" title=" " alt="" coords="573,5,763,45"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="134,151,195,105,236,81,280,61,351,42,424,30,495,23,559,20,559,26,495,28,425,35,352,47,282,67,239,86,198,110,137,155"/>
+<area shape="rect" id="Node000006" href="$namespacecode_1_1WBA__solvers.html#ac118adeee57f36b16aaa2eb868a2f43f" title=" " alt="" coords="573,133,763,173"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="234,160,559,153,559,158,234,166"/>
+<area shape="rect" id="Node000007" href="$namespacecode_1_1WBA__solvers.html#a04ba12bfab7dfde54bdfdadf3f071ad3" title="Return the highest priority in an automaton." alt="" coords="564,214,772,239"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="234,175,551,211,550,216,234,181"/>
+<area shape="rect" id="Node000008" href="$namespacecode_1_1WBA__solvers.html#ac6a413dee01605539abec851eacdd567" title="Return the lowest priority in an automaton." alt="" coords="566,263,770,289"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="136,176,197,222,238,246,282,264,350,279,421,287,489,289,552,286,552,292,489,294,420,292,349,285,281,269,236,251,194,226,133,180"/>
+<area shape="rect" id="Node000009" href="$namespacecode_1_1WBA__solvers.html#a108b5dbf54c923bc83029de231ced6eb" title="Remove every transition with maximal priority in an automaton." alt="" coords="283,229,514,254"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="168,175,338,222,337,228,166,181"/>
+<area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__solvers.html#ad0bf8b753c3ba7d8617180a97c937925" title="Degeneralise a given SCC." alt="" coords="575,69,761,109"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="516,87,561,87,561,92,516,92"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="453,74,569,46,570,51,454,79"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="454,100,570,128,569,133,453,105"/>
+<area shape="rect" id="Node000004" href="$namespacecode_1_1WBA__solvers.html#aa3873162c67f49060931eb52c3824510" title="Find the entering states of a WBA&#39;s SCC." alt="" coords="820,69,987,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="762,87,807,87,807,92,762,92"/>
+<area shape="poly" id="edge12_Node000009_Node000007" title=" " alt="" coords="514,232,550,230,550,236,514,238"/>
+<area shape="poly" id="edge13_Node000009_Node000008" title=" " alt="" coords="498,251,555,259,555,264,497,257"/>
+</map>

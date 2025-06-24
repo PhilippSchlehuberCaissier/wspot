@@ -1,0 +1,7 @@
+<map id="code.WBA_solvers.PrunePriority" name="code.WBA_solvers.PrunePriority">
+<area shape="rect" id="Node000001" title="Remove every transition with maximal priority in an automaton." alt="" coords="5,31,236,56"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#a04ba12bfab7dfde54bdfdadf3f071ad3" title="Return the highest priority in an automaton." alt="" coords="284,5,492,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="236,30,270,27,270,32,236,35"/>
+<area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__solvers.html#ac6a413dee01605539abec851eacdd567" title="Return the lowest priority in an automaton." alt="" coords="286,55,490,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="236,51,273,54,272,60,236,56"/>
+</map>

@@ -1,0 +1,38 @@
+\doxysection{code.\+WBA\+\_\+\+FW Namespace Reference}
+\hypertarget{namespacecode_1_1WBA__FW}{}\label{namespacecode_1_1WBA__FW}\index{code.WBA\_FW@{code.WBA\_FW}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__FW_a0bab0acdf0d29ea729ef1afbaa8fef22}{FWhoa}} ("{}HOA automaton"{} aut, sr, int s0, check=lambda M, i, None j)
+\begin{DoxyCompactList}\small\item\em Generalized Floyd-\/\+Warshall on automata weighted on a semiring sr. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacecode_1_1WBA__FW_a0bab0acdf0d29ea729ef1afbaa8fef22}\label{namespacecode_1_1WBA__FW_a0bab0acdf0d29ea729ef1afbaa8fef22} 
+\index{code.WBA\_FW@{code.WBA\_FW}!FWhoa@{FWhoa}}
+\index{FWhoa@{FWhoa}!code.WBA\_FW@{code.WBA\_FW}}
+\doxysubsubsection{\texorpdfstring{FWhoa()}{FWhoa()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} code.\+WBA\+\_\+\+FW.\+FWhoa (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{aut,  }\item[{}]{sr,  }\item[{int}]{s0,  }\item[{}]{check = {\ttfamily lambda~M},  }\item[{}]{i,  }\item[{None           }]{j }\end{DoxyParamCaption})}
+
+
+
+Generalized Floyd-\/\+Warshall on automata weighted on a semiring sr. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aut} & (HOA automaton)\+: generalized weighted co-\/büchi automaton as twa\+\_\+graph \\
+\hline
+{\em sr} & (class)\+: a semiring class \\
+\hline
+{\em s0} & (int)\+: initial state \\
+\hline
+{\em wup} & (int)\+: weak upper bound \\
+\hline
+{\em c0} & (int)\+: initial credit \\
+\hline
+{\em check} & (matrix of sr -\/\texorpdfstring{$>$}{>} None)\+: optional function to call after a pass in the triple loop \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
+\end{DoxyReturn}

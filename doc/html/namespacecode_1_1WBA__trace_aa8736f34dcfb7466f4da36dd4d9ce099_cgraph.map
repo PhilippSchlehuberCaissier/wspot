@@ -1,0 +1,15 @@
+<map id="code.WBA_trace.searchTrace" name="code.WBA_trace.searchTrace">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,66,215,91"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__trace.html#a38c54b4133d84c44b0d4d472659d8fa3" title=" " alt="" coords="289,29,492,69"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="215,65,275,59,276,64,215,70"/>
+<area shape="rect" id="Node000004" href="$namespacecode_1_1WBA__trace.html#afee286061060a7755f2505b106112908" title=" " alt="" coords="263,94,519,119"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="215,86,250,90,250,95,215,92"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="339,30,336,20,344,10,362,5,391,3,423,5,441,13,439,18,422,11,391,8,363,10,347,15,341,21,344,28"/>
+<area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__trace.html#a71bdea20cfe3aa4f3f2c9db613b33d1d" title=" " alt="" coords="567,37,789,62"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="492,47,553,47,553,52,492,52"/>
+<area shape="rect" id="Node000005" href="$namespacecode_1_1WBA__trace.html#ab7cbe6a2448a5690370edb563d41387e" title=" " alt="" coords="837,115,1036,141"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="519,109,824,121,823,126,519,114"/>
+<area shape="rect" id="Node000006" href="$namespacecode_1_1WBA__trace.html#aff5cfd78d5c4a17a7eaaf9e560c10624" title=" " alt="" coords="569,141,787,166"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="470,117,586,136,585,141,469,122"/>
+<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="787,140,824,136,824,142,788,145"/>
+</map>

@@ -1,0 +1,275 @@
+\doxysection{code.\+energy.\+Energy\+Function Class Reference}
+\hypertarget{classcode_1_1energy_1_1EnergyFunction}{}\label{classcode_1_1energy_1_1EnergyFunction}\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+
+
+Class for representing an energy function.  
+
+
+
+
+Inheritance diagram for code.\+energy.\+Energy\+Function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=233pt]{classcode_1_1energy_1_1EnergyFunction__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for code.\+energy.\+Energy\+Function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=276pt]{classcode_1_1energy_1_1EnergyFunction__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ad6eb1dabd7dfca6a1eda3261e3852661}{\+\_\+\+\_\+str\+\_\+\+\_\+}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_abcc98f88b59a7ff5234514957646ce6e}{is\+\_\+zero}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5}{domain}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a9790a5a1926b5b674196ddac177f7032}{discontinuities}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a879a4b348e02afcd78d0232740999450}{is\+\_\+in\+\_\+domain}} (self, x)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ae3486f3a25a655ec97c5d6529725298f}{get\+\_\+segment}} (self, x)
+\begin{DoxyCompactList}\small\item\em Return the segment that is used when evaluating this function at x. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_af7954427c2f9ce64f250fd13c6f5d2a4}{evaluate}} (self, x)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a6a2a13d08dc5ef35f11b391f379bf003}{\+\_\+\+\_\+add\+\_\+\+\_\+}} (f1, f2)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a60b9379b6df12e2060a3bfd271b3ef3b}{is\+\_\+above\+\_\+one}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_aae3f0f31e835c99945339d806aa67b68}{\+\_\+\+\_\+mul\+\_\+\+\_\+}} (self, other)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_aaa58b8c13693143bd3c89bd5c8a640da}{one}} (low=0, upp=\mbox{\hyperlink{classcode_1_1energy_1_1WUP_a606861bca791113ff0e9771cf2351fee}{WUP.\+value}})
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a104220641539a49a1e4fe20fa0665457}{zero}} (low=0, upp=\mbox{\hyperlink{classcode_1_1energy_1_1WUP_a606861bca791113ff0e9771cf2351fee}{WUP.\+value}})
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a1e9f39930ca7c82252490ea780499680}{clean}} (f)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a453579de5c1fa6332c63f70fcfccb938}{transition\+\_\+to\+\_\+sr}} (e, weight)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a454f21b498bf6d40949490aaa42e1a2b}{segments}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+List \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a704254cf4681a2c36b17854874e99b5d}{segments}} \mbox{[}\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment}{Energy\+Segment}}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class for representing an energy function. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a6a2a13d08dc5ef35f11b391f379bf003}\label{classcode_1_1energy_1_1EnergyFunction_a6a2a13d08dc5ef35f11b391f379bf003} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!\_\_add\_\_@{\_\_add\_\_}}
+\index{\_\_add\_\_@{\_\_add\_\_}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{\_\_add\_\_()}{\_\_add\_\_()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+\_\+\+\_\+add\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{f1,  }\item[{}]{f2 }\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classcode_1_1semiring_1_1Semiring_ad5cbf524c6c11c8ac40d6b14f03b4966}{code.\+semiring.\+Semiring}}.
+
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_aae3f0f31e835c99945339d806aa67b68}\label{classcode_1_1energy_1_1EnergyFunction_aae3f0f31e835c99945339d806aa67b68} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!\_\_mul\_\_@{\_\_mul\_\_}}
+\index{\_\_mul\_\_@{\_\_mul\_\_}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{\_\_mul\_\_()}{\_\_mul\_\_()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+\_\+\+\_\+mul\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{other }\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classcode_1_1semiring_1_1Semiring_aa0a9ce95cf690c40cfb147539f978e08}{code.\+semiring.\+Semiring}}.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_aae3f0f31e835c99945339d806aa67b68_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_ad6eb1dabd7dfca6a1eda3261e3852661}\label{classcode_1_1energy_1_1EnergyFunction_ad6eb1dabd7dfca6a1eda3261e3852661} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!\_\_str\_\_@{\_\_str\_\_}}
+\index{\_\_str\_\_@{\_\_str\_\_}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{\_\_str\_\_()}{\_\_str\_\_()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+\_\+\+\_\+str\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_ad6eb1dabd7dfca6a1eda3261e3852661_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a1e9f39930ca7c82252490ea780499680}\label{classcode_1_1energy_1_1EnergyFunction_a1e9f39930ca7c82252490ea780499680} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!clean@{clean}}
+\index{clean@{clean}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{clean()}{clean()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+clean (\begin{DoxyParamCaption}\item[{}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a9790a5a1926b5b674196ddac177f7032}\label{classcode_1_1energy_1_1EnergyFunction_a9790a5a1926b5b674196ddac177f7032} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!discontinuities@{discontinuities}}
+\index{discontinuities@{discontinuities}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{discontinuities()}{discontinuities()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+discontinuities (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5}\label{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!domain@{domain}}
+\index{domain@{domain}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{domain()}{domain()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+domain (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_af7954427c2f9ce64f250fd13c6f5d2a4}\label{classcode_1_1energy_1_1EnergyFunction_af7954427c2f9ce64f250fd13c6f5d2a4} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!evaluate@{evaluate}}
+\index{evaluate@{evaluate}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{evaluate()}{evaluate()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+evaluate (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{x }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_af7954427c2f9ce64f250fd13c6f5d2a4_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_af7954427c2f9ce64f250fd13c6f5d2a4_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_ae3486f3a25a655ec97c5d6529725298f}\label{classcode_1_1energy_1_1EnergyFunction_ae3486f3a25a655ec97c5d6529725298f} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!get\_segment@{get\_segment}}
+\index{get\_segment@{get\_segment}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{get\_segment()}{get\_segment()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+get\+\_\+segment (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{x }\end{DoxyParamCaption})}
+
+
+
+Return the segment that is used when evaluating this function at x. 
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_ae3486f3a25a655ec97c5d6529725298f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_ae3486f3a25a655ec97c5d6529725298f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a60b9379b6df12e2060a3bfd271b3ef3b}\label{classcode_1_1energy_1_1EnergyFunction_a60b9379b6df12e2060a3bfd271b3ef3b} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!is\_above\_one@{is\_above\_one}}
+\index{is\_above\_one@{is\_above\_one}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{is\_above\_one()}{is\_above\_one()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+is\+\_\+above\+\_\+one (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a879a4b348e02afcd78d0232740999450}\label{classcode_1_1energy_1_1EnergyFunction_a879a4b348e02afcd78d0232740999450} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!is\_in\_domain@{is\_in\_domain}}
+\index{is\_in\_domain@{is\_in\_domain}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{is\_in\_domain()}{is\_in\_domain()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+is\+\_\+in\+\_\+domain (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{x }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_a879a4b348e02afcd78d0232740999450_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_a879a4b348e02afcd78d0232740999450_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_abcc98f88b59a7ff5234514957646ce6e}\label{classcode_1_1energy_1_1EnergyFunction_abcc98f88b59a7ff5234514957646ce6e} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!is\_zero@{is\_zero}}
+\index{is\_zero@{is\_zero}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{is\_zero()}{is\_zero()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+is\+\_\+zero (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_abcc98f88b59a7ff5234514957646ce6e_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_aaa58b8c13693143bd3c89bd5c8a640da}\label{classcode_1_1energy_1_1EnergyFunction_aaa58b8c13693143bd3c89bd5c8a640da} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!one@{one}}
+\index{one@{one}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{one()}{one()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+one (\begin{DoxyParamCaption}\item[{}]{low = {\ttfamily 0},  }\item[{}]{upp = {\ttfamily \mbox{\hyperlink{classcode_1_1energy_1_1WUP_a606861bca791113ff0e9771cf2351fee}{WUP.\+value}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classcode_1_1semiring_1_1Semiring_a9fd314cb01baa45525e121978a8f960d}{code.\+semiring.\+Semiring}}.
+
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a453579de5c1fa6332c63f70fcfccb938}\label{classcode_1_1energy_1_1EnergyFunction_a453579de5c1fa6332c63f70fcfccb938} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!transition\_to\_sr@{transition\_to\_sr}}
+\index{transition\_to\_sr@{transition\_to\_sr}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{transition\_to\_sr()}{transition\_to\_sr()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+transition\+\_\+to\+\_\+sr (\begin{DoxyParamCaption}\item[{}]{e,  }\item[{}]{weight }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classcode_1_1semiring_1_1Semiring_a7e1d8dd18a9f9d3fb635006ac508c8a0}{code.\+semiring.\+Semiring}}.
+
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a104220641539a49a1e4fe20fa0665457}\label{classcode_1_1energy_1_1EnergyFunction_a104220641539a49a1e4fe20fa0665457} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!zero@{zero}}
+\index{zero@{zero}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{zero()}{zero()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+zero (\begin{DoxyParamCaption}\item[{}]{low = {\ttfamily 0},  }\item[{}]{upp = {\ttfamily \mbox{\hyperlink{classcode_1_1energy_1_1WUP_a606861bca791113ff0e9771cf2351fee}{WUP.\+value}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classcode_1_1semiring_1_1Semiring_a95bf9864f6b98708a1e0570830ca9129}{code.\+semiring.\+Semiring}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a704254cf4681a2c36b17854874e99b5d}\label{classcode_1_1energy_1_1EnergyFunction_a704254cf4681a2c36b17854874e99b5d} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!segments@{segments}}
+\index{segments@{segments}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{segments}{segments}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily List code.\+energy.\+Energy\+Function.\+segments \mbox{[}\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment}{Energy\+Segment}}\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a454f21b498bf6d40949490aaa42e1a2b}\label{classcode_1_1energy_1_1EnergyFunction_a454f21b498bf6d40949490aaa42e1a2b} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!segments@{segments}}
+\index{segments@{segments}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{segments}{segments}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+segments}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{energy_8py}{energy.\+py}}\end{DoxyCompactItemize}

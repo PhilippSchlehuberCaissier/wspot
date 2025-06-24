@@ -1,0 +1,13 @@
+<map id="code.WBA_solvers.RabinEnergy" name="code.WBA_solvers.RabinEnergy">
+<area shape="rect" id="Node000001" title="Solve an ɷ&#45;regular energy game in a Rabin automaton." alt="" coords="5,77,233,102"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#ac8a0a8b668b4e84202a92f5291cc5142" title="Solve an ɷ&#45;regular energy game in a Büchi automaton." alt="" coords="281,77,516,102"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="234,87,268,87,268,92,234,92"/>
+<area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__solvers.html#ad0bf8b753c3ba7d8617180a97c937925" title="Degeneralise a given SCC." alt="" coords="566,5,753,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="451,74,563,46,564,51,452,79"/>
+<area shape="rect" id="Node000005" href="$namespacecode_1_1WBA__solvers.html#a2e067f8ffd07ea704e15e3608f27cd30" title=" " alt="" coords="564,69,755,109"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="516,87,550,87,550,92,516,92"/>
+<area shape="rect" id="Node000006" href="$namespacecode_1_1WBA__solvers.html#ac118adeee57f36b16aaa2eb868a2f43f" title=" " alt="" coords="564,133,755,173"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="452,100,564,127,563,133,451,105"/>
+<area shape="rect" id="Node000004" href="$namespacecode_1_1WBA__solvers.html#aa3873162c67f49060931eb52c3824510" title="Find the entering states of a WBA&#39;s SCC." alt="" coords="803,5,969,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="753,23,789,23,789,28,753,28"/>
+</map>

@@ -1,0 +1,57 @@
+\doxysection{code.\+WBA\+\_\+utils Namespace Reference}
+\hypertarget{namespacecode_1_1WBA__utils}{}\label{namespacecode_1_1WBA__utils}\index{code.WBA\_utils@{code.WBA\_utils}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__utils_a6ad543c9b7c42598d316e12095127386}{Omega\+Energy}} ("{}HOA automaton"{} aut, int s0, int wup, int c0, int do\+\_\+display=0)
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in an energy ɷ-\/automaton. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecode_1_1WBA__utils_a8e0bba34cd11134a60c2bf741de8e923}{ipy\+\_\+utils}} = ipy.\+IPython\+Utils()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacecode_1_1WBA__utils_a6ad543c9b7c42598d316e12095127386}\label{namespacecode_1_1WBA__utils_a6ad543c9b7c42598d316e12095127386} 
+\index{code.WBA\_utils@{code.WBA\_utils}!OmegaEnergy@{OmegaEnergy}}
+\index{OmegaEnergy@{OmegaEnergy}!code.WBA\_utils@{code.WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{OmegaEnergy()}{OmegaEnergy()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} code.\+WBA\+\_\+utils.\+Omega\+Energy (\begin{DoxyParamCaption}\item[{"{}HOA automaton"{}}]{aut,  }\item[{int}]{s0,  }\item[{int}]{wup,  }\item[{int}]{c0,  }\item[{int }]{do\+\_\+display = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Solve an ɷ-\/regular energy game in an energy ɷ-\/automaton. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aut} & (HOA automaton)\+: automaton as twa\+\_\+graph \\
+\hline
+{\em s0} & (int)\+: initial state \\
+\hline
+{\em wup} & (int)\+: weak upper bound \\
+\hline
+{\em c0} & (int)\+: initial credit \\
+\hline
+{\em do\+\_\+display} & 0 No information is displayed at all~\newline
+ 1 Only text is shown~\newline
+ 2 The (sub)-\/graphs are shown as well, only works from jupyter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
+\end{DoxyReturn}
+\begin{DoxyVerb}Searches for energy feasible lasso in the given automaton from the initial state
+with a weak upper bound of \a wup and an initial credit of \a c0
+
+Returns a BuechiResult allowing to extract the trace.
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacecode_1_1WBA__utils_a8e0bba34cd11134a60c2bf741de8e923}\label{namespacecode_1_1WBA__utils_a8e0bba34cd11134a60c2bf741de8e923} 
+\index{code.WBA\_utils@{code.WBA\_utils}!ipy\_utils@{ipy\_utils}}
+\index{ipy\_utils@{ipy\_utils}!code.WBA\_utils@{code.WBA\_utils}}
+\doxysubsubsection{\texorpdfstring{ipy\_utils}{ipy\_utils}}
+{\footnotesize\ttfamily code.\+WBA\+\_\+utils.\+ipy\+\_\+utils = ipy.\+IPython\+Utils()}
+

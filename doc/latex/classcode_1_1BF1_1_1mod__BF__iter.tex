@@ -1,0 +1,389 @@
+\doxysection{code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter Class Reference}
+\hypertarget{classcode_1_1BF1_1_1mod__BF__iter}{}\label{classcode_1_1BF1_1_1mod__BF__iter}\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+
+
+Class allowing to run iterations of the modified bellman-\/ford algorithm.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_ab8396412a6ef95dea872c3bcfa52de96}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, spot.\+twa\+\_\+graph g)
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_ae801269c8aa49cc045a14cb27ac43eda}{init}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a8f3e936a62c66bb8a168ae3147467e55}{prop\+\_\+}} (self, "{}edge number"{} en, bool opt)
+\begin{DoxyCompactList}\small\item\em Propagates the energy along an edge. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a3e50294634b1e32251fc97f724c4e0ae}{mark\+\_\+}} (self, "{}state"{} s)
+\begin{DoxyCompactList}\small\item\em Mark state s as waiting. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_aa5da758214d9c813a1646cbb285b9995}{loop\+\_\+}} (self, "{}init state"{} si)
+\begin{DoxyCompactList}\small\item\em Helper function to iterate over loops Must be constructed with a state on a cycle. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a8dab6c8a7a55fe0563953736dc633f0f}{pump\+Loop\+\_\+}} (self, "{}state"{} s)
+\begin{DoxyCompactList}\small\item\em Helper to pump the simple positive loop containing s. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a0e9f94e8a96f436b55f49aa8b3120c79}{check\+Loop}} (self, "{}state"{} s)
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a8883786513eb52c98e77dba469e5b6f3}{pump\+All}} (self)
+\begin{DoxyCompactList}\small\item\em Pump all (energy positive) loops of the current iteration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_ab719d7fa866d72b6e58fd9e7de60db7b}{ensure\+Loop\+Pred}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_ae005ed633b0a326dfb39baf48409ec4c}{BF1}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a2ee8c813ff5460982ad8cf77be0e1523}{Find\+Max\+Energy\+\_\+}} (self, "{}state"{} s0, "{}weak upper bound"{} wup, "{}Initial credit"{} c0)
+\begin{DoxyCompactList}\small\item\em Computes for each state the maximal energy for which it can be reached from s0 with initial credit c0 given the weak upper bound wup. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a4175028036bf37912954e78522a15e7c}{Find\+Max\+Energy\+Gen}} (self, "{}state"{} s0, "{}weak upper bound"{} wup, "{}Initial credit"{} c0)
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_ab1c76556680b3c3a15e2e0ceccdb93cd}{Find\+Max\+Energy}} (self, "{}state"{} s0, "{}weak upper bound"{} wup, "{}Initial credit"{} c0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a29465c3dc7b9b87cfaf6d6084b06cbac}{g\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a92640d28cf87839224a029366dd8b267}{N\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a1262d8508cc90b267d55ac969134e128}{E\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a709823748b5d98e1db19ace4702337a0}{Pred\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a13d2aeca52a970a715cd1d52a42bc784}{is\+Waiting\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a9f65ca23fa53e5e8b33b0dd685260976}{changed\+E\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a5e850682fc95786d5bcccb80a66e9f73}{Waiting\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a5cf7f49f49b455473d23919a8fda756f}{on\+Loop\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_a41fcf4a2f14b928d64d82113450006d2}{s0\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_aa7839b76e4c86bd9b4e8af5d5e87b57d}{wup\+\_\+}}
+\item 
+\mbox{\hyperlink{classcode_1_1BF1_1_1mod__BF__iter_aa5bfe8ce7fff02030135de5733f8c3b1}{c0\+\_\+}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class allowing to run iterations of the modified bellman-\/ford algorithm. 
+
+Holds all necessary variables and member functions described in algorithm 2. Most of them have additional optimiations 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_ab8396412a6ef95dea872c3bcfa52de96}\label{classcode_1_1BF1_1_1mod__BF__iter_ab8396412a6ef95dea872c3bcfa52de96} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{spot.\+twa\+\_\+graph}]{g }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_ae005ed633b0a326dfb39baf48409ec4c}\label{classcode_1_1BF1_1_1mod__BF__iter_ae005ed633b0a326dfb39baf48409ec4c} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!BF1@{BF1}}
+\index{BF1@{BF1}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{BF1()}{BF1()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+BF1 (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_ae005ed633b0a326dfb39baf48409ec4c_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a0e9f94e8a96f436b55f49aa8b3120c79}\label{classcode_1_1BF1_1_1mod__BF__iter_a0e9f94e8a96f436b55f49aa8b3120c79} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!checkLoop@{checkLoop}}
+\index{checkLoop@{checkLoop}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{checkLoop()}{checkLoop()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+check\+Loop (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}state"{}}]{s }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a0e9f94e8a96f436b55f49aa8b3120c79_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a0e9f94e8a96f436b55f49aa8b3120c79_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_ab719d7fa866d72b6e58fd9e7de60db7b}\label{classcode_1_1BF1_1_1mod__BF__iter_ab719d7fa866d72b6e58fd9e7de60db7b} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!ensureLoopPred@{ensureLoopPred}}
+\index{ensureLoopPred@{ensureLoopPred}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{ensureLoopPred()}{ensureLoopPred()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+ensure\+Loop\+Pred (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Search for loops induced by the last predecessors in the graph,
+if necessary, make them appear twice in the list.
+#todo This should probable be factor with pumpAll at some point
+
+Returns:\end{DoxyVerb}
+ Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_ab719d7fa866d72b6e58fd9e7de60db7b_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_ab1c76556680b3c3a15e2e0ceccdb93cd}\label{classcode_1_1BF1_1_1mod__BF__iter_ab1c76556680b3c3a15e2e0ceccdb93cd} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!FindMaxEnergy@{FindMaxEnergy}}
+\index{FindMaxEnergy@{FindMaxEnergy}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{FindMaxEnergy()}{FindMaxEnergy()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+Find\+Max\+Energy (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}Initial credit"{}}]{c0 }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_ab1c76556680b3c3a15e2e0ceccdb93cd_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a2ee8c813ff5460982ad8cf77be0e1523}\label{classcode_1_1BF1_1_1mod__BF__iter_a2ee8c813ff5460982ad8cf77be0e1523} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!FindMaxEnergy\_@{FindMaxEnergy\_}}
+\index{FindMaxEnergy\_@{FindMaxEnergy\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{FindMaxEnergy\_()}{FindMaxEnergy\_()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+Find\+Max\+Energy\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}Initial credit"{}}]{c0 }\end{DoxyParamCaption})}
+
+
+
+Computes for each state the maximal energy for which it can be reached from s0 with initial credit c0 given the weak upper bound wup. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s0} & (int)\+: the initial state \\
+\hline
+{\em wup} & (int)\+: the weak upper bound \\
+\hline
+{\em c0} & (int)\+: the initial credit \+:param as\+Gen\+: If set to true, it will yield the current energy levels and predecessors at every iteration \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a2ee8c813ff5460982ad8cf77be0e1523_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a4175028036bf37912954e78522a15e7c}\label{classcode_1_1BF1_1_1mod__BF__iter_a4175028036bf37912954e78522a15e7c} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!FindMaxEnergyGen@{FindMaxEnergyGen}}
+\index{FindMaxEnergyGen@{FindMaxEnergyGen}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{FindMaxEnergyGen()}{FindMaxEnergyGen()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+Find\+Max\+Energy\+Gen (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}state"{}}]{s0,  }\item[{"{}weak upper bound"{}}]{wup,  }\item[{"{}Initial credit"{}}]{c0 }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a4175028036bf37912954e78522a15e7c_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_ae801269c8aa49cc045a14cb27ac43eda}\label{classcode_1_1BF1_1_1mod__BF__iter_ae801269c8aa49cc045a14cb27ac43eda} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!init@{init}}
+\index{init@{init}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+init (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_aa5da758214d9c813a1646cbb285b9995}\label{classcode_1_1BF1_1_1mod__BF__iter_aa5da758214d9c813a1646cbb285b9995} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!loop\_@{loop\_}}
+\index{loop\_@{loop\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{loop\_()}{loop\_()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+loop\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}init state"{}}]{si }\end{DoxyParamCaption})}
+
+
+
+Helper function to iterate over loops Must be constructed with a state on a cycle. 
+
+~\newline
+ Will eventually raise an error otherwise or loop indefinitely otherwise 
+\begin{DoxyParams}{Parameters}
+{\em si} & (int)\+: initial state \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+yields a state till done 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_aa5da758214d9c813a1646cbb285b9995_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a3e50294634b1e32251fc97f724c4e0ae}\label{classcode_1_1BF1_1_1mod__BF__iter_a3e50294634b1e32251fc97f724c4e0ae} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!mark\_@{mark\_}}
+\index{mark\_@{mark\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{mark\_()}{mark\_()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+mark\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}state"{}}]{s }\end{DoxyParamCaption})}
+
+
+
+Mark state s as waiting. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & (int)\+: state to mark \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a3e50294634b1e32251fc97f724c4e0ae_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a8f3e936a62c66bb8a168ae3147467e55}\label{classcode_1_1BF1_1_1mod__BF__iter_a8f3e936a62c66bb8a168ae3147467e55} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!prop\_@{prop\_}}
+\index{prop\_@{prop\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{prop\_()}{prop\_()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+prop\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}edge number"{}}]{en,  }\item[{bool}]{opt }\end{DoxyParamCaption})}
+
+
+
+Propagates the energy along an edge. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em en} & (int)\+: Edge number \\
+\hline
+{\em opt} & (bool)\+: Whether the optimal energy for dst is chosen or energy is always propagated \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether the energy of dst changed 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a8f3e936a62c66bb8a168ae3147467e55_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a8883786513eb52c98e77dba469e5b6f3}\label{classcode_1_1BF1_1_1mod__BF__iter_a8883786513eb52c98e77dba469e5b6f3} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!pumpAll@{pumpAll}}
+\index{pumpAll@{pumpAll}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{pumpAll()}{pumpAll()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+pump\+All (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Pump all (energy positive) loops of the current iteration. 
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a8883786513eb52c98e77dba469e5b6f3_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a8dab6c8a7a55fe0563953736dc633f0f}\label{classcode_1_1BF1_1_1mod__BF__iter_a8dab6c8a7a55fe0563953736dc633f0f} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!pumpLoop\_@{pumpLoop\_}}
+\index{pumpLoop\_@{pumpLoop\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{pumpLoop\_()}{pumpLoop\_()}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+pump\+Loop\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}state"{}}]{s }\end{DoxyParamCaption})}
+
+
+
+Helper to pump the simple positive loop containing s. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & (int)\+: initial state \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a8dab6c8a7a55fe0563953736dc633f0f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1BF1_1_1mod__BF__iter_a8dab6c8a7a55fe0563953736dc633f0f_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_aa5bfe8ce7fff02030135de5733f8c3b1}\label{classcode_1_1BF1_1_1mod__BF__iter_aa5bfe8ce7fff02030135de5733f8c3b1} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!c0\_@{c0\_}}
+\index{c0\_@{c0\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{c0\_}{c0\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+c0\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a9f65ca23fa53e5e8b33b0dd685260976}\label{classcode_1_1BF1_1_1mod__BF__iter_a9f65ca23fa53e5e8b33b0dd685260976} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!changedE\_@{changedE\_}}
+\index{changedE\_@{changedE\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{changedE\_}{changedE\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+changed\+E\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a1262d8508cc90b267d55ac969134e128}\label{classcode_1_1BF1_1_1mod__BF__iter_a1262d8508cc90b267d55ac969134e128} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!E\_@{E\_}}
+\index{E\_@{E\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{E\_}{E\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+E\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a29465c3dc7b9b87cfaf6d6084b06cbac}\label{classcode_1_1BF1_1_1mod__BF__iter_a29465c3dc7b9b87cfaf6d6084b06cbac} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!g\_@{g\_}}
+\index{g\_@{g\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{g\_}{g\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+g\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a13d2aeca52a970a715cd1d52a42bc784}\label{classcode_1_1BF1_1_1mod__BF__iter_a13d2aeca52a970a715cd1d52a42bc784} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!isWaiting\_@{isWaiting\_}}
+\index{isWaiting\_@{isWaiting\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{isWaiting\_}{isWaiting\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+is\+Waiting\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a92640d28cf87839224a029366dd8b267}\label{classcode_1_1BF1_1_1mod__BF__iter_a92640d28cf87839224a029366dd8b267} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!N\_@{N\_}}
+\index{N\_@{N\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{N\_}{N\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+N\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a5cf7f49f49b455473d23919a8fda756f}\label{classcode_1_1BF1_1_1mod__BF__iter_a5cf7f49f49b455473d23919a8fda756f} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!onLoop\_@{onLoop\_}}
+\index{onLoop\_@{onLoop\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{onLoop\_}{onLoop\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+on\+Loop\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a709823748b5d98e1db19ace4702337a0}\label{classcode_1_1BF1_1_1mod__BF__iter_a709823748b5d98e1db19ace4702337a0} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!Pred\_@{Pred\_}}
+\index{Pred\_@{Pred\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{Pred\_}{Pred\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+Pred\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a41fcf4a2f14b928d64d82113450006d2}\label{classcode_1_1BF1_1_1mod__BF__iter_a41fcf4a2f14b928d64d82113450006d2} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!s0\_@{s0\_}}
+\index{s0\_@{s0\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{s0\_}{s0\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+s0\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_a5e850682fc95786d5bcccb80a66e9f73}\label{classcode_1_1BF1_1_1mod__BF__iter_a5e850682fc95786d5bcccb80a66e9f73} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!Waiting\_@{Waiting\_}}
+\index{Waiting\_@{Waiting\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{Waiting\_}{Waiting\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+Waiting\+\_\+}
+
+\Hypertarget{classcode_1_1BF1_1_1mod__BF__iter_aa7839b76e4c86bd9b4e8af5d5e87b57d}\label{classcode_1_1BF1_1_1mod__BF__iter_aa7839b76e4c86bd9b4e8af5d5e87b57d} 
+\index{code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}!wup\_@{wup\_}}
+\index{wup\_@{wup\_}!code.BF1.mod\_BF\_iter@{code.BF1.mod\_BF\_iter}}
+\doxysubsubsection{\texorpdfstring{wup\_}{wup\_}}
+{\footnotesize\ttfamily code.\+BF1.\+mod\+\_\+\+BF\+\_\+iter.\+wup\+\_\+}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{BF1_8py}{BF1.\+py}}\end{DoxyCompactItemize}

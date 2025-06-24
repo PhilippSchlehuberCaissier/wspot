@@ -1,0 +1,7 @@
+<map id="code.WBA_solvers.RemoveColor" name="code.WBA_solvers.RemoveColor">
+<area shape="rect" id="Node000001" title="Remove a specified color (acceptance set) in an automaton." alt="" coords="288,35,523,60"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#abd7892e3dab5aa15ed70bbe7f41b6e9d" title="Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton using Floyd&#45;Warshall on energy functions." alt="" coords="5,5,240,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="274,36,240,33,241,28,275,31"/>
+<area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__solvers.html#a0e95b42269d6bd22a8c0fdbdbbc3d9c5" title="Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton using Floyd&#45;Warshall on energy functions." alt="" coords="19,55,226,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="274,63,226,68,226,62,274,58"/>
+</map>

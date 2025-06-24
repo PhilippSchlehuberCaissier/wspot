@@ -1,0 +1,41 @@
+\doxysection{WBA\+\_\+trace.\+py File Reference}
+\hypertarget{WBA__trace_8py}{}\label{WBA__trace_8py}\index{WBA\_trace.py@{WBA\_trace.py}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classcode_1_1WBA__trace_1_1transition}{code.\+WBA\+\_\+trace.\+transition}}
+\item 
+class \mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{code.\+WBA\+\_\+trace.\+path\+Segment}}
+\item 
+class \mbox{\hyperlink{classcode_1_1WBA__trace_1_1lasso}{code.\+WBA\+\_\+trace.\+lasso}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacecode}{code}}
+\item 
+namespace \mbox{\hyperlink{namespacecode_1_1WBA__trace}{code.\+WBA\+\_\+trace}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_a71bdea20cfe3aa4f3f2c9db613b33d1d}{code.\+WBA\+\_\+trace.\+compress\+Path}} (List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1transition}{transition}}\mbox{]} path)
+\item 
+Tuple\mbox{[}bool, int\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_ab7cbe6a2448a5690370edb563d41387e}{code.\+WBA\+\_\+trace.\+prop\+Along}} (int e, List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1transition}{transition}}\mbox{]} t, int wup)
+\item 
+Tuple\mbox{[}bool, int\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_aff5cfd78d5c4a17a7eaaf9e560c10624}{code.\+WBA\+\_\+trace.\+try\+Pump\+Loop}} (int e, List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1transition}{transition}}\mbox{]} t, int wup)
+\item 
+bool \mbox{\hyperlink{namespacecode_1_1WBA__trace_afee286061060a7755f2505b106112908}{code.\+WBA\+\_\+trace.\+forward\+Exploration}} (int ic, int e\+Dst, int wup, List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]} t, Union\mbox{[}int, None\mbox{]} impl\+Cycl\+Cost=None)
+\item 
+List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_a38c54b4133d84c44b0d4d472659d8fa3}{code.\+WBA\+\_\+trace.\+backwards\+Search\+Impl\+\_\+}} (spot.\+twa\+\_\+graph g, List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]} pred, int g\+Src, Callable forward\+Exp, List\mbox{[}int\mbox{]} ci, List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1transition}{transition}}\mbox{]} t)
+\item 
+List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_aa8736f34dcfb7466f4da36dd4d9ce099}{code.\+WBA\+\_\+trace.\+search\+Trace}} (spot.\+twa\+\_\+graph g, List\mbox{[}List\mbox{[}int\mbox{]}\mbox{]} pred, int g\+Src, int g\+Dst, int ic\+Src, int e\+Dst, int wup, Union\mbox{[}int, None\mbox{]} impl\+Cycl\+Cost=None)
+\item 
+List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_a43e6e0cbb3f4c795275af93d937a6de7}{code.\+WBA\+\_\+trace.\+project\+Trace\+\_\+}} (\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} br, List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]} t)
+\item 
+Tuple\mbox{[}int, List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]}\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_ae0c81bde201044d9f1f9a3624e79a815}{code.\+WBA\+\_\+trace.\+trace\+Extraction\+Cycle1\+\_\+}} (\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} br, bool project)
+\item 
+Tuple\mbox{[}int, List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]}\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_aa15e0c6b93ab2620b21a4bd121c96625}{code.\+WBA\+\_\+trace.\+trace\+Extraction\+Cycle2\+\_\+}} (\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} br, bool project)
+\item 
+List\mbox{[}\mbox{\hyperlink{classcode_1_1WBA__trace_1_1pathSegment}{path\+Segment}}\mbox{]} \mbox{\hyperlink{namespacecode_1_1WBA__trace_afb1f87ec466bf4da1adf2b7d057ad7b9}{code.\+WBA\+\_\+trace.\+trace\+Exctraction}} (\mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} br, bool project)
+\end{DoxyCompactItemize}

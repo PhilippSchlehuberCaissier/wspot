@@ -1,0 +1,55 @@
+\doxysection{one\+\_\+exec.\+py File Reference}
+\hypertarget{one__exec_8py}{}\label{one__exec_8py}\index{one\_exec.py@{one\_exec.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacecode}{code}}
+\item 
+namespace \mbox{\hyperlink{namespacecode_1_1one__exec}{code.\+one\+\_\+exec}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a097c1f7580e718836dfe74bc9f006d43}{code.\+one\+\_\+exec.\+n\+\_\+states}} (str zg\+File)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ad49e37ba5a6e3a1f81844f0421ee80c7}{code.\+one\+\_\+exec.\+parser}} = argparse.\+Argument\+Parser(description="{}Run one instance given as tcheckerfile and ltl spec"{})
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ac86a9aafcf6868326eefa363fc539c7a}{code.\+one\+\_\+exec.\+help}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a9ab93cbb5a5bb065ad068fcaee9b35d8}{code.\+one\+\_\+exec.\+type}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a193c8eed4becaf910b76a04e83d852ef}{code.\+one\+\_\+exec.\+args}} = parser.\+parse\+\_\+args()
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}{code.\+one\+\_\+exec.\+tchk\+File}} = args.\+tchk\+File
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a41c6fd9597439c333d6059213677127a}{code.\+one\+\_\+exec.\+spec\+\_\+ltl}} = args.\+spec
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a1c88a7a73ab11af5c51fc9e5e223a5ec}{code.\+one\+\_\+exec.\+benchfile}} = args.\+file
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{code.\+one\+\_\+exec.\+t}} = time.\+time()
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ab8e9208a2ec00b5d6c7c68b32051b126}{code.\+one\+\_\+exec.\+wba}} = \mbox{\hyperlink{namespacecode_1_1to__weighted__twa_a35e779065bb1128d1c160071da37afc6}{to\+\_\+weighted\+\_\+twa.\+translate}}(\mbox{\hyperlink{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}{tchk\+File}})
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ae2abc48157e4b8668fa8ac3f87a21c12}{code.\+one\+\_\+exec.\+tchk2cpatime}} = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a757bb98c5073004c62b579d9d759cf6c}{code.\+one\+\_\+exec.\+zg\+States}} = \mbox{\hyperlink{namespacecode_1_1one__exec_a097c1f7580e718836dfe74bc9f006d43}{n\+\_\+states}}(\mbox{\hyperlink{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}{tchk\+File}} + "{}.zg"{})
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a436618ded74b519f009ab65ab56a52b0}{code.\+one\+\_\+exec.\+spec}} = spot.\+translate(\mbox{\hyperlink{namespacecode_1_1one__exec_a41c6fd9597439c333d6059213677127a}{spec\+\_\+ltl}}, dict=wba.\+get\+\_\+dict())
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a83ed36923a020f5c173f9e2c7662cc3e}{code.\+one\+\_\+exec.\+spectranstime}} = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a9054fde0dcacc138d59930caf89ad704}{code.\+one\+\_\+exec.\+tot\+\_\+wba}} = spot.\+product(\mbox{\hyperlink{namespacecode_1_1one__exec_ab8e9208a2ec00b5d6c7c68b32051b126}{wba}}, \mbox{\hyperlink{namespacecode_1_1one__exec_a436618ded74b519f009ab65ab56a52b0}{spec}})
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a5b9418d1a66f8234c99b4ed6decb6e11}{code.\+one\+\_\+exec.\+prodtime}} = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a15813516b225fd987b06c4c7c683d60b}{code.\+one\+\_\+exec.\+prodstates}} = tot\+\_\+wba.\+num\+\_\+states()
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_afa9b13fcb4e37cfda0df03415edd7b01}{code.\+one\+\_\+exec.\+feas}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_aae35dbafde9ef2f5096f8386e32aa8e5}{code.\+one\+\_\+exec.\+solvetime}} = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_aa78a508a3af3b8781458716cde27a737}{code.\+one\+\_\+exec.\+det\+\_\+bench}} = deepcopy(WBA\+\_\+utils.\+get\+\_\+stats())
+\end{DoxyCompactItemize}

@@ -1,0 +1,8 @@
+<map id="code.WBA_trace.forwardExploration" name="code.WBA_trace.forwardExploration">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,261,31"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__trace.html#ab7cbe6a2448a5690370edb563d41387e" title=" " alt="" coords="576,5,775,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="261,15,562,15,562,21,261,21"/>
+<area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__trace.html#aff5cfd78d5c4a17a7eaaf9e560c10624" title=" " alt="" coords="309,31,528,56"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="262,27,296,30,295,35,261,32"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="528,30,562,26,563,32,528,35"/>
+</map>

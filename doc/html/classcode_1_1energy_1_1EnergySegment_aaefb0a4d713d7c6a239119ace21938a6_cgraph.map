@@ -1,0 +1,22 @@
+<map id="code.energy.EnergySegment.is_above_one" name="code.energy.EnergySegment.is_above_one">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,84,228,124"/>
+<area shape="rect" id="Node000002" href="$classcode_1_1energy_1_1EnergySegment.html#a52e9446492426aab9df08d1bf9cfd0a8" title=" " alt="" coords="589,145,857,170"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="228,111,576,142,575,147,228,116"/>
+<area shape="rect" id="Node000007" href="$classcode_1_1energy_1_1EnergyFunction.html#af7954427c2f9ce64f250fd13c6f5d2a4" title=" " alt="" coords="276,66,541,91"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="228,92,262,89,262,94,228,97"/>
+<area shape="rect" id="Node000003" href="$classcode_1_1energy_1_1EnergySegment.html#a709ea57f5d1e1029eb146a0ee71f0057" title=" " alt="" coords="905,91,1128,131"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="803,142,892,128,892,133,804,147"/>
+<area shape="rect" id="Node000004" href="$classcode_1_1energy_1_1EnergyFunction.html#a879a4b348e02afcd78d0232740999450" title=" " alt="" coords="907,27,1126,67"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="750,142,819,110,904,76,928,68,929,73,906,81,821,115,752,147"/>
+<area shape="rect" id="Node000005" href="$classcode_1_1energy_1_1EnergySegment.html#ae29c631480493b005f752f542c1f3b76" title=" " alt="" coords="1176,10,1436,35"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1126,35,1162,32,1163,37,1127,40"/>
+<area shape="rect" id="Node000006" href="$classcode_1_1energy_1_1EnergyFunction.html#ae13e41f5575e114d1a15576d2eba9fd5" title=" " alt="" coords="1177,59,1435,85"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="1127,54,1164,57,1163,62,1126,59"/>
+<area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="541,83,892,101,891,107,541,88"/>
+<area shape="poly" id="edge12_Node000007_Node000004" title=" " alt="" coords="437,63,505,37,589,15,664,5,723,3,858,15,910,22,910,27,857,20,723,9,664,10,590,20,507,42,439,68"/>
+<area shape="poly" id="edge7_Node000007_Node000007" title=" " alt="" coords="362,68,352,58,357,47,376,41,409,39,451,44,462,49,465,55,461,57,458,53,449,49,409,45,377,47,360,52,357,57,366,64"/>
+<area shape="rect" id="Node000008" href="$classcode_1_1energy_1_1EnergyFunction.html#ae3486f3a25a655ec97c5d6529725298f" title="Return the segment that is used when evaluating this function at x." alt="" coords="609,29,838,69"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="541,64,595,59,595,64,542,69"/>
+<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="820,67,908,85,906,90,819,72"/>
+<area shape="poly" id="edge10_Node000008_Node000004" title=" " alt="" coords="838,46,893,45,893,50,838,51"/>
+</map>

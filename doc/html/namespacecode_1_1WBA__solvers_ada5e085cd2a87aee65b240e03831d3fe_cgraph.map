@@ -1,0 +1,7 @@
+<map id="code.WBA_solvers.CoBuechiEnergy" name="code.WBA_solvers.CoBuechiEnergy">
+<area shape="rect" id="Node000001" title="Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton." alt="" coords="5,37,212,77"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#a2e067f8ffd07ea704e15e3608f27cd30" title=" " alt="" coords="260,5,451,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="212,41,246,37,247,42,212,47"/>
+<area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__solvers.html#ac118adeee57f36b16aaa2eb868a2f43f" title=" " alt="" coords="260,69,451,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="212,68,247,73,246,78,212,73"/>
+</map>

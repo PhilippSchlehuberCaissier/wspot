@@ -1,0 +1,9 @@
+<map id="code.BF1.mod_BF_iter.pumpLoop_" name="code.BF1.mod_BF_iter.pumpLoop_">
+<area shape="rect" id="Node000001" title="Helper to pump the simple positive loop containing s." alt="" coords="5,47,213,87"/>
+<area shape="rect" id="Node000002" href="$classcode_1_1BF1_1_1mod__BF__iter.html#aa5da758214d9c813a1646cbb285b9995" title="Helper function to iterate over loops Must be constructed with a state on a cycle." alt="" coords="264,5,471,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,45,286,31,287,36,214,50"/>
+<area shape="rect" id="Node000003" href="$classcode_1_1BF1_1_1mod__BF__iter.html#a3e50294634b1e32251fc97f724c4e0ae" title="Mark state s as waiting." alt="" coords="261,55,473,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="213,65,248,65,248,70,213,70"/>
+<area shape="rect" id="Node000004" href="$classcode_1_1BF1_1_1mod__BF__iter.html#a8f3e936a62c66bb8a168ae3147467e55" title="Propagates the energy along an edge." alt="" coords="264,104,471,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="214,85,287,99,286,104,213,90"/>
+</map>

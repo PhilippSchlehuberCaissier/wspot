@@ -1,0 +1,20 @@
+<map id="code.WBA_solvers.format_energie_" name="code.WBA_solvers.format_energie_">
+<area shape="rect" id="Node000001" title=" " alt="" coords="564,149,755,189"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#ac8a0a8b668b4e84202a92f5291cc5142" title="Solve an ɷ&#45;regular energy game in a Büchi automaton." alt="" coords="281,106,516,131"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="550,151,464,134,465,129,551,146"/>
+<area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__solvers.html#adec6e180d50af97ff152b77804e7bb32" title="DEPRECATED Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton using a naive algorithm." alt="" coords="19,5,220,45"/>
+<area shape="poly" id="edge9_Node000001_Node000003" title=" " alt="" coords="614,145,567,119,515,97,439,75,362,58,220,37,221,32,362,53,441,70,517,92,570,114,616,140"/>
+<area shape="rect" id="Node000004" href="$namespacecode_1_1WBA__solvers.html#a6eb4391ab22206de7f9c22294bde13c4" title="Solve an ɷ&#45;regular energy game in a parity automaton." alt="" coords="5,193,233,218"/>
+<area shape="poly" id="edge10_Node000001_Node000004" title=" " alt="" coords="550,179,234,200,233,195,550,174"/>
+<area shape="rect" id="Node000007" href="$namespacecode_1_1WBA__solvers.html#ada5e085cd2a87aee65b240e03831d3fe" title="Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton." alt="" coords="295,207,502,247"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="555,195,491,209,490,204,554,190"/>
+<area shape="rect" id="Node000008" href="$namespacecode_1_1WBA__solvers.html#a801b2715d2c8358c4794e0c9fba9941d" title="Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton (legacy algorithm)." alt="" coords="300,271,497,311"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="621,200,573,232,517,261,485,273,483,268,515,256,570,227,618,195"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="352,103,232,60,194,48,196,43,234,55,354,98"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="336,138,282,153,157,195,155,190,281,148,335,132"/>
+<area shape="rect" id="Node000005" href="$namespacecode_1_1WBA__solvers.html#a70176db7a3f7a35a191bc83ad862d59a" title="Solve an ɷ&#45;regular energy game in a Rabin automaton." alt="" coords="5,70,233,95"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="286,107,218,98,219,93,286,102"/>
+<area shape="rect" id="Node000006" href="$namespacecode_1_1WBA__solvers.html#a3ca3c117ff682c0a448fbeab74ea68c9" title="Solve an ɷ&#45;regular energy game in an automaton with an acceptance condition of t." alt="" coords="10,119,229,145"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="268,128,229,129,229,124,268,122"/>
+<area shape="poly" id="edge4_Node000004_Node000004" title=" " alt="" coords="169,184,167,179,158,175,119,171,89,173,73,178,70,184,78,191,75,194,65,184,70,174,88,168,119,166,160,170,170,175,174,182"/>
+</map>

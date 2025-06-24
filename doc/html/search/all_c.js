@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['traceextractioncycle1_5f_0',['traceExtractionCycle1_',['../namespaceWBA__utils.html#aa475d4de8dd4ab32c3d7201cde591a7d',1,'WBA_utils']]],
-  ['traceextractioncycle2_5f_1',['traceExtractionCycle2_',['../namespaceWBA__utils.html#ae0ee6bca12265759f0993df9325ea3f6',1,'WBA_utils']]],
-  ['transition_2',['transition',['../classWBA__utils_1_1transition.html',1,'WBA_utils']]],
-  ['trueenergy_3',['TrueEnergy',['../namespaceWBA__utils.html#aea0769079bef3e91687cc9ce9e0bab59',1,'WBA_utils']]],
-  ['trypumploop_4',['tryPumpLoop',['../namespaceWBA__utils.html#a6abdfac6b1346654fba419a83deaf396',1,'WBA_utils']]]
+  ['mark_5f_0',['mark_',['../classcode_1_1BF1_1_1mod__BF__iter.html#a3e50294634b1e32251fc97f724c4e0ae',1,'code::BF1::mod_BF_iter']]],
+  ['maxcolor_1',['MaxColor',['../namespacecode_1_1WBA__solvers.html#a04ba12bfab7dfde54bdfdadf3f071ad3',1,'code::WBA_solvers']]],
+  ['memory_5fbenchmark_5flegacy_2epy_2',['memory_benchmark_legacy.py',['../memory__benchmark__legacy_8py.html',1,'']]],
+  ['memory_5fbenchmark_5fnew_2epy_3',['memory_benchmark_new.py',['../memory__benchmark__new_8py.html',1,'']]],
+  ['mincolor_4',['MinColor',['../namespacecode_1_1WBA__solvers.html#ac6a413dee01605539abec851eacdd567',1,'code::WBA_solvers']]],
+  ['mod_5fbf_5fiter_5',['mod_BF_iter',['../classcode_1_1BF1_1_1mod__BF__iter.html',1,'code::BF1']]]
 ];

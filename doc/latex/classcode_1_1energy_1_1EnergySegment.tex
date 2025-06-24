@@ -1,0 +1,258 @@
+\doxysection{code.\+energy.\+Energy\+Segment Class Reference}
+\hypertarget{classcode_1_1energy_1_1EnergySegment}{}\label{classcode_1_1energy_1_1EnergySegment}\index{code.energy.EnergySegment@{code.energy.EnergySegment}}
+
+
+Class for representing energy functions segments.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_ae29c631480493b005f752f542c1f3b76}{domain}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_ae1a85dea86ea31009abba4aed73f361b}{image}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a094bf1e6674d0f6b3966d115698b6271}{\+\_\+\+\_\+str\+\_\+\+\_\+}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a709ea57f5d1e1029eb146a0ee71f0057}{is\+\_\+in\+\_\+domain}} (self, x)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a52e9446492426aab9df08d1bf9cfd0a8}{evaluate}} (self, e\+\_\+in)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_aaefb0a4d713d7c6a239119ace21938a6}{is\+\_\+above\+\_\+one}} (self)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_af724e7982a5ba2b6a5ab2bb4ef9b5df8}{restriction}} (self, low, upp)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a20378829c790827598d51cf67538692e}{is\+\_\+zero}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a97df2fb5d21a2eaea304e4529ba0ccf1}{zero}} (low, upp, \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a149916166d2627c93f68622df16e5c46}{pred}})
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_ade28aafdff42dce8c87575b51c87a1a6}{one}} (low, upp, \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a149916166d2627c93f68622df16e5c46}{pred}})
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_af29c8939c09f67c611e6e0346fe2d054}{const}} (low, upp, \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a149916166d2627c93f68622df16e5c46}{pred}}, k)
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a7d59f3bbca8d6b235edaee068eb6d542}{incr}} (low, upp, \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a149916166d2627c93f68622df16e5c46}{pred}}, \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_afb73a7cae143cb9761a5aee85851efd0}{b}})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_aad7fd2e5a2e6cacce2f13568e5f866d0}{lower\+Bound}}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a6fa743451547b5629134725a8cf8b319}{upper\+Bound}}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_ac2fa37fd2524981b6d48e3ccaa7db7d2}{a}}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a162a7a096a75d62a88cfe6a39b2f9a92}{b}}
+\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a7a1142e5a8148413b6cf6f8d3a50df7a}{pred}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a90541f8e90bf0489dcef79fe3f7bedcc}{lower\+Bound}}
+\item 
+int \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a9477bcbba51241f74102773db6734eef}{upper\+Bound}}
+\item 
+int \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a149916166d2627c93f68622df16e5c46}{pred}}
+\item 
+int \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_a65ca9981ea1c84d907fc4322ff0e0d99}{a}}
+\item 
+int \mbox{\hyperlink{classcode_1_1energy_1_1EnergySegment_afb73a7cae143cb9761a5aee85851efd0}{b}} = -\/1
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class for representing energy functions segments. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a094bf1e6674d0f6b3966d115698b6271}\label{classcode_1_1energy_1_1EnergySegment_a094bf1e6674d0f6b3966d115698b6271} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!\_\_str\_\_@{\_\_str\_\_}}
+\index{\_\_str\_\_@{\_\_str\_\_}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{\_\_str\_\_()}{\_\_str\_\_()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+\_\+\+\_\+str\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergySegment_a094bf1e6674d0f6b3966d115698b6271_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_af29c8939c09f67c611e6e0346fe2d054}\label{classcode_1_1energy_1_1EnergySegment_af29c8939c09f67c611e6e0346fe2d054} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!const@{const}}
+\index{const@{const}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{const()}{const()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+const (\begin{DoxyParamCaption}\item[{}]{low,  }\item[{}]{upp,  }\item[{}]{pred,  }\item[{}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_ae29c631480493b005f752f542c1f3b76}\label{classcode_1_1energy_1_1EnergySegment_ae29c631480493b005f752f542c1f3b76} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!domain@{domain}}
+\index{domain@{domain}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{domain()}{domain()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+domain (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergySegment_ae29c631480493b005f752f542c1f3b76_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a52e9446492426aab9df08d1bf9cfd0a8}\label{classcode_1_1energy_1_1EnergySegment_a52e9446492426aab9df08d1bf9cfd0a8} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!evaluate@{evaluate}}
+\index{evaluate@{evaluate}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{evaluate()}{evaluate()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+evaluate (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{e\+\_\+in }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergySegment_a52e9446492426aab9df08d1bf9cfd0a8_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergySegment_a52e9446492426aab9df08d1bf9cfd0a8_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_ae1a85dea86ea31009abba4aed73f361b}\label{classcode_1_1energy_1_1EnergySegment_ae1a85dea86ea31009abba4aed73f361b} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!image@{image}}
+\index{image@{image}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{image()}{image()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+image (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a7d59f3bbca8d6b235edaee068eb6d542}\label{classcode_1_1energy_1_1EnergySegment_a7d59f3bbca8d6b235edaee068eb6d542} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!incr@{incr}}
+\index{incr@{incr}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{incr()}{incr()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+incr (\begin{DoxyParamCaption}\item[{}]{low,  }\item[{}]{upp,  }\item[{}]{pred,  }\item[{}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_aaefb0a4d713d7c6a239119ace21938a6}\label{classcode_1_1energy_1_1EnergySegment_aaefb0a4d713d7c6a239119ace21938a6} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!is\_above\_one@{is\_above\_one}}
+\index{is\_above\_one@{is\_above\_one}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{is\_above\_one()}{is\_above\_one()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+is\+\_\+above\+\_\+one (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergySegment_aaefb0a4d713d7c6a239119ace21938a6_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a709ea57f5d1e1029eb146a0ee71f0057}\label{classcode_1_1energy_1_1EnergySegment_a709ea57f5d1e1029eb146a0ee71f0057} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!is\_in\_domain@{is\_in\_domain}}
+\index{is\_in\_domain@{is\_in\_domain}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{is\_in\_domain()}{is\_in\_domain()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+is\+\_\+in\+\_\+domain (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{x }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergySegment_a709ea57f5d1e1029eb146a0ee71f0057_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a20378829c790827598d51cf67538692e}\label{classcode_1_1energy_1_1EnergySegment_a20378829c790827598d51cf67538692e} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!is\_zero@{is\_zero}}
+\index{is\_zero@{is\_zero}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{is\_zero()}{is\_zero()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+is\+\_\+zero (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergySegment_a20378829c790827598d51cf67538692e_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_ade28aafdff42dce8c87575b51c87a1a6}\label{classcode_1_1energy_1_1EnergySegment_ade28aafdff42dce8c87575b51c87a1a6} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!one@{one}}
+\index{one@{one}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{one()}{one()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+one (\begin{DoxyParamCaption}\item[{}]{low,  }\item[{}]{upp,  }\item[{}]{pred }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_af724e7982a5ba2b6a5ab2bb4ef9b5df8}\label{classcode_1_1energy_1_1EnergySegment_af724e7982a5ba2b6a5ab2bb4ef9b5df8} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!restriction@{restriction}}
+\index{restriction@{restriction}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{restriction()}{restriction()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+restriction (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{low,  }\item[{}]{upp }\end{DoxyParamCaption})}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a97df2fb5d21a2eaea304e4529ba0ccf1}\label{classcode_1_1energy_1_1EnergySegment_a97df2fb5d21a2eaea304e4529ba0ccf1} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!zero@{zero}}
+\index{zero@{zero}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{zero()}{zero()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+zero (\begin{DoxyParamCaption}\item[{}]{low,  }\item[{}]{upp,  }\item[{}]{pred }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a65ca9981ea1c84d907fc4322ff0e0d99}\label{classcode_1_1energy_1_1EnergySegment_a65ca9981ea1c84d907fc4322ff0e0d99} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!a@{a}}
+\index{a@{a}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{a}{a}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int code.\+energy.\+Energy\+Segment.\+a\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_ac2fa37fd2524981b6d48e3ccaa7db7d2}\label{classcode_1_1energy_1_1EnergySegment_ac2fa37fd2524981b6d48e3ccaa7db7d2} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!a@{a}}
+\index{a@{a}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{a}{a}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+a}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_afb73a7cae143cb9761a5aee85851efd0}\label{classcode_1_1energy_1_1EnergySegment_afb73a7cae143cb9761a5aee85851efd0} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!b@{b}}
+\index{b@{b}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{b}{b}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int code.\+energy.\+Energy\+Segment.\+b = -\/1\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a162a7a096a75d62a88cfe6a39b2f9a92}\label{classcode_1_1energy_1_1EnergySegment_a162a7a096a75d62a88cfe6a39b2f9a92} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!b@{b}}
+\index{b@{b}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{b}{b}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+b}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a90541f8e90bf0489dcef79fe3f7bedcc}\label{classcode_1_1energy_1_1EnergySegment_a90541f8e90bf0489dcef79fe3f7bedcc} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!lowerBound@{lowerBound}}
+\index{lowerBound@{lowerBound}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{lowerBound}{lowerBound}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int code.\+energy.\+Energy\+Segment.\+lower\+Bound\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_aad7fd2e5a2e6cacce2f13568e5f866d0}\label{classcode_1_1energy_1_1EnergySegment_aad7fd2e5a2e6cacce2f13568e5f866d0} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!lowerBound@{lowerBound}}
+\index{lowerBound@{lowerBound}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{lowerBound}{lowerBound}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+lower\+Bound}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a149916166d2627c93f68622df16e5c46}\label{classcode_1_1energy_1_1EnergySegment_a149916166d2627c93f68622df16e5c46} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!pred@{pred}}
+\index{pred@{pred}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{pred}{pred}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int code.\+energy.\+Energy\+Segment.\+pred\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a7a1142e5a8148413b6cf6f8d3a50df7a}\label{classcode_1_1energy_1_1EnergySegment_a7a1142e5a8148413b6cf6f8d3a50df7a} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!pred@{pred}}
+\index{pred@{pred}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{pred}{pred}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+pred}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a9477bcbba51241f74102773db6734eef}\label{classcode_1_1energy_1_1EnergySegment_a9477bcbba51241f74102773db6734eef} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!upperBound@{upperBound}}
+\index{upperBound@{upperBound}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{upperBound}{upperBound}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int code.\+energy.\+Energy\+Segment.\+upper\+Bound\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classcode_1_1energy_1_1EnergySegment_a6fa743451547b5629134725a8cf8b319}\label{classcode_1_1energy_1_1EnergySegment_a6fa743451547b5629134725a8cf8b319} 
+\index{code.energy.EnergySegment@{code.energy.EnergySegment}!upperBound@{upperBound}}
+\index{upperBound@{upperBound}!code.energy.EnergySegment@{code.energy.EnergySegment}}
+\doxysubsubsection{\texorpdfstring{upperBound}{upperBound}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Segment.\+upper\+Bound}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{energy_8py}{energy.\+py}}\end{DoxyCompactItemize}

@@ -1,0 +1,18 @@
+<map id="code.BF1.mod_BF_iter.FindMaxEnergy_" name="code.BF1.mod_BF_iter.FindMaxEnergy_">
+<area shape="rect" id="Node000001" title="Computes for each state the maximal energy for which it can be reached from s0 with initial credit c0..." alt="" coords="5,85,204,125"/>
+<area shape="poly" id="edge5_Node000001_Node000001" title=" " alt="" coords="57,85,54,75,62,66,79,60,105,58,135,61,151,68,149,73,133,66,105,63,80,65,64,70,59,76,62,83"/>
+<area shape="rect" id="Node000002" href="$classcode_1_1BF1_1_1mod__BF__iter.html#ae005ed633b0a326dfb39baf48409ec4c" title=" " alt="" coords="267,5,463,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="148,82,251,41,285,31,286,36,253,46,150,87"/>
+<area shape="rect" id="Node000003" href="$classcode_1_1BF1_1_1mod__BF__iter.html#ab719d7fa866d72b6e58fd9e7de60db7b" title=" " alt="" coords="257,55,472,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="204,91,243,86,244,92,204,96"/>
+<area shape="rect" id="Node000006" href="$classcode_1_1BF1_1_1mod__BF__iter.html#ae801269c8aa49cc045a14cb27ac43eda" title=" " alt="" coords="269,120,461,145"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="204,113,255,118,255,124,204,118"/>
+<area shape="rect" id="Node000007" href="$classcode_1_1BF1_1_1mod__BF__iter.html#a8883786513eb52c98e77dba469e5b6f3" title="Pump all (energy positive) loops of the current iteration." alt="" coords="252,169,477,195"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="157,122,253,155,285,164,283,169,251,161,155,127"/>
+<area shape="rect" id="Node000004" href="$classcode_1_1BF1_1_1mod__BF__iter.html#aa5da758214d9c813a1646cbb285b9995" title="Helper function to iterate over loops Must be constructed with a state on a cycle." alt="" coords="542,39,749,64"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="472,64,528,59,529,64,473,69"/>
+<area shape="rect" id="Node000005" href="$classcode_1_1BF1_1_1mod__BF__iter.html#a8f3e936a62c66bb8a168ae3147467e55" title="Propagates the energy along an edge." alt="" coords="542,88,749,113"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="473,82,529,87,528,93,472,88"/>
+<area shape="rect" id="Node000008" href="$classcode_1_1BF1_1_1mod__BF__iter.html#a0e9f94e8a96f436b55f49aa8b3120c79" title=" " alt="" coords="525,169,765,195"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="477,179,512,179,512,185,477,185"/>
+</map>

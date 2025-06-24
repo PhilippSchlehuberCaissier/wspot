@@ -1,4 +1,24 @@
 var searchData=
 [
-  ['wba_5futils_0',['WBA_utils',['../namespaceWBA__utils.html',1,'']]]
+  ['code_0',['code',['../namespacecode.html',1,'']]],
+  ['code_3a_3abf1_1',['BF1',['../namespacecode_1_1BF1.html',1,'code']]],
+  ['code_3a_3abuechi_2',['buechi',['../namespacecode_1_1buechi.html',1,'code']]],
+  ['code_3a_3aenergy_3',['energy',['../namespacecode_1_1energy.html',1,'code']]],
+  ['code_3a_3ainteger_4',['integer',['../namespacecode_1_1integer.html',1,'code']]],
+  ['code_3a_3aipython_5futils_5',['ipython_utils',['../namespacecode_1_1ipython__utils.html',1,'code']]],
+  ['code_3a_3aloop_5fbenchmark_6',['loop_benchmark',['../namespacecode_1_1loop__benchmark.html',1,'code']]],
+  ['code_3a_3aloop_5fbenchmark2_7',['loop_benchmark2',['../namespacecode_1_1loop__benchmark2.html',1,'code']]],
+  ['code_3a_3amemory_5fbenchmark_5flegacy_8',['memory_benchmark_legacy',['../namespacecode_1_1memory__benchmark__legacy.html',1,'code']]],
+  ['code_3a_3amemory_5fbenchmark_5fnew_9',['memory_benchmark_new',['../namespacecode_1_1memory__benchmark__new.html',1,'code']]],
+  ['code_3a_3anested_5floops_5fbuilder_10',['nested_loops_builder',['../namespacecode_1_1nested__loops__builder.html',1,'code']]],
+  ['code_3a_3aone_5fexec_11',['one_exec',['../namespacecode_1_1one__exec.html',1,'code']]],
+  ['code_3a_3arun_5fbench_12',['run_bench',['../namespacecode_1_1run__bench.html',1,'code']]],
+  ['code_3a_3asemiring_13',['semiring',['../namespacecode_1_1semiring.html',1,'code']]],
+  ['code_3a_3asimple_5f1cta_14',['simple_1CTA',['../namespacecode_1_1simple__1CTA.html',1,'code']]],
+  ['code_3a_3ato_5fweighted_5ftwa_15',['to_weighted_twa',['../namespacecode_1_1to__weighted__twa.html',1,'code']]],
+  ['code_3a_3atrace_5ftest_16',['trace_test',['../namespacecode_1_1trace__test.html',1,'code']]],
+  ['code_3a_3awba_5ffw_17',['WBA_FW',['../namespacecode_1_1WBA__FW.html',1,'code']]],
+  ['code_3a_3awba_5fsolvers_18',['WBA_solvers',['../namespacecode_1_1WBA__solvers.html',1,'code']]],
+  ['code_3a_3awba_5ftrace_19',['WBA_trace',['../namespacecode_1_1WBA__trace.html',1,'code']]],
+  ['code_3a_3awba_5futils_20',['WBA_utils',['../namespacecode_1_1WBA__utils.html',1,'code']]]
 ];

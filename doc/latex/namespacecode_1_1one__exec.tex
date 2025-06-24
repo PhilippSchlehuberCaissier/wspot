@@ -1,0 +1,182 @@
+\doxysection{code.\+one\+\_\+exec Namespace Reference}
+\hypertarget{namespacecode_1_1one__exec}{}\label{namespacecode_1_1one__exec}\index{code.one\_exec@{code.one\_exec}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a097c1f7580e718836dfe74bc9f006d43}{n\+\_\+states}} (str zg\+File)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ad49e37ba5a6e3a1f81844f0421ee80c7}{parser}} = argparse.\+Argument\+Parser(description="{}Run one instance given as tcheckerfile and ltl spec"{})
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ac86a9aafcf6868326eefa363fc539c7a}{help}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a9ab93cbb5a5bb065ad068fcaee9b35d8}{type}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a193c8eed4becaf910b76a04e83d852ef}{args}} = parser.\+parse\+\_\+args()
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}{tchk\+File}} = args.\+tchk\+File
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a41c6fd9597439c333d6059213677127a}{spec\+\_\+ltl}} = args.\+spec
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a1c88a7a73ab11af5c51fc9e5e223a5ec}{benchfile}} = args.\+file
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}} = time.\+time()
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ab8e9208a2ec00b5d6c7c68b32051b126}{wba}} = \mbox{\hyperlink{namespacecode_1_1to__weighted__twa_a35e779065bb1128d1c160071da37afc6}{to\+\_\+weighted\+\_\+twa.\+translate}}(\mbox{\hyperlink{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}{tchk\+File}})
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_ae2abc48157e4b8668fa8ac3f87a21c12}{tchk2cpatime}} = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a757bb98c5073004c62b579d9d759cf6c}{zg\+States}} = \mbox{\hyperlink{namespacecode_1_1one__exec_a097c1f7580e718836dfe74bc9f006d43}{n\+\_\+states}}(\mbox{\hyperlink{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}{tchk\+File}} + "{}.zg"{})
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a436618ded74b519f009ab65ab56a52b0}{spec}} = spot.\+translate(\mbox{\hyperlink{namespacecode_1_1one__exec_a41c6fd9597439c333d6059213677127a}{spec\+\_\+ltl}}, dict=wba.\+get\+\_\+dict())
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a83ed36923a020f5c173f9e2c7662cc3e}{spectranstime}} = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a9054fde0dcacc138d59930caf89ad704}{tot\+\_\+wba}} = spot.\+product(\mbox{\hyperlink{namespacecode_1_1one__exec_ab8e9208a2ec00b5d6c7c68b32051b126}{wba}}, \mbox{\hyperlink{namespacecode_1_1one__exec_a436618ded74b519f009ab65ab56a52b0}{spec}})
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a5b9418d1a66f8234c99b4ed6decb6e11}{prodtime}} = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_a15813516b225fd987b06c4c7c683d60b}{prodstates}} = tot\+\_\+wba.\+num\+\_\+states()
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_afa9b13fcb4e37cfda0df03415edd7b01}{feas}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_aae35dbafde9ef2f5096f8386e32aa8e5}{solvetime}} = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1one__exec_aa78a508a3af3b8781458716cde27a737}{det\+\_\+bench}} = deepcopy(WBA\+\_\+utils.\+get\+\_\+stats())
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacecode_1_1one__exec_a097c1f7580e718836dfe74bc9f006d43}\label{namespacecode_1_1one__exec_a097c1f7580e718836dfe74bc9f006d43} 
+\index{code.one\_exec@{code.one\_exec}!n\_states@{n\_states}}
+\index{n\_states@{n\_states}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{n\_states()}{n\_states()}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+n\+\_\+states (\begin{DoxyParamCaption}\item[{str}]{zg\+File }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacecode_1_1one__exec_a193c8eed4becaf910b76a04e83d852ef}\label{namespacecode_1_1one__exec_a193c8eed4becaf910b76a04e83d852ef} 
+\index{code.one\_exec@{code.one\_exec}!args@{args}}
+\index{args@{args}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{args}{args}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+args = parser.\+parse\+\_\+args()}
+
+\Hypertarget{namespacecode_1_1one__exec_a1c88a7a73ab11af5c51fc9e5e223a5ec}\label{namespacecode_1_1one__exec_a1c88a7a73ab11af5c51fc9e5e223a5ec} 
+\index{code.one\_exec@{code.one\_exec}!benchfile@{benchfile}}
+\index{benchfile@{benchfile}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{benchfile}{benchfile}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+benchfile = args.\+file}
+
+\Hypertarget{namespacecode_1_1one__exec_aa78a508a3af3b8781458716cde27a737}\label{namespacecode_1_1one__exec_aa78a508a3af3b8781458716cde27a737} 
+\index{code.one\_exec@{code.one\_exec}!det\_bench@{det\_bench}}
+\index{det\_bench@{det\_bench}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{det\_bench}{det\_bench}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+det\+\_\+bench = deepcopy(WBA\+\_\+utils.\+get\+\_\+stats())}
+
+\Hypertarget{namespacecode_1_1one__exec_afa9b13fcb4e37cfda0df03415edd7b01}\label{namespacecode_1_1one__exec_afa9b13fcb4e37cfda0df03415edd7b01} 
+\index{code.one\_exec@{code.one\_exec}!feas@{feas}}
+\index{feas@{feas}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{feas}{feas}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+feas}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ WBA\_utils.BuechiEnergy(tot\_wba,}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tot\_wba.get\_init\_state\_number(),}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ args.wup,}
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ args.initial,\ 0)}
+
+\end{DoxyCode}
+\Hypertarget{namespacecode_1_1one__exec_ac86a9aafcf6868326eefa363fc539c7a}\label{namespacecode_1_1one__exec_ac86a9aafcf6868326eefa363fc539c7a} 
+\index{code.one\_exec@{code.one\_exec}!help@{help}}
+\index{help@{help}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{help}{help}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+help}
+
+\Hypertarget{namespacecode_1_1one__exec_ad49e37ba5a6e3a1f81844f0421ee80c7}\label{namespacecode_1_1one__exec_ad49e37ba5a6e3a1f81844f0421ee80c7} 
+\index{code.one\_exec@{code.one\_exec}!parser@{parser}}
+\index{parser@{parser}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{parser}{parser}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+parser = argparse.\+Argument\+Parser(description="{}Run one instance given as tcheckerfile and ltl spec"{})}
+
+\Hypertarget{namespacecode_1_1one__exec_a15813516b225fd987b06c4c7c683d60b}\label{namespacecode_1_1one__exec_a15813516b225fd987b06c4c7c683d60b} 
+\index{code.one\_exec@{code.one\_exec}!prodstates@{prodstates}}
+\index{prodstates@{prodstates}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{prodstates}{prodstates}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+prodstates = tot\+\_\+wba.\+num\+\_\+states()}
+
+\Hypertarget{namespacecode_1_1one__exec_a5b9418d1a66f8234c99b4ed6decb6e11}\label{namespacecode_1_1one__exec_a5b9418d1a66f8234c99b4ed6decb6e11} 
+\index{code.one\_exec@{code.one\_exec}!prodtime@{prodtime}}
+\index{prodtime@{prodtime}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{prodtime}{prodtime}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+prodtime = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}}
+
+\Hypertarget{namespacecode_1_1one__exec_aae35dbafde9ef2f5096f8386e32aa8e5}\label{namespacecode_1_1one__exec_aae35dbafde9ef2f5096f8386e32aa8e5} 
+\index{code.one\_exec@{code.one\_exec}!solvetime@{solvetime}}
+\index{solvetime@{solvetime}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{solvetime}{solvetime}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+solvetime = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}}
+
+\Hypertarget{namespacecode_1_1one__exec_a436618ded74b519f009ab65ab56a52b0}\label{namespacecode_1_1one__exec_a436618ded74b519f009ab65ab56a52b0} 
+\index{code.one\_exec@{code.one\_exec}!spec@{spec}}
+\index{spec@{spec}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{spec}{spec}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+spec = spot.\+translate(\mbox{\hyperlink{namespacecode_1_1one__exec_a41c6fd9597439c333d6059213677127a}{spec\+\_\+ltl}}, dict=wba.\+get\+\_\+dict())}
+
+\Hypertarget{namespacecode_1_1one__exec_a41c6fd9597439c333d6059213677127a}\label{namespacecode_1_1one__exec_a41c6fd9597439c333d6059213677127a} 
+\index{code.one\_exec@{code.one\_exec}!spec\_ltl@{spec\_ltl}}
+\index{spec\_ltl@{spec\_ltl}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{spec\_ltl}{spec\_ltl}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+spec\+\_\+ltl = args.\+spec}
+
+\Hypertarget{namespacecode_1_1one__exec_a83ed36923a020f5c173f9e2c7662cc3e}\label{namespacecode_1_1one__exec_a83ed36923a020f5c173f9e2c7662cc3e} 
+\index{code.one\_exec@{code.one\_exec}!spectranstime@{spectranstime}}
+\index{spectranstime@{spectranstime}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{spectranstime}{spectranstime}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+spectranstime = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}}
+
+\Hypertarget{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}\label{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718} 
+\index{code.one\_exec@{code.one\_exec}!t@{t}}
+\index{t@{t}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{t}{t}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+t = time.\+time()}
+
+\Hypertarget{namespacecode_1_1one__exec_ae2abc48157e4b8668fa8ac3f87a21c12}\label{namespacecode_1_1one__exec_ae2abc48157e4b8668fa8ac3f87a21c12} 
+\index{code.one\_exec@{code.one\_exec}!tchk2cpatime@{tchk2cpatime}}
+\index{tchk2cpatime@{tchk2cpatime}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{tchk2cpatime}{tchk2cpatime}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+tchk2cpatime = time.\+time() -\/ \mbox{\hyperlink{namespacecode_1_1one__exec_aae6369fd5d4af84aa157fe56e1ae7718}{t}}}
+
+\Hypertarget{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}\label{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70} 
+\index{code.one\_exec@{code.one\_exec}!tchkFile@{tchkFile}}
+\index{tchkFile@{tchkFile}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{tchkFile}{tchkFile}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+tchk\+File = args.\+tchk\+File}
+
+\Hypertarget{namespacecode_1_1one__exec_a9054fde0dcacc138d59930caf89ad704}\label{namespacecode_1_1one__exec_a9054fde0dcacc138d59930caf89ad704} 
+\index{code.one\_exec@{code.one\_exec}!tot\_wba@{tot\_wba}}
+\index{tot\_wba@{tot\_wba}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{tot\_wba}{tot\_wba}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+tot\+\_\+wba = spot.\+product(\mbox{\hyperlink{namespacecode_1_1one__exec_ab8e9208a2ec00b5d6c7c68b32051b126}{wba}}, \mbox{\hyperlink{namespacecode_1_1one__exec_a436618ded74b519f009ab65ab56a52b0}{spec}})}
+
+\Hypertarget{namespacecode_1_1one__exec_a9ab93cbb5a5bb065ad068fcaee9b35d8}\label{namespacecode_1_1one__exec_a9ab93cbb5a5bb065ad068fcaee9b35d8} 
+\index{code.one\_exec@{code.one\_exec}!type@{type}}
+\index{type@{type}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{type}{type}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+type}
+
+\Hypertarget{namespacecode_1_1one__exec_ab8e9208a2ec00b5d6c7c68b32051b126}\label{namespacecode_1_1one__exec_ab8e9208a2ec00b5d6c7c68b32051b126} 
+\index{code.one\_exec@{code.one\_exec}!wba@{wba}}
+\index{wba@{wba}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{wba}{wba}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+wba = \mbox{\hyperlink{namespacecode_1_1to__weighted__twa_a35e779065bb1128d1c160071da37afc6}{to\+\_\+weighted\+\_\+twa.\+translate}}(\mbox{\hyperlink{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}{tchk\+File}})}
+
+\Hypertarget{namespacecode_1_1one__exec_a757bb98c5073004c62b579d9d759cf6c}\label{namespacecode_1_1one__exec_a757bb98c5073004c62b579d9d759cf6c} 
+\index{code.one\_exec@{code.one\_exec}!zgStates@{zgStates}}
+\index{zgStates@{zgStates}!code.one\_exec@{code.one\_exec}}
+\doxysubsubsection{\texorpdfstring{zgStates}{zgStates}}
+{\footnotesize\ttfamily code.\+one\+\_\+exec.\+zg\+States = \mbox{\hyperlink{namespacecode_1_1one__exec_a097c1f7580e718836dfe74bc9f006d43}{n\+\_\+states}}(\mbox{\hyperlink{namespacecode_1_1one__exec_ac97e3a8581d0134ddd7aae92a226ad70}{tchk\+File}} + "{}.zg"{})}
+

@@ -1,0 +1,9 @@
+<map id="code.ipython_utils.IPythonUtils" name="code.ipython_utils.IPythonUtils">
+<area shape="rect" id="Node000001" title="Singleton class to be called when printing information." alt="" coords="35,167,230,207"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,86,95,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,119,116,164,112,168,69,123"/>
+<area shape="rect" id="Node000003" href="$classcode_1_1ipython__utils_1_1IPythonUtilsMeta.html" title="Class that implements the Singleton design pattern." alt="" coords="119,79,314,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="191,130,153,168,149,165,187,127"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="191,5,242,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="219,44,219,79,214,79,214,44"/>
+</map>
