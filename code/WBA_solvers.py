@@ -710,6 +710,11 @@ def CoBuechi_FW(aut: "co-Büchi automaton",
                 # TODO return BuechiResult
                 return True
 
+    for i in range(V):
+        print(f"==== color {i} ====")
+        for j in range(V):
+            print(f"to {j}: {M[i][j]}")
+        print("\n")
     ipy_utils.print_c("There is no positive loop")
     return BuechiResult()
 

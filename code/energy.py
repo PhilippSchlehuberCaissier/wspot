@@ -62,7 +62,9 @@ class EnergySegment:
         return self.evaluate(self.lowerBound) >= self.lowerBound and self.pred is not None
 
     def restriction(self, low, upp):
-        return EnergySegment(low, upp, self.pred, self.a, self.b)
+        return EnergySegment(max(self.lowerBound, low),
+                             min(upp, self.upperBound),
+                             self.pred, self.a, self.b)
 
     @staticmethod
     def zero(low, upp, pred):
@@ -127,7 +129,7 @@ class EnergyFunction(Semiring):
     ## Return the segment that is used when evaluating this function at x.
     def get_segment(self, x):
         self.is_in_domain(x)
-        
+
         for seg in self.segments:
             # We assume that if there is a discontinuity at x, the used segment will be the one that has maximal energy.
             # This means that a segment is only usable on [lowerBound, upperBound-1] unless it is the last segment (since there is no next segment to use)
@@ -158,6 +160,22 @@ class EnergyFunction(Semiring):
                                                  None))
 
         for old_seg in f.segments:
+            # Keep every segment defined on an interval of [0, wup]
+            old_seg = old_seg.restriction(0, WUP.value)
+
+            # Remove duplicate segments
+            if old_seg == next_seg or old_seg in new_segs:
+                next_seg = None
+                continue
+
+            # # Remove zero-length segments EXCEPT if they are defined for wup
+            # if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound != WUP.value:
+            #     continue
+
+            if next_seg is None or old_seg.lowerBound > old_seg.upperBound:
+                next_seg = old_seg
+                continue
+
             # Cap every segment to wup
             if old_seg.evaluate(old_seg.upperBound) > WUP.value:
                 if next_seg is not None:
@@ -210,20 +228,11 @@ class EnergyFunction(Semiring):
                                                        ))
                 continue
 
-            if next_seg is None:
-                next_seg = old_seg
-                continue
-
-            # Remove zero-length segments EXCEPT if they are defined for wup
-            if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound == WUP.value:
-                continue
-
             # Merge segments with the same equation
             if old_seg.a == next_seg.a and old_seg.b == next_seg.b and old_seg.pred == next_seg.pred:
                 next_seg.upperBound = old_seg.upperBound
                 # print(f"merging segments, new segment: {next_seg}")
             else:
-                # print(f"next segment: {next_seg}")
                 new_segs.append(next_seg)
                 next_seg = old_seg
         if next_seg is not None:
@@ -297,7 +306,7 @@ class EnergyFunction(Semiring):
             if im_lower == im_upper:
                 next_seg = EnergySegment.const(lower,
                                                upper,
-                                               seg.pred,
+                                               other.get_segment(im_lower).pred,
                                                other.evaluate(im_lower))
                 new_segs.append(next_seg)
                 continue
@@ -318,7 +327,7 @@ class EnergyFunction(Semiring):
 
                     new_a = seg.a * other_seg.a
                     new_b = other_seg.a * seg.b + other_seg.b
-                    next_seg = EnergySegment.incr(inv_lower, inv_upper, seg.pred, new_b) if new_a == 1 else EnergySegment.const(inv_lower, inv_upper, seg.pred, new_b)
+                    next_seg = EnergySegment.incr(inv_lower, inv_upper, other_seg.pred, new_b) if new_a == 1 else EnergySegment.const(inv_lower, inv_upper, other_seg.pred, new_b)
                     new_segs.append(next_seg)
 
         f = EnergyFunction(new_segs)
