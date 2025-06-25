@@ -6,7 +6,7 @@ from semiring import Semiring
 # We use a global wup
 @dataclass
 class WUP:
-    value = 10
+    value = None
 
 
 def set_wup(wup):
@@ -97,10 +97,14 @@ class EnergyFunction(Semiring):
 
     @staticmethod
     def one(low=0, upp=WUP.value):
+        # TODO find a smarter way of using dataclass WUP
+        upp = WUP.value if upp is None else upp
         return EnergyFunction([EnergySegment.one(low, upp, None)])
 
     @staticmethod
     def zero(low=0, upp=WUP.value):
+        # TODO find a smarter way of using dataclass WUP
+        upp = WUP.value if upp is None else upp
         return EnergyFunction([EnergySegment.zero(low, upp, None)])
 
     @property

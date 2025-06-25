@@ -71,7 +71,7 @@ def OmegaEnergy(aut: "HOA automaton",
     # Co-Büchi
     if acc_cond.is_co_buchi():
         ipy_utils.print_c("(Generalized) co-Büchi condition detected.")
-        return solv.CoBuechi_FW(hoa, s0, wup, c0)
+        return solv.CoBuechi_FW_new(hoa, s0, wup, c0)
 
     # Parity
     # Implements the algorithm presented in Section 7
