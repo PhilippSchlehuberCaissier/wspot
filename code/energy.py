@@ -2,15 +2,7 @@ from typing import List
 from dataclasses import dataclass
 
 from semiring import Semiring
-
-# We use a global wup
-@dataclass
-class WUP:
-    value = None
-
-
-def set_wup(wup):
-    WUP.value = wup
+from wup import WUP, set_wup
 
 
 @dataclass
@@ -96,13 +88,13 @@ class EnergyFunction(Semiring):
         return " U ".join([str(seg) for seg in self.segments])
 
     @staticmethod
-    def one(low=0, upp=WUP.value):
+    def one(low=0, upp=None):
         # TODO find a smarter way of using dataclass WUP
         upp = WUP.value if upp is None else upp
         return EnergyFunction([EnergySegment.one(low, upp, None)])
 
     @staticmethod
-    def zero(low=0, upp=WUP.value):
+    def zero(low=0, upp=None):
         # TODO find a smarter way of using dataclass WUP
         upp = WUP.value if upp is None else upp
         return EnergyFunction([EnergySegment.zero(low, upp, None)])

@@ -4,7 +4,7 @@
 import spot
 
 from buechi import BuechiResult
-
+from energy import WUP
 
 ## Generalized Floyd-Warshall on automata weighted on a semiring sr.
 # @param aut (HOA automaton): generalized weighted co-büchi automaton as twa_graph

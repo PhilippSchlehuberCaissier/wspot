@@ -2,7 +2,7 @@ from typing import List
 from buechi import BuechiResult
 import BF1
 from BF1 import mod_BF_iter
-from energy import EnergyFunction, EnergySegment
+from energy import EnergyFunction, EnergySegment, set_wup
 
 import spot
 
@@ -207,6 +207,8 @@ def ParityEnergy(hoa: "parity automaton",
                  wup: int,
                  c0: int
                  ) -> BuechiResult:
+    set_wup(wup)
+
     def scc_one_parity(acc_set, look_for_odd):
         ## Return True if acc_set contains only odd sets (even sets if look_for_odd is set to False), False otherwise.
         # @param acc_set(mark_t): set of all acceptance sets in a SCC
@@ -297,6 +299,7 @@ def ParityEnergy(hoa: "parity automaton",
 # Solve an ɷ-regular energy game in a co-Büchi automaton using a naive algorithm.
 def NaiveCoBuechi(hoa, s0, wup, c0):
     # For every color col, prune every edge accepting col, promote to backedge (color 0) every other edge and solve for Büchi
+    set_wup(wup)
     bf = mod_BF_iter(hoa)
     assert s0 == hoa.get_init_state_number()
 
@@ -345,6 +348,7 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
                    wup: "weak upper bound",
                    c0: "initial credit"
                    ):
+    set_wup(wup)
     # Algorithm:
     # First, calculate the prefixes in the original automaton.
     # Then, try to find an accepting loop in the automaton
@@ -498,6 +502,7 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                    wup: int,
                    c0: int
                    ) -> BuechiResult:
+    set_wup(wup)
     # Algorithm:
     # First, calculate the prefixes in the original automaton.
     # Then, try to find an accepting loop in the automaton
@@ -650,6 +655,8 @@ def CoBuechi_FW(aut: "co-Büchi automaton",
                 wup: int,
                 c0: int
                 ) -> BuechiResult:
+    set_wup(wup)
+
     if isinstance(aut, str):
         hoa = spot.automaton(aut)
     else:
@@ -725,21 +732,23 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
                     wup: int,
                     c0: int
                     ) -> BuechiResult:
+    set_wup(wup)
+    
     if isinstance(aut, str):
         hoa = spot.automaton(aut)
     else:
         hoa = aut
 
+    def diag_is_above_one(M, i, j):
+        if i == j:
+            if M[i][j].is_above_one:
+                ipy_utils.print_c(f"There is a positive loop starting from {i}! ({M[i][j]})")
+                # TODO return BuechiResult
+                return True
+
     for col in range(hoa.acc().num_sets()):
         ipy_utils.print_c(f"Examining color {str(col)}")
         sub_hoa = RemoveColor(hoa, col)
-
-        def diag_is_above_one(M, i, j):
-            if i == j:
-                if M[i][j].is_above_one:
-                    ipy_utils.print_c(f"There is a positive loop starting from {i}! ({M[i][j]})")
-                    # TODO return BuechiResult
-                    return True
 
         res = wf.FWhoa(sub_hoa, EnergyFunction, s0, diag_is_above_one)
         if res:
@@ -763,6 +772,7 @@ def RabinEnergy(hoa: "Rabin automaton",
                 wup: int,
                 c0: int
                 ) -> BuechiResult:
+    set_wup(wup)
     # TODO Try to find a more efficient algorithm
     # Algorithm:
     # for each accepting state pair (f, i), check if hoa with Büchi condition Inf(i) has a Büchi accepting path when removing every edge that accepts f
@@ -808,6 +818,7 @@ def TrueEnergy(hoa: "automaton",
                wup: int,
                c0: int
                ) -> BuechiResult:
+    set_wup(wup)
     # Algorithm: promote every edge to back edge and run BuechiEnergy on the new automaton
     buchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
     buchi_hoa.copy_named_properties_of(hoa)
@@ -836,6 +847,8 @@ def BuechiEnergy(aut,
                  en: "prefix energies array" = None,
                  pred: "optimal predecessors array" = None
                  ) -> BuechiResult:
+    set_wup(wup)
+
     if not (aut.acc().num_sets() >= 1) and aut.acc().is_generalized_buchi():
         raise RuntimeError("Automaton does not have a generalized buechi acceptance.")
 
