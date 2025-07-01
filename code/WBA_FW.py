@@ -42,8 +42,7 @@ def FWhoa(aut: "HOA automaton",
     for k in range(V):
         for i in range(V):
             for j in range(V):
-                # TODO do we need this if?
-                M[i][j] = M[i][j] + (M[i][k] * M[k][j]) if M[i][k] != sr.zero() else M[i][j]
+                M[i][j] = M[i][j] + (M[i][k] * M[k][j])
                 # TODO do we need to return something?
                 res = check(M, i, j)
                 if res:
