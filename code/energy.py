@@ -209,13 +209,13 @@ class EnergyFunction(Semiring):
                 if old_seg.a == 0:
                     new_segs.append(EnergySegment.zero(old_seg.lowerBound,
                                                        old_seg.upperBound,
-                                                       old_seg.pred
+                                                       None
                                                        ))
                 else:
                     disc = int(-old_seg.b / old_seg.a)
                     new_segs.append(EnergySegment.zero(old_seg.lowerBound,
                                                        disc,
-                                                       old_seg.pred,
+                                                       None
                                                        ))
                     new_segs.append(EnergySegment.incr(disc,
                                                        old_seg.upperBound,
