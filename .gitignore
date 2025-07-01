@@ -130,3 +130,6 @@ dmypy.json
 
 # Emacs backup files
 *~
+
+# Automatically generated HOA automata
+*auto.hoa
