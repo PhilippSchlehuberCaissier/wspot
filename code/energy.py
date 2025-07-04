@@ -2,7 +2,6 @@ from typing import List
 from dataclasses import dataclass
 
 from semiring import Semiring
-from wup import WUP, set_wup
 
 
 @dataclass
@@ -21,18 +20,11 @@ class EnergySegment:
 
     @property
     def domain(self):
-        return range(self.lowerBound, self.upperBound)
+        return (self.lowerBound, self.upperBound)
 
     @property
     def image(self):
-        if self.a == 0:
-            return range(self.b, self.b+1)
-        else:
-            # It is guaranteed that the image of an energy segment is in [0,wup]
-            return range(
-                self.lowerBound + self.b,
-                self.upperBound + self.b + 1
-                )
+        return (self.b, self.b) if self.a == 0 else (self.lowerBound + self.b, self.upperBound + self.b)
 
     def __str__(self):
         str_def = f"[{self.lowerBound}, {self.upperBound}] -> IR"
@@ -41,12 +33,11 @@ class EnergySegment:
         return f"{str_def} ; e_in |---> {str_a}{str_b}" + f" (from {self.pred})"
 
     def is_in_domain(self, x):
-        if x not in range(self.lowerBound, self.upperBound + 1):
-            raise ValueError(f"x = {x} is out of the domain of the segment: {self}")
+        return x >= self.domain[0] and x <= self.domain[1]
 
     def evaluate(self, e_in):
         # TODO This works while our weights are integers
-        self.is_in_domain(e_in)
+        assert self.is_in_domain(e_in)
         return self.a * e_in + self.b
 
     @property
@@ -88,16 +79,12 @@ class EnergyFunction(Semiring):
         return " U ".join([str(seg) for seg in self.segments])
 
     @staticmethod
-    def one(low=0, upp=None):
-        # TODO find a smarter way of using dataclass WUP
-        upp = WUP.value if upp is None else upp
-        return EnergyFunction([EnergySegment.one(low, upp, None)])
+    def one(wup):
+        return EnergyFunction([EnergySegment.one(0, wup, None)])
 
     @staticmethod
-    def zero(low=0, upp=None):
-        # TODO find a smarter way of using dataclass WUP
-        upp = WUP.value if upp is None else upp
-        return EnergyFunction([EnergySegment.zero(low, upp, None)])
+    def zero(wup):
+        return EnergyFunction([EnergySegment.zero(0, wup, None)])
 
     @property
     def is_zero(self):
@@ -105,27 +92,28 @@ class EnergyFunction(Semiring):
         return len(self.segments) == 1 and self.segments[0].evaluate(0) == -1
 
     @property
-    def domain(self):
-        # Assuming segments are ordered
-        return range(self.segments[0].lowerBound,
-                     self.segments[-1].upperBound + 1)
-
-    @property
     def discontinuities(self):
         # Assuming segments are ordered
         # IMPORTANT: Global lower and upper bounds are also considered as discontinuities!
         final = [seg.lowerBound for seg in self.segments] + [self.segments[-1].upperBound]
-        final.sort()
         return final
 
+    @property
+    def domain(self):
+        return (0, self.segments[-1].upperBound)
+
+    @property
+    def wup(self):
+        return self.domain[1]
+
     def is_in_domain(self, x):
-        if x not in self.domain:
-            raise ValueError(f"x = {x} is out of the domain of the function: {self}")
+        return x >= self.domain[0] and x <= self.domain[1]
 
     ## Return the segment that is used when evaluating this function at x.
     def get_segment(self, x):
-        self.is_in_domain(x)
+        assert self.is_in_domain(x)
 
+        # TODO dichotomy?
         for seg in self.segments:
             # We assume that if there is a discontinuity at x, the used segment will be the one that has maximal energy.
             # This means that a segment is only usable on [lowerBound, upperBound-1] unless it is the last segment (since there is no next segment to use)
@@ -134,12 +122,14 @@ class EnergyFunction(Semiring):
                 return seg
 
     def evaluate(self, x):
-        self.is_in_domain(x)
-
+        assert self.is_in_domain(x)
         return self.get_segment(x).evaluate(x)
 
     @staticmethod
     def clean(f):
+        # TODO clean this!!
+        wup = f.domain[1]
+        
         new_segs = []
         next_seg = None
         # Whether we need to make another pass
@@ -150,14 +140,14 @@ class EnergyFunction(Semiring):
             f.segments.insert(0, EnergySegment.zero(0,
                                                     f.segments[0].lowerBound,
                                                     None))
-        if f.segments[-1].upperBound < WUP.value:
+        if f.segments[-1].upperBound < wup:
             f.segments.append(EnergySegment.zero(f.segments[-1].upperBound,
-                                                 WUP.value,
+                                                 wup,
                                                  None))
 
         for old_seg in f.segments:
             # Keep every segment defined on an interval of [0, wup]
-            old_seg = old_seg.restriction(0, WUP.value)
+            old_seg = old_seg.restriction(0, wup)
 
             # Remove duplicate segments
             if old_seg == next_seg or old_seg in new_segs:
@@ -165,7 +155,7 @@ class EnergyFunction(Semiring):
                 continue
 
             # # Remove zero-length segments EXCEPT if they are defined for wup
-            # if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound != WUP.value:
+            # if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound != WUP.get_wup():
             #     continue
 
             if next_seg is None or old_seg.lowerBound > old_seg.upperBound:
@@ -173,7 +163,7 @@ class EnergyFunction(Semiring):
                 continue
 
             # Cap every segment to wup
-            if old_seg.evaluate(old_seg.upperBound) > WUP.value:
+            if old_seg.evaluate(old_seg.upperBound) > wup:
                 if next_seg is not None:
                     new_segs.append(next_seg)
                     next_seg = None
@@ -183,10 +173,10 @@ class EnergyFunction(Semiring):
                     new_segs.append(EnergySegment.const(old_seg.lowerBound,
                                                         old_seg.upperBound,
                                                         old_seg.pred,
-                                                        WUP.value
+                                                        wup
                                                         ))
                 else:
-                    disc = int((WUP.value - old_seg.b) / old_seg.a)
+                    disc = int((wup - old_seg.b) / old_seg.a)
                     new_segs.append(EnergySegment.incr(old_seg.lowerBound,
                                                        disc,
                                                        old_seg.pred,
@@ -195,7 +185,7 @@ class EnergyFunction(Semiring):
                     new_segs.append(EnergySegment.const(disc,
                                                         old_seg.upperBound,
                                                         old_seg.pred,
-                                                        WUP.value
+                                                        wup
                                                         ))
                 continue
 
@@ -245,6 +235,7 @@ class EnergyFunction(Semiring):
             lower = discs[i]
             upper = discs[i+1]
 
+            # TODO associate discontinuities to a list of corresponding segments
             seg1 = f1.get_segment(lower)
             seg2 = f2.get_segment(lower)
 
@@ -283,10 +274,11 @@ class EnergyFunction(Semiring):
 
     def __mul__(self, other):
         # TODO clean this!!
+        wup = self.domain[1]
         new_segs = []
 
         if self.is_zero or other.is_zero:
-            return EnergyFunction.zero(0, WUP.value)
+            return EnergyFunction.zero(wup)
 
         for seg in self.segments:
             if seg.is_zero:
@@ -329,22 +321,33 @@ class EnergyFunction(Semiring):
         f = EnergyFunction(new_segs)
         return EnergyFunction.clean(f)
 
-    @staticmethod
-    def transition_to_sr(e, weight):
+    def transition_to_sr(wup, e, weight):
         segs = []
         if weight > 0:
             segs = [
-                EnergySegment.incr(0, WUP.value - weight, e.src, weight),
-                EnergySegment.const(WUP.value - weight, WUP.value, e.src, WUP.value)
+                EnergySegment.incr(0, wup - weight, e.src, weight),
+                EnergySegment.const(wup - weight, wup, e.src, wup)
             ]
         elif weight < 0:
             segs = [
                 EnergySegment.const(0, -weight, e.src, -1),
-                EnergySegment.incr(-weight, WUP.value, e.src, weight)
+                EnergySegment.incr(-weight, wup, e.src, weight)
             ]
         else:
             segs = [
-                EnergySegment.one(0, WUP.value, e.src)
+                EnergySegment.one(0, wup, e.src)
             ]
         f = EnergyFunction(segs)
         return EnergyFunction.clean(f)
+
+
+## Class for energy functions parametrized with a wup
+def EnergyFunctionWup(wup):
+    return type(
+        "EnergyFunctionWup",
+        (EnergyFunction, ),
+        {"wup": wup,
+         "zero": lambda: EnergyFunction.zero(wup),
+         "one": lambda: EnergyFunction.one(wup),
+         "transition_to_sr": lambda e, weight: EnergyFunction.transition_to_sr(wup, e, weight)}
+    )

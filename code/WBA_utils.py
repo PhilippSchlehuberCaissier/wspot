@@ -15,7 +15,6 @@ from array import array
 
 import WBA_solvers as solv
 from buechi import BuechiResult
-import energy
 import ipython_utils as ipy
 ipy_utils = ipy.IPythonUtils()
 
@@ -49,7 +48,7 @@ def OmegaEnergy(aut: "HOA automaton",
     else:
         hoa = aut
 
-    energy.set_wup(wup)
+    wup_t = wup
     ipy_utils.set_display_mode(do_display)
     acc_cond = hoa.acc()
 
@@ -61,31 +60,31 @@ def OmegaEnergy(aut: "HOA automaton",
     # Condition is t
     if acc_cond.is_t():
         ipy_utils.print_c("True condition detected.")
-        return solv.TrueEnergy(hoa, s0, wup, c0)
+        return solv.TrueEnergy(hoa, s0, wup_t, c0)
 
     # Büchi (can be generalized)
     if acc_cond.is_generalized_buchi():
         ipy_utils.print_c("(Generalized) Büchi condition detected.")
-        return solv.BuechiEnergy(hoa, s0, wup, c0, None, None)
+        return solv.BuechiEnergy(hoa, s0, wup_t, c0, None, None)
 
     # Co-Büchi
     if acc_cond.is_co_buchi():
         ipy_utils.print_c("(Generalized) co-Büchi condition detected.")
-        return solv.CoBuechi_FW_new(hoa, s0, wup, c0)
+        return solv.CoBuechi_FW_new(hoa, s0, wup_t, c0)
 
     # Parity
     # Implements the algorithm presented in Section 7
     if acc_cond.is_parity()[0]:
         ipy_utils.print_c("Parity condition detected.")
-        return solv.ParityEnergy(hoa, s0, wup, c0)
+        return solv.ParityEnergy(hoa, s0, wup_t, c0)
 
     # Rabin
     p = acc_cond.is_rabin()
     if p != 1:
         ipy_utils.print_c("Rabin condition detected.")
-        return solv.RabinEnergy(hoa, p, s0, wup, c0)
+        return solv.RabinEnergy(hoa, p, s0, wup_t, c0)
 
     # TODO other automata types
     ipy_utils.print_c("Unknown automaton type. Assuming acceptance condition is t.")
     ipy_utils.print_c("This will lead to errors in trace extraction if the acceptance condition is not t.")
-    return solv.TrueEnergy(hoa, s0, wup, c0)
+    return solv.TrueEnergy(hoa, s0, wup_t, c0)

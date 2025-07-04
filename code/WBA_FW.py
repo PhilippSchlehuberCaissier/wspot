@@ -4,7 +4,6 @@
 import spot
 
 from buechi import BuechiResult
-from energy import WUP
 
 ## Generalized Floyd-Warshall on automata weighted on a semiring sr.
 # @param aut (HOA automaton): generalized weighted co-büchi automaton as twa_graph
@@ -16,7 +15,6 @@ from energy import WUP
 # @return True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise.
 def FWhoa(aut: "HOA automaton",
           sr,
-          s0: int,
           check=lambda M, i, j: None
           ) -> BuechiResult:
     if isinstance(aut, str):
@@ -42,6 +40,7 @@ def FWhoa(aut: "HOA automaton",
     for k in range(V):
         for i in range(V):
             for j in range(V):
+                # print(f"Examining {i} to {j} via {k}")
                 M[i][j] = M[i][j] + (M[i][k] * M[k][j])
                 # TODO do we need to return something?
                 res = check(M, i, j)

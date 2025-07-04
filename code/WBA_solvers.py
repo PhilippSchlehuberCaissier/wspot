@@ -2,7 +2,7 @@ from typing import List
 from buechi import BuechiResult
 import BF1
 from BF1 import mod_BF_iter
-from energy import EnergyFunction, EnergySegment, set_wup
+from energy import EnergyFunctionWup
 
 import spot
 
@@ -207,8 +207,6 @@ def ParityEnergy(hoa: "parity automaton",
                  wup: int,
                  c0: int
                  ) -> BuechiResult:
-    set_wup(wup)
-
     def scc_one_parity(acc_set, look_for_odd):
         ## Return True if acc_set contains only odd sets (even sets if look_for_odd is set to False), False otherwise.
         # @param acc_set(mark_t): set of all acceptance sets in a SCC
@@ -299,7 +297,6 @@ def ParityEnergy(hoa: "parity automaton",
 # Solve an ɷ-regular energy game in a co-Büchi automaton using a naive algorithm.
 def NaiveCoBuechi(hoa, s0, wup, c0):
     # For every color col, prune every edge accepting col, promote to backedge (color 0) every other edge and solve for Büchi
-    set_wup(wup)
     bf = mod_BF_iter(hoa)
     assert s0 == hoa.get_init_state_number()
 
@@ -348,7 +345,6 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
                    wup: "weak upper bound",
                    c0: "initial credit"
                    ):
-    set_wup(wup)
     # Algorithm:
     # First, calculate the prefixes in the original automaton.
     # Then, try to find an accepting loop in the automaton
@@ -502,7 +498,6 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
                    wup: int,
                    c0: int
                    ) -> BuechiResult:
-    set_wup(wup)
     # Algorithm:
     # First, calculate the prefixes in the original automaton.
     # Then, try to find an accepting loop in the automaton
@@ -649,81 +644,79 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
     return BuechiResult()
 
 
-## Solve an ɷ-regular energy game in a co-Büchi automaton using Floyd-Warshall on energy functions.
-def CoBuechi_FW(aut: "co-Büchi automaton",
-                s0: int,
-                wup: int,
-                c0: int
-                ) -> BuechiResult:
-    set_wup(wup)
+# ## Solve an ɷ-regular energy game in a co-Büchi automaton using Floyd-Warshall on energy functions.
+# def CoBuechi_FW(aut: "co-Büchi automaton",
+#                 s0: int,
+#                 wup: int,
+#                 c0: int
+#                 ) -> BuechiResult:
+#     if isinstance(aut, str):
+#         hoa = spot.automaton(aut)
+#     else:
+#         hoa = aut
 
-    if isinstance(aut, str):
-        hoa = spot.automaton(aut)
-    else:
-        hoa = aut
+#     for col in range(hoa.acc().num_sets()):
+#         ipy_utils.print_c(f"Examining color {str(col)}")
+#         sub_hoa = RemoveColor(hoa, col)
 
-    for col in range(hoa.acc().num_sets()):
-        ipy_utils.print_c(f"Examining color {str(col)}")
-        sub_hoa = RemoveColor(hoa, col)
+#         V = sub_hoa.num_states()
+#         M = [
+#             [EnergyFunction.zero(0, wup) for _ in range(V)] for _ in range(V)]
 
-        V = sub_hoa.num_states()
-        M = [
-            [EnergyFunction.zero(0, wup) for _ in range(V)] for _ in range(V)]
+#         for e in sub_hoa.edges():
+#             # 3 cases:
+#             # edge weight is 0 -> identity
+#             # edge weight is > 0 -> increasing function + constant
+#             # edge weight is < 0 -> undefined + increasing
+#             weight = spot.get_weight(sub_hoa, e)
+#             segs = []
+#             if weight > 0:
+#                 segs = [
+#                     EnergySegment.incr(0, wup - weight, e.src, weight),
+#                     EnergySegment.const(wup - weight, wup, e.src, wup)
+#                     ]
+#             elif weight < 0:
+#                 segs = [
+#                     EnergySegment.const(0, -weight, e.src, -1),
+#                     EnergySegment.incr(-weight, wup, e.src, weight)
+#                     ]
+#             else:
+#                 segs = [
+#                     EnergySegment.one(0, wup, e.src)
+#                     ]
+#             f = EnergyFunction(segs)
+#             M[e.src][e.dst] = EnergyFunction.clean(f)
+#         for v in range(V):
+#             if M[v][v] == EnergyFunction.zero(0, wup):
+#                 M[v][v] = EnergyFunction.clean(EnergyFunction(
+#                     [
+#                         EnergySegment.one(0, wup, None)
+#                     ]))
+#         for k in range(V):
+#             for i in range(V):
+#                 for j in range(V):
+#                     M[i][j] = M[i][j] + (M[i][k] * M[k][j]) if M[i][k] != EnergyFunction.zero(0, wup) else M[i][j]
+#                     if i == j:
+#                         if M[i][j].is_above_one:
+#                             ipy_utils.print_c(f"There is a positive loop starting from {i}! ({M[i][j]})")
+#                             # TODO return BuechiResult
+#                             return True
 
-        for e in sub_hoa.edges():
-            # 3 cases:
-            # edge weight is 0 -> identity
-            # edge weight is > 0 -> increasing function + constant
-            # edge weight is < 0 -> undefined + increasing
-            weight = spot.get_weight(sub_hoa, e)
-            segs = []
-            if weight > 0:
-                segs = [
-                    EnergySegment.incr(0, wup - weight, e.src, weight),
-                    EnergySegment.const(wup - weight, wup, e.src, wup)
-                    ]
-            elif weight < 0:
-                segs = [
-                    EnergySegment.const(0, -weight, e.src, -1),
-                    EnergySegment.incr(-weight, wup, e.src, weight)
-                    ]
-            else:
-                segs = [
-                    EnergySegment.one(0, wup, e.src)
-                    ]
-            f = EnergyFunction(segs)
-            M[e.src][e.dst] = EnergyFunction.clean(f)
-        for v in range(V):
-            if M[v][v] == EnergyFunction.zero(0, wup):
-                M[v][v] = EnergyFunction.clean(EnergyFunction(
-                    [
-                        EnergySegment.one(0, wup, None)
-                    ]))
-        for k in range(V):
-            for i in range(V):
-                for j in range(V):
-                    M[i][j] = M[i][j] + (M[i][k] * M[k][j]) if M[i][k] != EnergyFunction.zero(0, wup) else M[i][j]
-                    if i == j:
-                        if M[i][j].is_above_one:
-                            ipy_utils.print_c(f"There is a positive loop starting from {i}! ({M[i][j]})")
-                            # TODO return BuechiResult
-                            return True
+#         # Check the diagonal
+#         for k in range(V):
+#             fun = M[k][k]
+#             if fun.is_above_one:
+#                 ipy_utils.print_c(f"There is a positive loop starting from {k}! ({fun})")
+#                 # TODO return BuechiResult
+#                 return True
 
-        # Check the diagonal
-        for k in range(V):
-            fun = M[k][k]
-            if fun.is_above_one:
-                ipy_utils.print_c(f"There is a positive loop starting from {k}! ({fun})")
-                # TODO return BuechiResult
-                return True
-
-    for i in range(V):
-        print(f"==== color {i} ====")
-        for j in range(V):
-            print(f"to {j}: {M[i][j]}")
-        print("\n")
-    ipy_utils.print_c("There is no positive loop")
-    return BuechiResult()
+#     for i in range(V):
+#         print(f"==== color {i} ====")
+#         for j in range(V):
+#             print(f"to {j}: {M[i][j]}")
+#         print("\n")
+#     ipy_utils.print_c("There is no positive loop")
+#     return BuechiResult()
 
 
 ## Solve an ɷ-regular energy game in a co-Büchi automaton using Floyd-Warshall on energy functions.
@@ -732,8 +725,6 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
                     wup: int,
                     c0: int
                     ) -> BuechiResult:
-    set_wup(wup)
-    
     if isinstance(aut, str):
         hoa = spot.automaton(aut)
     else:
@@ -750,7 +741,7 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
         ipy_utils.print_c(f"Examining color {str(col)}")
         sub_hoa = RemoveColor(hoa, col)
 
-        res = wf.FWhoa(sub_hoa, EnergyFunction, s0, diag_is_above_one)
+        res = wf.FWhoa(sub_hoa, EnergyFunctionWup(wup), diag_is_above_one)
         if res:
             return res
 
@@ -772,7 +763,6 @@ def RabinEnergy(hoa: "Rabin automaton",
                 wup: int,
                 c0: int
                 ) -> BuechiResult:
-    set_wup(wup)
     # TODO Try to find a more efficient algorithm
     # Algorithm:
     # for each accepting state pair (f, i), check if hoa with Büchi condition Inf(i) has a Büchi accepting path when removing every edge that accepts f
@@ -818,7 +808,6 @@ def TrueEnergy(hoa: "automaton",
                wup: int,
                c0: int
                ) -> BuechiResult:
-    set_wup(wup)
     # Algorithm: promote every edge to back edge and run BuechiEnergy on the new automaton
     buchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
     buchi_hoa.copy_named_properties_of(hoa)
@@ -847,8 +836,6 @@ def BuechiEnergy(aut,
                  en: "prefix energies array" = None,
                  pred: "optimal predecessors array" = None
                  ) -> BuechiResult:
-    set_wup(wup)
-
     if not (aut.acc().num_sets() >= 1) and aut.acc().is_generalized_buchi():
         raise RuntimeError("Automaton does not have a generalized buechi acceptance.")
 
