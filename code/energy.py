@@ -36,7 +36,6 @@ class EnergySegment:
         return x >= self.domain[0] and x <= self.domain[1]
 
     def evaluate(self, e_in):
-        # TODO This works while our weights are integers
         assert self.is_in_domain(e_in)
         return self.a * e_in + self.b
 
@@ -117,8 +116,7 @@ class EnergyFunction(Semiring):
         for seg in self.segments:
             # We assume that if there is a discontinuity at x, the used segment will be the one that has maximal energy.
             # This means that a segment is only usable on [lowerBound, upperBound-1] unless it is the last segment (since there is no next segment to use)
-            corrected_upper = seg.upperBound if seg != self.segments[-1] else seg.upperBound + 1
-            if x in range(seg.lowerBound, corrected_upper):
+            if x >= seg.lowerBound and x < seg.upperBound or seg == self.segments[-1]:
                 return seg
 
     def evaluate(self, x):
@@ -149,70 +147,70 @@ class EnergyFunction(Semiring):
             # Keep every segment defined on an interval of [0, wup]
             old_seg = old_seg.restriction(0, wup)
 
-            # Remove duplicate segments
-            if old_seg == next_seg or old_seg in new_segs:
-                next_seg = None
-                continue
+            # # Remove duplicate segments
+            # if old_seg == next_seg or old_seg in new_segs:
+            #     next_seg = None
+            #     continue
 
             # # Remove zero-length segments EXCEPT if they are defined for wup
             # if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound != WUP.get_wup():
             #     continue
 
-            if next_seg is None or old_seg.lowerBound > old_seg.upperBound:
+            if next_seg is None:# or old_seg.lowerBound > old_seg.upperBound:
                 next_seg = old_seg
                 continue
 
-            # Cap every segment to wup
-            if old_seg.evaluate(old_seg.upperBound) > wup:
-                if next_seg is not None:
-                    new_segs.append(next_seg)
-                    next_seg = None
-                to_clean = True
+            # # Cap every segment to wup
+            # if old_seg.evaluate(old_seg.upperBound) > wup:
+            #     if next_seg is not None:
+            #         new_segs.append(next_seg)
+            #         next_seg = None
+            #     to_clean = True
 
-                if old_seg.a == 0:
-                    new_segs.append(EnergySegment.const(old_seg.lowerBound,
-                                                        old_seg.upperBound,
-                                                        old_seg.pred,
-                                                        wup
-                                                        ))
-                else:
-                    disc = int((wup - old_seg.b) / old_seg.a)
-                    new_segs.append(EnergySegment.incr(old_seg.lowerBound,
-                                                       disc,
-                                                       old_seg.pred,
-                                                       old_seg.b
-                                                       ))
-                    new_segs.append(EnergySegment.const(disc,
-                                                        old_seg.upperBound,
-                                                        old_seg.pred,
-                                                        wup
-                                                        ))
-                continue
+            #     if old_seg.a == 0:
+            #         new_segs.append(EnergySegment.const(old_seg.lowerBound,
+            #                                             old_seg.upperBound,
+            #                                             old_seg.pred,
+            #                                             wup
+            #                                             ))
+            #     else:
+            #         disc = int((wup - old_seg.b) / old_seg.a)
+            #         new_segs.append(EnergySegment.incr(old_seg.lowerBound,
+            #                                            disc,
+            #                                            old_seg.pred,
+            #                                            old_seg.b
+            #                                            ))
+            #         new_segs.append(EnergySegment.const(disc,
+            #                                             old_seg.upperBound,
+            #                                             old_seg.pred,
+            #                                             wup
+            #                                             ))
+            #     continue
 
-            # Same procedure: nullify non-null segments below zero
-            if old_seg.evaluate(old_seg.lowerBound) < 0 and not old_seg.is_zero:
-                if next_seg is not None:
-                    new_segs.append(next_seg)
-                    next_seg = None
-                to_clean = True
+            # # Same procedure: nullify non-null segments below zero
+            # if old_seg.evaluate(old_seg.lowerBound) < 0 and not old_seg.is_zero:
+            #     if next_seg is not None:
+            #         new_segs.append(next_seg)
+            #         next_seg = None
+            #     to_clean = True
 
-                if old_seg.a == 0:
-                    new_segs.append(EnergySegment.zero(old_seg.lowerBound,
-                                                       old_seg.upperBound,
-                                                       None
-                                                       ))
-                else:
-                    disc = int(-old_seg.b / old_seg.a)
-                    new_segs.append(EnergySegment.zero(old_seg.lowerBound,
-                                                       disc,
-                                                       None
-                                                       ))
-                    new_segs.append(EnergySegment.incr(disc,
-                                                       old_seg.upperBound,
-                                                       old_seg.pred,
-                                                       old_seg.b
-                                                       ))
-                continue
+            #     if old_seg.a == 0:
+            #         new_segs.append(EnergySegment.zero(old_seg.lowerBound,
+            #                                            old_seg.upperBound,
+            #                                            None
+            #                                            ))
+            #     else:
+            #         disc = int(-old_seg.b / old_seg.a)
+            #         new_segs.append(EnergySegment.zero(old_seg.lowerBound,
+            #                                            disc,
+            #                                            None
+            #                                            ))
+            #         new_segs.append(EnergySegment.incr(disc,
+            #                                            old_seg.upperBound,
+            #                                            old_seg.pred,
+            #                                            old_seg.b
+            #                                            ))
+            #     continue
 
             # Merge segments with the same equation
             if old_seg.a == next_seg.a and old_seg.b == next_seg.b and old_seg.pred == next_seg.pred:

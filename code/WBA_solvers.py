@@ -742,6 +742,7 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
         sub_hoa = RemoveColor(hoa, col)
 
         res = wf.FWhoa(sub_hoa, EnergyFunctionWup(wup), diag_is_above_one)
+        # TODO return a BuechiResult and not the result matrix
         if res:
             return res
 
