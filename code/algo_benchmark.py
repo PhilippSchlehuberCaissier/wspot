@@ -11,7 +11,7 @@ import WBA_solvers as ws
 
 ## Benchmark to assess the efficiency of our algorithms with automata of varying sizes.
 # We will use the nested loops automata with an increasing number k of nested loops.
-max_loops = 5
+max_loops = 15
 
 times_naive = []
 times_cycles = []
@@ -34,7 +34,7 @@ for k in range(2, max_loops + 1):
     for i in range(len(solvers)):
         solver = solvers[i]
         start = time.time()
-        solver(hoa, 0, 100000, 0)
+        solver(hoa, 0, 1000, 0)
         times[k-2][i] = time.time() - start
 
 for s in times:
