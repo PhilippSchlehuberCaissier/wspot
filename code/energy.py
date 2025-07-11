@@ -44,6 +44,9 @@ class EnergySegment:
         return self.evaluate(self.lowerBound) >= self.lowerBound and self.pred is not None
 
     def restriction(self, low, upp):
+        # TODO do we really need to restrict energy segments?
+        if self.lowerBound >= low and self.upperBound <= upp:
+            return self
         return EnergySegment(max(self.lowerBound, low),
                              min(upp, self.upperBound),
                              self.pred, self.a, self.b)
@@ -54,7 +57,7 @@ class EnergySegment:
 
     @property
     def is_zero(self):
-        return self == EnergySegment.zero(self.lowerBound, self.upperBound, self.pred)
+        return self.a == 0 and self.b == -1
 
     @staticmethod
     def one(low, upp, pred):
@@ -116,7 +119,7 @@ class EnergyFunction(Semiring):
         for seg in self.segments:
             # We assume that if there is a discontinuity at x, the used segment will be the one that has maximal energy.
             # This means that a segment is only usable on [lowerBound, upperBound-1] unless it is the last segment (since there is no next segment to use)
-            if x >= seg.lowerBound and x < seg.upperBound or seg == self.segments[-1]:
+            if (x >= seg.lowerBound and x < seg.upperBound) or seg == self.segments[-1]:
                 return seg
 
     def evaluate(self, x):
@@ -127,21 +130,21 @@ class EnergyFunction(Semiring):
     def clean(f):
         # TODO clean this!!
         wup = f.domain[1]
-        
+
         new_segs = []
         next_seg = None
         # Whether we need to make another pass
         to_clean = False
 
         # f must be defined on [0, wup]
-        if f.segments[0].lowerBound > 0:
-            f.segments.insert(0, EnergySegment.zero(0,
-                                                    f.segments[0].lowerBound,
-                                                    None))
-        if f.segments[-1].upperBound < wup:
-            f.segments.append(EnergySegment.zero(f.segments[-1].upperBound,
-                                                 wup,
-                                                 None))
+        # if f.segments[0].lowerBound > 0:
+        #     f.segments.insert(0, EnergySegment.zero(0,
+        #                                             f.segments[0].lowerBound,
+        #                                             None))
+        # if f.segments[-1].upperBound < wup:
+        #     f.segments.append(EnergySegment.zero(f.segments[-1].upperBound,
+        #                                          wup,
+        #                                          None))
 
         for old_seg in f.segments:
             # Keep every segment defined on an interval of [0, wup]
@@ -222,20 +225,31 @@ class EnergyFunction(Semiring):
         if next_seg is not None:
             new_segs.append(next_seg)
         f = EnergyFunction(new_segs)
+        # print(f"final is {f}")
         return EnergyFunction.clean(f) if to_clean else f
 
     def __add__(f1, f2):
+        # print(f"{f1} + {f2}")
         new_segs = []
+
         # The discontinuities of the max are the union of those of the 2 functions
-        discs = list(set(f1.discontinuities + f2.discontinuities))
+        seen = set()
+        discs = [d for d in f1.discontinuities + f2.discontinuities if d not in seen and not seen.add(d)]
         discs.sort()
+
+        # Build a list of segments valid at each discontinuity
+        # We use a dictionary as it is a bit more efficient
+        segment_at_disc = {'f1': {}, 'f2': {}}
+        for d in discs:
+            segment_at_disc['f1'][d] = f1.get_segment(d)
+            segment_at_disc['f2'][d] = f2.get_segment(d)
+
         for i in range(len(discs) - 1):
             lower = discs[i]
             upper = discs[i+1]
 
-            # TODO associate discontinuities to a list of corresponding segments
-            seg1 = f1.get_segment(lower)
-            seg2 = f2.get_segment(lower)
+            seg1 = segment_at_disc['f1'][lower]
+            seg2 = segment_at_disc['f2'][lower]
 
             if seg1.a == seg2.a:
                 if seg1.b == seg2.b:
