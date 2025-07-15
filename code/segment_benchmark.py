@@ -5,6 +5,7 @@ from matplotlib import cm
 import os
 import time
 import math
+import cProfile
 
 import WBA_solvers as ws
 import WBA_FW as wf
@@ -15,10 +16,13 @@ from energy import EnergyFunctionWup
 loops = 10
 
 subprocess.run(["python3", "nested_loops_builder.py", str(loops)])
-# hoa = spot.automaton("../tests/nested_loops_auto.hoa")
-hoa = spot.automaton("../tests/many_iterations_co_buechi_flattened.hoa")
+hoa = spot.automaton("../tests/nested_loops_auto.hoa")
+# hoa = spot.automaton("../tests/many_iterations_co_buechi_flattened.hoa")
 
-M = wf.FWhoa(hoa, EnergyFunctionWup(100), lambda M, i, j: True)
+ef_class = EnergyFunctionWup(100)
+cProfile.run('wf.FWhoa(hoa, ef_class, lambda M, i, j: True)')
+cProfile.run('wf.FWhoa(hoa, ef_class, lambda M, i, j: True)', 'restats')
+M = [] #wf.FWhoa(hoa, EnergyFunctionWup(100), lambda M, i, j: True)
 n = len(M[0])
 M_seg = [[len(f.segments) for f in li] for li in M]
 

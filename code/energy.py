@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, override
 from dataclasses import dataclass
 
 from semiring import Semiring
@@ -22,18 +22,15 @@ class EnergySegment:
     def domain(self):
         return (self.lowerBound, self.upperBound)
 
-    @property
-    def image(self):
-        return (self.b, self.b) if self.a == 0 else (self.lowerBound + self.b, self.upperBound + self.b)
-
     def __str__(self):
         str_def = f"[{self.lowerBound}, {self.upperBound}] -> IR"
         str_a = 'e_in' if self.a else ''
         str_b = '' if self.a and not self.b else str(self.b) if not self.a else f" + {self.b}"
         return f"{str_def} ; e_in |---> {str_a}{str_b}" + f" (from {self.pred})"
 
+    # TODO x < upper bound except when it's wup
     def is_in_domain(self, x):
-        return x >= self.domain[0] and x <= self.domain[1]
+        return x >= self.lowerBound and x <= self.upperBound
 
     def evaluate(self, e_in):
         assert self.is_in_domain(e_in)
@@ -44,7 +41,6 @@ class EnergySegment:
         return self.evaluate(self.lowerBound) >= self.lowerBound and self.pred is not None
 
     def restriction(self, low, upp):
-        # TODO do we really need to restrict energy segments?
         if self.lowerBound >= low and self.upperBound <= upp:
             return self
         return EnergySegment(max(self.lowerBound, low),
@@ -77,6 +73,10 @@ class EnergySegment:
 class EnergyFunction(Semiring):
     segments: List[EnergySegment]
 
+    # def __init__(self, segments):
+    #     self.segments = segments
+    #     self.segment_map = dict([seg.lowerBound, seg] for seg in segments)
+
     def __str__(self):
         return " U ".join([str(seg) for seg in self.segments])
 
@@ -104,16 +104,16 @@ class EnergyFunction(Semiring):
     def domain(self):
         return (0, self.segments[-1].upperBound)
 
-    @property
     def wup(self):
-        return self.domain[1]
+        return self.segments[-1].upperBound
 
+    # Assuming every energy function is well-defined on [0, wup]
     def is_in_domain(self, x):
-        return x >= self.domain[0] and x <= self.domain[1]
+        return x >= 0 and x <= self.wup()
 
     ## Return the segment that is used when evaluating this function at x.
     def get_segment(self, x):
-        assert self.is_in_domain(x)
+        assert x >= 0 and x <= self.wup()
 
         # TODO dichotomy?
         for seg in self.segments:
@@ -129,26 +129,16 @@ class EnergyFunction(Semiring):
     @staticmethod
     def clean(f):
         # TODO clean this!!
-        wup = f.domain[1]
+        # wup = f.wup()
 
         new_segs = []
         next_seg = None
         # Whether we need to make another pass
         to_clean = False
 
-        # f must be defined on [0, wup]
-        # if f.segments[0].lowerBound > 0:
-        #     f.segments.insert(0, EnergySegment.zero(0,
-        #                                             f.segments[0].lowerBound,
-        #                                             None))
-        # if f.segments[-1].upperBound < wup:
-        #     f.segments.append(EnergySegment.zero(f.segments[-1].upperBound,
-        #                                          wup,
-        #                                          None))
-
         for old_seg in f.segments:
             # Keep every segment defined on an interval of [0, wup]
-            old_seg = old_seg.restriction(0, wup)
+            # old_seg = old_seg.restriction(0, wup)
 
             # # Remove duplicate segments
             # if old_seg == next_seg or old_seg in new_segs:
@@ -233,16 +223,37 @@ class EnergyFunction(Semiring):
         new_segs = []
 
         # The discontinuities of the max are the union of those of the 2 functions
+        # discs = []
+        # curr_disc1, curr_disc2 = 0, 0
+        # discs1, discs2 = f1.discontinuities, f2.discontinuities
+        # while curr_disc1 < len(discs1) and curr_disc2 < len(discs2):
+        #     if discs1[curr_disc1] > discs2[curr_disc2]:
+        #         if discs == [] or discs2[curr_disc2] != discs[-1]:
+        #             discs.append(discs2[curr_disc2])
+        #         curr_disc2 += 1
+        #     else:
+        #         if discs == [] or discs1[curr_disc1] != discs[-1]:
+        #             discs.append(discs1[curr_disc1])
+        #         curr_disc1 += 1
         seen = set()
         discs = [d for d in f1.discontinuities + f2.discontinuities if d not in seen and not seen.add(d)]
         discs.sort()
 
-        # Build a list of segments valid at each discontinuity
+        # Build a list of segments valid between each discontinuity
         # We use a dictionary as it is a bit more efficient
         segment_at_disc = {'f1': {}, 'f2': {}}
         for d in discs:
             segment_at_disc['f1'][d] = f1.get_segment(d)
             segment_at_disc['f2'][d] = f2.get_segment(d)
+
+        # segment_at_disc = []
+        # segs1, segs2 = f1.segments, f2.segments
+        # seg_idx1, seg_idx2 = 0
+        # while seg_idx1 < len(segs1) and seg_idx2 < len(segs2):
+        #     seg1_end = segs1[seg_idx1].upperBound
+        #     seg2_end = segs2[seg_idx2].upperBound
+        #     if seg1_end < seg2_end:
+        #         segment_at_disc.append((
 
         for i in range(len(discs) - 1):
             lower = discs[i]
@@ -286,11 +297,11 @@ class EnergyFunction(Semiring):
 
     def __mul__(self, other):
         # TODO clean this!!
-        wup = self.domain[1]
+        wup = self.wup()
         new_segs = []
 
         if self.is_zero or other.is_zero:
-            return EnergyFunction.zero(wup)
+            return self.__class__.zero(wup)
 
         for seg in self.segments:
             if seg.is_zero:
@@ -354,9 +365,29 @@ class EnergyFunction(Semiring):
 
 
 ## Class for energy functions parametrized with a wup
-def EnergyFunctionWup(wup):
+def EnergyFunctionWup(q):
+    ZERO = EnergyFunction.zero(q)
+    ONE = EnergyFunction.one(q)
+
+    class EnergyFunctionWup(EnergyFunction):
+        # We already define the null and identity to save some time
+        @override
+        def wup():
+            return q
+
+        def zero():
+            return ZERO
+
+        def one():
+            return ONE
+
+        def transition_to_sr(e, weight):
+            return EnergyFunction.transition_to_sr(q, e, weight)
+
+    return EnergyFunctionWup
+    # TODO remove this
     return type(
-        "EnergyFunctionWup",
+        "EnergyFuctionWup",
         (EnergyFunction, ),
         {"wup": wup,
          "zero": lambda: EnergyFunction.zero(wup),
