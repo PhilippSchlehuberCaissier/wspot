@@ -1,8 +1,13 @@
 from typing import List, override
 from dataclasses import dataclass
+from copy import copy
 
 from semiring import Semiring
 
+
+## Dict for storing segment maps.
+# With this dict we don't have to instanciate the segment map each time
+index = dict()
 
 @dataclass
 ## Class for representing energy functions segments.
@@ -28,6 +33,9 @@ class EnergySegment:
         str_b = '' if self.a and not self.b else str(self.b) if not self.a else f" + {self.b}"
         return f"{str_def} ; e_in |---> {str_a}{str_b}" + f" (from {self.pred})"
 
+    def __hash__(self):
+        return hash((self.lowerBound, self.a, self.b))
+
     # TODO x < upper bound except when it's wup
     def is_in_domain(self, x):
         return x >= self.lowerBound and x <= self.upperBound
@@ -41,8 +49,8 @@ class EnergySegment:
         return self.evaluate(self.lowerBound) >= self.lowerBound and self.pred is not None
 
     def restriction(self, low, upp):
-        if self.lowerBound >= low and self.upperBound <= upp:
-            return self
+        # if self.lowerBound >= low and self.upperBound <= upp:
+        #     return self
         return EnergySegment(max(self.lowerBound, low),
                              min(upp, self.upperBound),
                              self.pred, self.a, self.b)
@@ -73,12 +81,23 @@ class EnergySegment:
 class EnergyFunction(Semiring):
     segments: List[EnergySegment]
 
-    # def __init__(self, segments):
-    #     self.segments = segments
-    #     self.segment_map = dict([seg.lowerBound, seg] for seg in segments)
+    def __init__(self, segments):
+        self.segments = tuple(segments)
+
+        try:
+            self.segment_map = index[hash(self)]
+        except KeyError:
+            self.segment_map = dict([seg.lowerBound, seg] for seg in segments)
+            index[hash(self)] = self.segment_map
 
     def __str__(self):
         return " U ".join([str(seg) for seg in self.segments])
+
+    def __eq__(self, other):
+        return self.segments == other.segments
+
+    def __hash__(self):
+        return hash(self.segments)
 
     @staticmethod
     def one(wup):
@@ -115,12 +134,17 @@ class EnergyFunction(Semiring):
     def get_segment(self, x):
         assert x >= 0 and x <= self.wup()
 
-        # TODO dichotomy?
-        for seg in self.segments:
-            # We assume that if there is a discontinuity at x, the used segment will be the one that has maximal energy.
-            # This means that a segment is only usable on [lowerBound, upperBound-1] unless it is the last segment (since there is no next segment to use)
-            if (x >= seg.lowerBound and x < seg.upperBound) or seg == self.segments[-1]:
-                return seg
+        try:
+            return self.segment_map[x]
+        except KeyError:
+            # TODO dichotomy?
+            for seg in self.segments:
+                # We assume that if there is a discontinuity at x, the used segment will be the one that has maximal energy.
+                # This means that a segment is only usable on [lowerBound, upperBound-1] unless it is the last segment (since there is no next segment to use)
+                if (x >= seg.lowerBound and x < seg.upperBound) or seg == self.segments[-1]:
+                    self.segment_map[x] = seg
+                    # index[hash(self)] = self.segment_map
+                    return seg
 
     def evaluate(self, x):
         assert self.is_in_domain(x)
@@ -241,10 +265,11 @@ class EnergyFunction(Semiring):
 
         # Build a list of segments valid between each discontinuity
         # We use a dictionary as it is a bit more efficient
-        segment_at_disc = {'f1': {}, 'f2': {}}
-        for d in discs:
-            segment_at_disc['f1'][d] = f1.get_segment(d)
-            segment_at_disc['f2'][d] = f2.get_segment(d)
+
+        # segment_at_disc = {'f1': {}, 'f2': {}}
+        # for d in discs:
+        #     segment_at_disc['f1'][d] = f1.get_segment(d)
+        #     segment_at_disc['f2'][d] = f2.get_segment(d)
 
         # segment_at_disc = []
         # segs1, segs2 = f1.segments, f2.segments
@@ -259,8 +284,10 @@ class EnergyFunction(Semiring):
             lower = discs[i]
             upper = discs[i+1]
 
-            seg1 = segment_at_disc['f1'][lower]
-            seg2 = segment_at_disc['f2'][lower]
+            seg1 = f1.get_segment(lower)
+            seg2 = f2.get_segment(lower)
+            # seg1 = segment_at_disc['f1'][lower]
+            # seg2 = segment_at_disc['f2'][lower]
 
             if seg1.a == seg2.a:
                 if seg1.b == seg2.b:
@@ -284,6 +311,7 @@ class EnergyFunction(Semiring):
                     # Segments do not intersect, we use upper because its image is guaranteed to be not equal (unless seg1 == seg2)
                     next_seg = seg1 if seg1.evaluate(upper) > seg2.evaluate(upper) else seg2
                     new_segs.append(next_seg.restriction(lower, upper))
+                    # print(f"next is {next_seg.restriction(lower, upper)}")
 
         f = EnergyFunction(new_segs)
         return EnergyFunction.clean(f)
@@ -297,6 +325,8 @@ class EnergyFunction(Semiring):
 
     def __mul__(self, other):
         # TODO clean this!!
+        # print(f"{self} (otimes) {other}")
+
         wup = self.wup()
         new_segs = []
 
@@ -305,7 +335,7 @@ class EnergyFunction(Semiring):
 
         for seg in self.segments:
             if seg.is_zero:
-                new_segs.append(seg)
+                new_segs.append(copy(seg))
                 continue
 
             lower = seg.lowerBound
@@ -385,12 +415,3 @@ def EnergyFunctionWup(q):
             return EnergyFunction.transition_to_sr(q, e, weight)
 
     return EnergyFunctionWup
-    # TODO remove this
-    return type(
-        "EnergyFuctionWup",
-        (EnergyFunction, ),
-        {"wup": wup,
-         "zero": lambda: EnergyFunction.zero(wup),
-         "one": lambda: EnergyFunction.one(wup),
-         "transition_to_sr": lambda e, weight: EnergyFunction.transition_to_sr(wup, e, weight)}
-    )
