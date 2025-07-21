@@ -36,14 +36,6 @@ def FWhoa(aut: "HOA automaton",
         weight = spot.get_weight(hoa, e)
         M[e.src][e.dst] = sr.transition_to_sr(e, weight)
 
-    # Initial state of the matrix
-    # for i in range(V):
-    #     print(f"From {i}")
-    #     for j in range(V):
-    #         print(str(M[i][j]))
-    #     print("")
-
-
     # The usual triple loop
     for k in range(V):
         for i in range(V):
@@ -51,15 +43,14 @@ def FWhoa(aut: "HOA automaton",
                 # print(f"Examining {i} to {j} via {k}")
                 M[i][j] = M[i][j] + (M[i][k] * M[k][j])
                 # TODO do we need to return something?
-                res = check(M, i, j)
-                if res:
-                    return res
+                # res = check(M, i, j)
+                # if res:
+                #    return res
 
-    # Final state of the matrix
     # for i in range(V):
     #     print(f"From {i}")
     #     for j in range(V):
     #         print(str(M[i][j]))
     #     print("")
 
-    # return M
+    return M
