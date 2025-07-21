@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['energy_2epy_0',['energy.py',['../energy_8py.html',1,'']]]
+  ['bf1_2epy_0',['BF1.py',['../BF1_8py.html',1,'']]],
+  ['buechi_2epy_1',['buechi.py',['../buechi_8py.html',1,'']]]
 ];

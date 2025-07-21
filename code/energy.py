@@ -93,6 +93,8 @@ class EnergyFunction(Semiring):
         # We can evaluate the segment in 0 since "normal" segments cannot get below 0
         return len(self.segments) == 1 and self.segments[0].evaluate(0) == -1
 
+    ## Return the list of the points where the energy function is discontinuous.
+    # In this context, "discontinuous" means that the previous energy segment and the next energy segment do not have the same equation or predecessor.
     @property
     def discontinuities(self):
         # Assuming segments are ordered
@@ -104,9 +106,12 @@ class EnergyFunction(Semiring):
     def domain(self):
         return (0, self.segments[-1].upperBound)
 
+    ## Return the wup for this energy function.
+    # In EnergyFunctionWup, this method is overriden to have an access to the wup that is constant in time
     def wup(self):
         return self.segments[-1].upperBound
 
+    ## Return True if x is in the domain of this energy function (ie. [0, wup]).
     # Assuming every energy function is well-defined on [0, wup]
     def is_in_domain(self, x):
         return x >= 0 and x <= self.wup()
@@ -122,10 +127,12 @@ class EnergyFunction(Semiring):
             if (x >= seg.lowerBound and x < seg.upperBound) or seg == self.segments[-1]:
                 return seg
 
+    ## Return the value of this energy function at point x.
     def evaluate(self, x):
         assert self.is_in_domain(x)
         return self.get_segment(x).evaluate(x)
 
+    ## Merge similar energy segments.
     @staticmethod
     def clean(f):
         # TODO clean this!!
@@ -288,6 +295,7 @@ class EnergyFunction(Semiring):
         f = EnergyFunction(new_segs)
         return EnergyFunction.clean(f)
 
+    ## Return True if this energy function is superior to the identity function.
     @property
     def is_above_one(self):
         for seg in self.segments:

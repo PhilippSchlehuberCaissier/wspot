@@ -1,24 +1,78 @@
 \doxysection{code.\+memory\+\_\+benchmark\+\_\+new Namespace Reference}
 \hypertarget{namespacecode_1_1memory__benchmark__new}{}\label{namespacecode_1_1memory__benchmark__new}\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a27a00e26bf5418dc0673ae2156823f19}{to\+\_\+benchmark}} (what)
+\end{DoxyCompactItemize}
 \doxysubsubsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
-str \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_afe46a7ed86aa10d8787a9f44df9e128c}{this}} = "{}../tests/nested\+\_\+loops.\+hoa"{}
+list \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a044cf8fc4b0a20f6d3a3bfae2cbf5efe}{solvers}} = \mbox{[}ws.\+Naive\+Co\+Buechi, ws.\+LEGACY\+\_\+\+Co\+Buechi\+Energy, ws.\+Co\+Buechi\+Energy\mbox{]}
 \item 
-\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a8ff794e0c26269f440c3e035ede219a6}{hoa}} = spot.\+automaton(\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_afe46a7ed86aa10d8787a9f44df9e128c}{this}})
+list \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_ab927a86804c88243f207ce751ac5d170}{memory}} = \mbox{[}\mbox{[}$\,$\mbox{]} for \+\_\+ in range(len(\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a044cf8fc4b0a20f6d3a3bfae2cbf5efe}{solvers}}))\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_ab5a36d71576b3628d27bb2771dc031f9}{solver}} = \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a044cf8fc4b0a20f6d3a3bfae2cbf5efe}{solvers}}\mbox{[}i\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a265d3e040358c97460f269e4aeee35c9}{n}} = max(\mbox{[}len(mem) for mem in \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_ab927a86804c88243f207ce751ac5d170}{memory}}\mbox{]})
+\item 
+\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a7dea6c08328cdd0b651264b51569d2f8}{constant\+\_\+values}}
+\item 
+\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a286367cbfe2c871046ca7ef31d79729b}{time}} = np.\+linspace(0, \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a265d3e040358c97460f269e4aeee35c9}{n}} \texorpdfstring{$\ast$}{*} 0.\+2, \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a265d3e040358c97460f269e4aeee35c9}{n}})
+\item 
+\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_ae04adadc071885c81dcb2fc3eab58797}{loc}}
 \end{DoxyCompactItemize}
 
 
-\doxysubsection{Variable Documentation}
-\Hypertarget{namespacecode_1_1memory__benchmark__new_a8ff794e0c26269f440c3e035ede219a6}\label{namespacecode_1_1memory__benchmark__new_a8ff794e0c26269f440c3e035ede219a6} 
-\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!hoa@{hoa}}
-\index{hoa@{hoa}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
-\doxysubsubsection{\texorpdfstring{hoa}{hoa}}
-{\footnotesize\ttfamily code.\+memory\+\_\+benchmark\+\_\+new.\+hoa = spot.\+automaton(\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_afe46a7ed86aa10d8787a9f44df9e128c}{this}})}
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacecode_1_1memory__benchmark__new_a27a00e26bf5418dc0673ae2156823f19}\label{namespacecode_1_1memory__benchmark__new_a27a00e26bf5418dc0673ae2156823f19} 
+\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!to\_benchmark@{to\_benchmark}}
+\index{to\_benchmark@{to\_benchmark}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection{\texorpdfstring{to\_benchmark()}{to\_benchmark()}}
+{\footnotesize\ttfamily code.\+memory\+\_\+benchmark\+\_\+new.\+to\+\_\+benchmark (\begin{DoxyParamCaption}\item[{}]{what }\end{DoxyParamCaption})}
 
-\Hypertarget{namespacecode_1_1memory__benchmark__new_afe46a7ed86aa10d8787a9f44df9e128c}\label{namespacecode_1_1memory__benchmark__new_afe46a7ed86aa10d8787a9f44df9e128c} 
-\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!this@{this}}
-\index{this@{this}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
-\doxysubsubsection{\texorpdfstring{this}{this}}
-{\footnotesize\ttfamily str code.\+memory\+\_\+benchmark\+\_\+new.\+this = "{}../tests/nested\+\_\+loops.\+hoa"{}}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacecode_1_1memory__benchmark__new_a7dea6c08328cdd0b651264b51569d2f8}\label{namespacecode_1_1memory__benchmark__new_a7dea6c08328cdd0b651264b51569d2f8} 
+\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!constant\_values@{constant\_values}}
+\index{constant\_values@{constant\_values}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection{\texorpdfstring{constant\_values}{constant\_values}}
+{\footnotesize\ttfamily code.\+memory\+\_\+benchmark\+\_\+new.\+constant\+\_\+values}
+
+\Hypertarget{namespacecode_1_1memory__benchmark__new_ae04adadc071885c81dcb2fc3eab58797}\label{namespacecode_1_1memory__benchmark__new_ae04adadc071885c81dcb2fc3eab58797} 
+\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!loc@{loc}}
+\index{loc@{loc}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection{\texorpdfstring{loc}{loc}}
+{\footnotesize\ttfamily code.\+memory\+\_\+benchmark\+\_\+new.\+loc}
+
+\Hypertarget{namespacecode_1_1memory__benchmark__new_ab927a86804c88243f207ce751ac5d170}\label{namespacecode_1_1memory__benchmark__new_ab927a86804c88243f207ce751ac5d170} 
+\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!memory@{memory}}
+\index{memory@{memory}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection{\texorpdfstring{memory}{memory}}
+{\footnotesize\ttfamily list code.\+memory\+\_\+benchmark\+\_\+new.\+memory = \mbox{[}\mbox{[}$\,$\mbox{]} for \+\_\+ in range(len(\mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a044cf8fc4b0a20f6d3a3bfae2cbf5efe}{solvers}}))\mbox{]}}
+
+\Hypertarget{namespacecode_1_1memory__benchmark__new_a265d3e040358c97460f269e4aeee35c9}\label{namespacecode_1_1memory__benchmark__new_a265d3e040358c97460f269e4aeee35c9} 
+\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!n@{n}}
+\index{n@{n}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection{\texorpdfstring{n}{n}}
+{\footnotesize\ttfamily code.\+memory\+\_\+benchmark\+\_\+new.\+n = max(\mbox{[}len(mem) for mem in \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_ab927a86804c88243f207ce751ac5d170}{memory}}\mbox{]})}
+
+\Hypertarget{namespacecode_1_1memory__benchmark__new_ab5a36d71576b3628d27bb2771dc031f9}\label{namespacecode_1_1memory__benchmark__new_ab5a36d71576b3628d27bb2771dc031f9} 
+\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!solver@{solver}}
+\index{solver@{solver}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection{\texorpdfstring{solver}{solver}}
+{\footnotesize\ttfamily list code.\+memory\+\_\+benchmark\+\_\+new.\+solver = \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a044cf8fc4b0a20f6d3a3bfae2cbf5efe}{solvers}}\mbox{[}i\mbox{]}}
+
+\Hypertarget{namespacecode_1_1memory__benchmark__new_a044cf8fc4b0a20f6d3a3bfae2cbf5efe}\label{namespacecode_1_1memory__benchmark__new_a044cf8fc4b0a20f6d3a3bfae2cbf5efe} 
+\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!solvers@{solvers}}
+\index{solvers@{solvers}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection{\texorpdfstring{solvers}{solvers}}
+{\footnotesize\ttfamily list code.\+memory\+\_\+benchmark\+\_\+new.\+solvers = \mbox{[}ws.\+Naive\+Co\+Buechi, ws.\+LEGACY\+\_\+\+Co\+Buechi\+Energy, ws.\+Co\+Buechi\+Energy\mbox{]}}
+
+\Hypertarget{namespacecode_1_1memory__benchmark__new_a286367cbfe2c871046ca7ef31d79729b}\label{namespacecode_1_1memory__benchmark__new_a286367cbfe2c871046ca7ef31d79729b} 
+\index{code.memory\_benchmark\_new@{code.memory\_benchmark\_new}!time@{time}}
+\index{time@{time}!code.memory\_benchmark\_new@{code.memory\_benchmark\_new}}
+\doxysubsubsection{\texorpdfstring{time}{time}}
+{\footnotesize\ttfamily code.\+memory\+\_\+benchmark\+\_\+new.\+time = np.\+linspace(0, \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a265d3e040358c97460f269e4aeee35c9}{n}} \texorpdfstring{$\ast$}{*} 0.\+2, \mbox{\hyperlink{namespacecode_1_1memory__benchmark__new_a265d3e040358c97460f269e4aeee35c9}{n}})}
 

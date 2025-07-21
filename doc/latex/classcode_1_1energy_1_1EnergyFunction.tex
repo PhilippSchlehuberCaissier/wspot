@@ -7,8 +7,7 @@ Class for representing an energy function.
 
 
 
-Inheritance diagram for code.\+energy.\+Energy\+Function\+:
-\nopagebreak
+Inheritance diagram for code.\+energy.\+Energy\+Function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -17,8 +16,7 @@ Inheritance diagram for code.\+energy.\+Energy\+Function\+:
 \end{figure}
 
 
-Collaboration diagram for code.\+energy.\+Energy\+Function\+:
-\nopagebreak
+Collaboration diagram for code.\+energy.\+Energy\+Function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -32,33 +30,35 @@ Collaboration diagram for code.\+energy.\+Energy\+Function\+:
 \item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_abcc98f88b59a7ff5234514957646ce6e}{is\+\_\+zero}} (self)
 \item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a9790a5a1926b5b674196ddac177f7032}{discontinuities}} (self)
+\begin{DoxyCompactList}\small\item\em Return the list of the points where the energy function is discontinuous. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5}{domain}} (self)
 \item 
-\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a9790a5a1926b5b674196ddac177f7032}{discontinuities}} (self)
-\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ae7cc38618188d9e29e54b622a850e190}{wup}} (self)
+\begin{DoxyCompactList}\small\item\em Return the wup for this energy function. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a879a4b348e02afcd78d0232740999450}{is\+\_\+in\+\_\+domain}} (self, x)
-\item 
+\begin{DoxyCompactList}\small\item\em Return True if x is in the domain of this energy function (ie. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ae3486f3a25a655ec97c5d6529725298f}{get\+\_\+segment}} (self, x)
 \begin{DoxyCompactList}\small\item\em Return the segment that is used when evaluating this function at x. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_af7954427c2f9ce64f250fd13c6f5d2a4}{evaluate}} (self, x)
-\item 
+\begin{DoxyCompactList}\small\item\em Return the value of this energy function at point x. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a6a2a13d08dc5ef35f11b391f379bf003}{\+\_\+\+\_\+add\+\_\+\+\_\+}} (f1, f2)
-\item 
+\begin{DoxyCompactList}\small\item\em The additive operator. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a60b9379b6df12e2060a3bfd271b3ef3b}{is\+\_\+above\+\_\+one}} (self)
-\item 
+\begin{DoxyCompactList}\small\item\em Return True if this energy function is superior to the identity function. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_aae3f0f31e835c99945339d806aa67b68}{\+\_\+\+\_\+mul\+\_\+\+\_\+}} (self, other)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em The multiplicative operator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a94354c3e2d78764c2b8e1627d0e7131f}{transition\+\_\+to\+\_\+sr}} (\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ae7cc38618188d9e29e54b622a850e190}{wup}}, e, weight)
+\begin{DoxyCompactList}\small\item\em Convert a transition in a weighted automaton into an element of this semiring. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Static Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_aaa58b8c13693143bd3c89bd5c8a640da}{one}} (low=0, upp=\mbox{\hyperlink{classcode_1_1energy_1_1WUP_a606861bca791113ff0e9771cf2351fee}{WUP.\+value}})
-\item 
-\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a104220641539a49a1e4fe20fa0665457}{zero}} (low=0, upp=\mbox{\hyperlink{classcode_1_1energy_1_1WUP_a606861bca791113ff0e9771cf2351fee}{WUP.\+value}})
-\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a911f48b303e20498d33dcabd3eddfb75}{one}} (\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ae7cc38618188d9e29e54b622a850e190}{wup}})
+\begin{DoxyCompactList}\small\item\em The neutral element for the multiplicative operator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a41ebe0136980bfcdfb03a58bd75da499}{zero}} (\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_ae7cc38618188d9e29e54b622a850e190}{wup}})
+\begin{DoxyCompactList}\small\item\em The neutral element for the additive operator. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a1e9f39930ca7c82252490ea780499680}{clean}} (f)
-\item 
-\mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction_a453579de5c1fa6332c63f70fcfccb938}{transition\+\_\+to\+\_\+sr}} (e, weight)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Merge similar energy segments. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -79,7 +79,11 @@ Class for representing an energy function.
 \index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!\_\_add\_\_@{\_\_add\_\_}}
 \index{\_\_add\_\_@{\_\_add\_\_}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{\_\_add\_\_()}{\_\_add\_\_()}}
-{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+\_\+\+\_\+add\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{f1,  }\item[{}]{f2 }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+\_\+\+\_\+add\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{other }\end{DoxyParamCaption})}
+
+
+
+The additive operator. 
 
 
 
@@ -90,6 +94,10 @@ Reimplemented from \mbox{\hyperlink{classcode_1_1semiring_1_1Semiring_ad5cbf524c
 \index{\_\_mul\_\_@{\_\_mul\_\_}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{\_\_mul\_\_()}{\_\_mul\_\_()}}
 {\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+\_\+\+\_\+mul\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{other }\end{DoxyParamCaption})}
+
+
+
+The multiplicative operator. 
 
 
 
@@ -121,30 +129,35 @@ Here is the caller graph for this function\+:\nopagebreak
 \doxysubsubsection{\texorpdfstring{clean()}{clean()}}
 {\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+clean (\begin{DoxyParamCaption}\item[{}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
+
+
+Merge similar energy segments. 
+
 \Hypertarget{classcode_1_1energy_1_1EnergyFunction_a9790a5a1926b5b674196ddac177f7032}\label{classcode_1_1energy_1_1EnergyFunction_a9790a5a1926b5b674196ddac177f7032} 
 \index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!discontinuities@{discontinuities}}
 \index{discontinuities@{discontinuities}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{discontinuities()}{discontinuities()}}
 {\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+discontinuities (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
 
-\Hypertarget{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5}\label{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5} 
+
+
+Return the list of the points where the energy function is discontinuous. 
+
+In this context, "{}discontinuous"{} means that the previous energy segment and the next energy segment do not have the same equation or predecessor. \Hypertarget{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5}\label{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5} 
 \index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!domain@{domain}}
 \index{domain@{domain}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{domain()}{domain()}}
 {\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+domain (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
 
-Here is the caller graph for this function\+:\nopagebreak
-\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_ae13e41f5575e114d1a15576d2eba9fd5_icgraph}
-\end{center}
-\end{figure}
 \Hypertarget{classcode_1_1energy_1_1EnergyFunction_af7954427c2f9ce64f250fd13c6f5d2a4}\label{classcode_1_1energy_1_1EnergyFunction_af7954427c2f9ce64f250fd13c6f5d2a4} 
 \index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!evaluate@{evaluate}}
 \index{evaluate@{evaluate}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{evaluate()}{evaluate()}}
 {\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+evaluate (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{x }\end{DoxyParamCaption})}
+
+
+
+Return the value of this energy function at point x. 
 
 Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
@@ -190,13 +203,21 @@ Here is the caller graph for this function\+:\nopagebreak
 \doxysubsubsection{\texorpdfstring{is\_above\_one()}{is\_above\_one()}}
 {\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+is\+\_\+above\+\_\+one (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
 
+
+
+Return True if this energy function is superior to the identity function. 
+
 \Hypertarget{classcode_1_1energy_1_1EnergyFunction_a879a4b348e02afcd78d0232740999450}\label{classcode_1_1energy_1_1EnergyFunction_a879a4b348e02afcd78d0232740999450} 
 \index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!is\_in\_domain@{is\_in\_domain}}
 \index{is\_in\_domain@{is\_in\_domain}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{is\_in\_domain()}{is\_in\_domain()}}
 {\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+is\+\_\+in\+\_\+domain (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{x }\end{DoxyParamCaption})}
 
-Here is the call graph for this function\+:\nopagebreak
+
+
+Return True if x is in the domain of this energy function (ie. 
+
+\mbox{[}0, wup\mbox{]}). Assuming every energy function is well-\/defined on \mbox{[}0, wup\mbox{]} Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -223,31 +244,60 @@ Here is the caller graph for this function\+:\nopagebreak
 \includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_abcc98f88b59a7ff5234514957646ce6e_icgraph}
 \end{center}
 \end{figure}
-\Hypertarget{classcode_1_1energy_1_1EnergyFunction_aaa58b8c13693143bd3c89bd5c8a640da}\label{classcode_1_1energy_1_1EnergyFunction_aaa58b8c13693143bd3c89bd5c8a640da} 
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a911f48b303e20498d33dcabd3eddfb75}\label{classcode_1_1energy_1_1EnergyFunction_a911f48b303e20498d33dcabd3eddfb75} 
 \index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!one@{one}}
 \index{one@{one}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{one()}{one()}}
-{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+one (\begin{DoxyParamCaption}\item[{}]{low = {\ttfamily 0},  }\item[{}]{upp = {\ttfamily \mbox{\hyperlink{classcode_1_1energy_1_1WUP_a606861bca791113ff0e9771cf2351fee}{WUP.\+value}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+one (\begin{DoxyParamCaption}\item[{}]{wup }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The neutral element for the multiplicative operator. 
 
 
 
 Reimplemented from \mbox{\hyperlink{classcode_1_1semiring_1_1Semiring_a9fd314cb01baa45525e121978a8f960d}{code.\+semiring.\+Semiring}}.
 
-\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a453579de5c1fa6332c63f70fcfccb938}\label{classcode_1_1energy_1_1EnergyFunction_a453579de5c1fa6332c63f70fcfccb938} 
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a94354c3e2d78764c2b8e1627d0e7131f}\label{classcode_1_1energy_1_1EnergyFunction_a94354c3e2d78764c2b8e1627d0e7131f} 
 \index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!transition\_to\_sr@{transition\_to\_sr}}
 \index{transition\_to\_sr@{transition\_to\_sr}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{transition\_to\_sr()}{transition\_to\_sr()}}
-{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+transition\+\_\+to\+\_\+sr (\begin{DoxyParamCaption}\item[{}]{e,  }\item[{}]{weight }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+transition\+\_\+to\+\_\+sr (\begin{DoxyParamCaption}\item[{}]{e,  }\item[{}]{weight,  }\item[{}]{weight }\end{DoxyParamCaption})}
+
+
+
+Convert a transition in a weighted automaton into an element of this semiring. 
 
 
 
 Reimplemented from \mbox{\hyperlink{classcode_1_1semiring_1_1Semiring_a7e1d8dd18a9f9d3fb635006ac508c8a0}{code.\+semiring.\+Semiring}}.
 
-\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a104220641539a49a1e4fe20fa0665457}\label{classcode_1_1energy_1_1EnergyFunction_a104220641539a49a1e4fe20fa0665457} 
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_ae7cc38618188d9e29e54b622a850e190}\label{classcode_1_1energy_1_1EnergyFunction_ae7cc38618188d9e29e54b622a850e190} 
+\index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!wup@{wup}}
+\index{wup@{wup}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
+\doxysubsubsection{\texorpdfstring{wup()}{wup()}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+wup (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Return the wup for this energy function. 
+
+In Energy\+Function\+Wup, this method is overriden to have an access to the wup that is constant in time Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classcode_1_1energy_1_1EnergyFunction_ae7cc38618188d9e29e54b622a850e190_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{classcode_1_1energy_1_1EnergyFunction_a41ebe0136980bfcdfb03a58bd75da499}\label{classcode_1_1energy_1_1EnergyFunction_a41ebe0136980bfcdfb03a58bd75da499} 
 \index{code.energy.EnergyFunction@{code.energy.EnergyFunction}!zero@{zero}}
 \index{zero@{zero}!code.energy.EnergyFunction@{code.energy.EnergyFunction}}
 \doxysubsubsection{\texorpdfstring{zero()}{zero()}}
-{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+zero (\begin{DoxyParamCaption}\item[{}]{low = {\ttfamily 0},  }\item[{}]{upp = {\ttfamily \mbox{\hyperlink{classcode_1_1energy_1_1WUP_a606861bca791113ff0e9771cf2351fee}{WUP.\+value}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily code.\+energy.\+Energy\+Function.\+zero (\begin{DoxyParamCaption}\item[{}]{wup }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The neutral element for the additive operator. 
 
 
 

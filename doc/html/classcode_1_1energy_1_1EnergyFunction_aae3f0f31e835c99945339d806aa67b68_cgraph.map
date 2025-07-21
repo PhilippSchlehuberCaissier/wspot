@@ -1,7 +1,11 @@
 <map id="code.energy.EnergyFunction.__mul__" name="code.energy.EnergyFunction.__mul__">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,23,213,63"/>
+<area shape="rect" id="Node000001" title="The multiplicative operator." alt="" coords="5,73,213,113"/>
 <area shape="rect" id="Node000002" href="$classcode_1_1energy_1_1EnergySegment.html#a20378829c790827598d51cf67538692e" title=" " alt="" coords="261,5,519,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,31,247,28,248,34,214,37"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,70,261,39,298,31,299,36,262,45,165,75"/>
 <area shape="rect" id="Node000003" href="$classcode_1_1energy_1_1EnergyFunction.html#abcc98f88b59a7ff5234514957646ce6e" title=" " alt="" coords="263,55,517,80"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="214,50,249,53,249,58,213,55"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="213,81,249,77,249,83,214,86"/>
+<area shape="rect" id="Node000004" href="$classcode_1_1energy_1_1EnergyFunction.html#ae7cc38618188d9e29e54b622a850e190" title="Return the wup for this energy function." alt="" coords="273,104,507,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="214,99,259,103,259,108,213,104"/>
+<area shape="rect" id="Node000005" href="$classcode_1_1semiring_1_1Semiring.html#a95bf9864f6b98708a1e0570830ca9129" title="The neutral element for the additive operator." alt="" coords="286,153,494,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="169,110,262,138,305,148,304,153,261,143,168,115"/>
 </map>

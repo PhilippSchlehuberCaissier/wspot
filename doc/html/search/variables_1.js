@@ -6,5 +6,6 @@ var searchData=
   ['all_5flims_3',['all_lims',['../classcode_1_1simple__1CTA_1_1simple__1CTA.html#a86bf463e8b3c09b1294f3a7d1d1e231c',1,'code::simple_1CTA::simple_1CTA']]],
   ['all_5fpropositions_4',['all_propositions',['../classcode_1_1simple__1CTA_1_1simple__1CTA.html#a23960b55c5faf3c2eec684bebfb7cca7',1,'code::simple_1CTA::simple_1CTA']]],
   ['all_5fzones_5',['all_zones',['../classcode_1_1simple__1CTA_1_1simple__1CTA.html#aca7a7040190f19a2fa98170485756c04',1,'code::simple_1CTA::simple_1CTA']]],
-  ['args_6',['args',['../namespacecode_1_1one__exec.html#a193c8eed4becaf910b76a04e83d852ef',1,'code.one_exec.args'],['../namespacecode_1_1run__bench.html#a092e79b9eff988ad3994e644c00dd659',1,'code.run_bench.args'],['../namespacecode_1_1to__weighted__twa.html#a2a1260e1ad03f5f4203a2b23db2ae695',1,'code.to_weighted_twa.args']]]
+  ['args_6',['args',['../namespacecode_1_1one__exec.html#a193c8eed4becaf910b76a04e83d852ef',1,'code.one_exec.args'],['../namespacecode_1_1run__bench.html#a092e79b9eff988ad3994e644c00dd659',1,'code.run_bench.args'],['../namespacecode_1_1to__weighted__twa.html#a2a1260e1ad03f5f4203a2b23db2ae695',1,'code.to_weighted_twa.args']]],
+  ['ax_7',['ax',['../namespacecode_1_1segment__benchmark.html#a5447dfbef8b679349d2427afc1e301bc',1,'code.segment_benchmark.ax'],['../namespacecode_1_1segment__benchmark__legacy.html#a3e08d09134d025ff7ea1a9c8c7e36ba1',1,'code.segment_benchmark_legacy.ax']]]
 ];
