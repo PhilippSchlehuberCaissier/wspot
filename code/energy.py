@@ -305,6 +305,8 @@ class EnergyFunction(Semiring):
 
     def __mul__(self, other):
         # TODO clean this!!
+        # TODO optimise this, especially with the segment_at_disc dict
+        # (even though this will have less impact on performance)
         wup = self.wup()
         new_segs = []
 
@@ -353,17 +355,24 @@ class EnergyFunction(Semiring):
         return EnergyFunction.clean(f)
 
     def transition_to_sr(wup, e, weight):
+        # TODO problems if the transition loses more energy than the wup
         segs = []
         if weight > 0:
-            segs = [
-                EnergySegment.incr(0, wup - weight, e.src, weight),
-                EnergySegment.const(wup - weight, wup, e.src, wup)
-            ]
+            if weight >= wup:
+                segs = [EnergySegment.const(0, wup, e.src, wup)]
+            else:
+                segs = [
+                    EnergySegment.incr(0, wup - weight, e.src, weight),
+                    EnergySegment.const(wup - weight, wup, e.src, wup)
+                ]
         elif weight < 0:
-            segs = [
-                EnergySegment.const(0, -weight, e.src, -1),
-                EnergySegment.incr(-weight, wup, e.src, weight)
-            ]
+            if weight <= -wup:
+                segs = [EnergySegment.const(0, wup, e.src, -1)]
+            else:
+                segs = [
+                    EnergySegment.const(0, -weight, e.src, -1),
+                    EnergySegment.incr(-weight, wup, e.src, weight)
+                ]
         else:
             segs = [
                 EnergySegment.one(0, wup, e.src)
