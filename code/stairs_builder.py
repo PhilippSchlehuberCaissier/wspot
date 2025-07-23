@@ -32,7 +32,7 @@ print("properties: trans-labels explicit-labels trans-acc weak", file=f)
 print("--BODY--", file=f)
 
 # Initial state is always this
-print(f"State: 0\n[t] 0 <-5> {{0}}\n[t] 1 <{k}>", file=f)
+print(f"State: 0\n[t] 0 <-10> {{0}}\n[t] 1 <0>", file=f)
 
 # "Hub" state
 print("State: 1", file=f)
