@@ -12,6 +12,7 @@ class EnergySegment:
     upperBound: int
 
     # Get the optimal predecessor on longer paths
+    # TODO special value (not int) to represent undef instead of None
     pred: int
 
     # We can demonstrate that in our case the equation of this segment will always be of the form e_out = a * e_in + b where a is either 0 or 1
@@ -67,12 +68,51 @@ class EnergySegment:
     def incr(low, upp, pred, b):
         return EnergySegment(low, upp, pred, 1, b)
 
+    def __add__(self, other):
+        # Restrictions should be done *before* using the add operator
+        assert self.lowerBound == other.lowerBound and self.upperBound == other.upperBound
+        segs = []
+        if self.a == other.a:
+            if self.b == other.b:
+                segs = [other] if self.pred is None else [self]
+            else:
+                segs = [other] if self.b < other.b else [self]
+        else:
+            # Use the IVT (xor)
+            lower = self.lowerBound
+            upper = self.upperBound
+            if (self.evaluate(lower) > other.evaluate(lower)) != (self.evaluate(upper) > other.evaluate(upper)):
+                # TODO compatibility with real numbers? (in intersect)
+                # intersect is guaranteed to be in ]lower, upper[ with the initial condition
+                intersect = int((other.b - self.b) / (self.a - other.a))
+                first_on_top = self if self.evaluate(lower) > other.evaluate(lower) else other
+                segs.append(first_on_top.restriction(lower, intersect))
+                second_on_top = other if first_on_top == self else self
+                segs.append(second_on_top.restriction(intersect, upper))
+            else:
+                segs = [other] if self.evaluate(upper) < other.evaluate(upper) else [self]
+        return segs
+                
+        f = EnergyFunction(segs)
+        return EnergyFunction.clean(f)
+
 
 @dataclass
 ## Class for representing an energy function.
 class EnergyFunction(Semiring):
     segments: List[EnergySegment]
 
+    def __init__(self, segments):
+        # Assuming segments are already ordered
+        start = segments[0].lowerBound
+        end = segments[-1].upperBound
+
+        self.segments = segments
+        if start > 0:
+            self.segments.insert(EnergySegment.zero(0, start, None), 0)
+        if end < self.wup():
+            self.segments.append(EnergySegment.zero(end, self.wup(), None))
+    
     # def __init__(self, segments):
     #     self.segments = segments
     #     self.segment_map = dict([seg.lowerBound, seg] for seg in segments)
@@ -144,73 +184,13 @@ class EnergyFunction(Semiring):
         to_clean = False
 
         for old_seg in f.segments:
-            # Keep every segment defined on an interval of [0, wup]
-            # old_seg = old_seg.restriction(0, wup)
-
-            # # Remove duplicate segments
-            # if old_seg == next_seg or old_seg in new_segs:
-            #     next_seg = None
-            #     continue
-
             # # Remove zero-length segments EXCEPT if they are defined for wup
             # if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound != WUP.get_wup():
             #     continue
 
-            if next_seg is None:# or old_seg.lowerBound > old_seg.upperBound:
+            if next_seg is None:
                 next_seg = old_seg
                 continue
-
-            # # Cap every segment to wup
-            # if old_seg.evaluate(old_seg.upperBound) > wup:
-            #     if next_seg is not None:
-            #         new_segs.append(next_seg)
-            #         next_seg = None
-            #     to_clean = True
-
-            #     if old_seg.a == 0:
-            #         new_segs.append(EnergySegment.const(old_seg.lowerBound,
-            #                                             old_seg.upperBound,
-            #                                             old_seg.pred,
-            #                                             wup
-            #                                             ))
-            #     else:
-            #         disc = int((wup - old_seg.b) / old_seg.a)
-            #         new_segs.append(EnergySegment.incr(old_seg.lowerBound,
-            #                                            disc,
-            #                                            old_seg.pred,
-            #                                            old_seg.b
-            #                                            ))
-            #         new_segs.append(EnergySegment.const(disc,
-            #                                             old_seg.upperBound,
-            #                                             old_seg.pred,
-            #                                             wup
-            #                                             ))
-            #     continue
-
-            # # Same procedure: nullify non-null segments below zero
-            # if old_seg.evaluate(old_seg.lowerBound) < 0 and not old_seg.is_zero:
-            #     if next_seg is not None:
-            #         new_segs.append(next_seg)
-            #         next_seg = None
-            #     to_clean = True
-
-            #     if old_seg.a == 0:
-            #         new_segs.append(EnergySegment.zero(old_seg.lowerBound,
-            #                                            old_seg.upperBound,
-            #                                            None
-            #                                            ))
-            #     else:
-            #         disc = int(-old_seg.b / old_seg.a)
-            #         new_segs.append(EnergySegment.zero(old_seg.lowerBound,
-            #                                            disc,
-            #                                            None
-            #                                            ))
-            #         new_segs.append(EnergySegment.incr(disc,
-            #                                            old_seg.upperBound,
-            #                                            old_seg.pred,
-            #                                            old_seg.b
-            #                                            ))
-            #     continue
 
             # Merge segments with the same equation
             if old_seg.a == next_seg.a and old_seg.b == next_seg.b and old_seg.pred == next_seg.pred:
@@ -230,18 +210,6 @@ class EnergyFunction(Semiring):
         new_segs = []
 
         # The discontinuities of the max are the union of those of the 2 functions
-        # discs = []
-        # curr_disc1, curr_disc2 = 0, 0
-        # discs1, discs2 = f1.discontinuities, f2.discontinuities
-        # while curr_disc1 < len(discs1) and curr_disc2 < len(discs2):
-        #     if discs1[curr_disc1] > discs2[curr_disc2]:
-        #         if discs == [] or discs2[curr_disc2] != discs[-1]:
-        #             discs.append(discs2[curr_disc2])
-        #         curr_disc2 += 1
-        #     else:
-        #         if discs == [] or discs1[curr_disc1] != discs[-1]:
-        #             discs.append(discs1[curr_disc1])
-        #         curr_disc1 += 1
         seen = set()
         discs = [d for d in f1.discontinuities + f2.discontinuities if d not in seen and not seen.add(d)]
         discs.sort()
@@ -266,31 +234,34 @@ class EnergyFunction(Semiring):
             lower = discs[i]
             upper = discs[i+1]
 
-            seg1 = segment_at_disc['f1'][lower]
-            seg2 = segment_at_disc['f2'][lower]
+            seg1 = segment_at_disc['f1'][lower].restriction(lower, upper)
+            seg2 = segment_at_disc['f2'][lower].restriction(lower, upper)
 
-            if seg1.a == seg2.a:
-                if seg1.b == seg2.b:
-                    next_seg = seg1 if seg2.pred is None else seg2
-                else:
-                    next_seg = seg1 if seg1.b > seg2.b else seg2
-                new_segs.append(next_seg.restriction(lower, upper))
-            else:
-                # Segments might be intersecting
-                # Use the IVT (xor)
-                if (seg1.evaluate(lower) > seg2.evaluate(lower)) != (seg1.evaluate(upper) > seg2.evaluate(upper)):
-                    # found by manipulating the functions' equations
-                    # again, this only works if our weights are ints
-                    # intersect is guaranteed to be in ]lower, upper[ with the initial condition
-                    intersect = int((seg2.b - seg1.b) / (seg1.a - seg2.a))
-                    first_on_top = seg1 if seg1.evaluate(lower) > seg2.evaluate(lower) else seg2
-                    new_segs.append(first_on_top.restriction(lower, intersect))
-                    second_on_top = seg2 if first_on_top == seg1 else seg1
-                    new_segs.append(second_on_top.restriction(intersect, upper))
-                else:
-                    # Segments do not intersect, we use upper because its image is guaranteed to be not equal (unless seg1 == seg2)
-                    next_seg = seg1 if seg1.evaluate(upper) > seg2.evaluate(upper) else seg2
-                    new_segs.append(next_seg.restriction(lower, upper))
+            for seg in seg1 + seg2:
+                new_segs.append(seg)
+
+            # if seg1.a == seg2.a:
+            #     if seg1.b == seg2.b:
+            #         next_seg = seg1 if seg2.pred is None else seg2
+            #     else:
+            #         next_seg = seg1 if seg1.b > seg2.b else seg2
+            #     new_segs.append(next_seg.restriction(lower, upper))
+            # else:
+            #     # Segments might be intersecting
+            #     # Use the IVT (xor)
+            #     if (seg1.evaluate(lower) > seg2.evaluate(lower)) != (seg1.evaluate(upper) > seg2.evaluate(upper)):
+            #         # found by manipulating the functions' equations
+            #         # again, this only works if our weights are ints
+            #         # intersect is guaranteed to be in ]lower, upper[ with the initial condition
+            #         intersect = int((seg2.b - seg1.b) / (seg1.a - seg2.a))
+            #         first_on_top = seg1 if seg1.evaluate(lower) > seg2.evaluate(lower) else seg2
+            #         new_segs.append(first_on_top.restriction(lower, intersect))
+            #         second_on_top = seg2 if first_on_top == seg1 else seg1
+            #         new_segs.append(second_on_top.restriction(intersect, upper))
+            #     else:
+            #         # Segments do not intersect, we use upper because its image is guaranteed to be not equal (unless seg1 == seg2)
+            #         next_seg = seg1 if seg1.evaluate(upper) > seg2.evaluate(upper) else seg2
+            #         new_segs.append(next_seg.restriction(lower, upper))
 
         f = EnergyFunction(new_segs)
         return EnergyFunction.clean(f)
@@ -355,7 +326,6 @@ class EnergyFunction(Semiring):
         return EnergyFunction.clean(f)
 
     def transition_to_sr(wup, e, weight):
-        # TODO problems if the transition loses more energy than the wup
         segs = []
         if weight > 0:
             if weight >= wup:

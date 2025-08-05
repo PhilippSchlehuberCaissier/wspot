@@ -43,14 +43,12 @@ def FWhoa(aut: "HOA automaton",
                 # print(f"Examining {i} to {j} via {k}")
                 M[i][j] = M[i][j] + (M[i][k] * M[k][j])
                 # TODO do we need to return something?
-                # res = check(M, i, j)
-                # if res:
-                #    return res
+                res = check(M, i, j)
+                if res:
+                    return res
 
     # for i in range(V):
     #     print(f"From {i}")
     #     for j in range(V):
     #         print(str(M[i][j]))
     #     print("")
-
-    return M
