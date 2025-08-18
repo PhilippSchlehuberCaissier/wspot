@@ -33,6 +33,11 @@ class EnergySegment:
     def is_in_domain(self, x):
         return x >= self.lowerBound and x <= self.upperBound
 
+    @property
+    def image(self):
+        return (self.a * self.lowerBound + self.b,
+                self.a * self.upperBound + self.b)
+
     def evaluate(self, e_in):
         assert self.is_in_domain(e_in)
         return self.a * e_in + self.b
@@ -92,9 +97,12 @@ class EnergySegment:
             else:
                 segs = [other] if self.evaluate(upper) < other.evaluate(upper) else [self]
         return segs
-                
+
         f = EnergyFunction(segs)
         return EnergyFunction.clean(f)
+
+    def __mul__(self, other):
+        pass
 
 
 @dataclass
@@ -109,7 +117,7 @@ class EnergyFunction(Semiring):
 
         self.segments = segments
         if start > 0:
-            self.segments.insert(EnergySegment.zero(0, start, None), 0)
+            self.segments.insert(0, EnergySegment.zero(0, start, None))
         if end < self.wup():
             self.segments.append(EnergySegment.zero(end, self.wup(), None))
     
@@ -135,6 +143,7 @@ class EnergyFunction(Semiring):
 
     ## Return the list of the points where the energy function is discontinuous.
     # In this context, "discontinuous" means that the previous energy segment and the next energy segment do not have the same equation or predecessor.
+    # TODO convert to class method
     @property
     def discontinuities(self):
         # Assuming segments are ordered
@@ -176,18 +185,13 @@ class EnergyFunction(Semiring):
     @staticmethod
     def clean(f):
         # TODO clean this!!
-        # wup = f.wup()
-
         new_segs = []
         next_seg = None
-        # Whether we need to make another pass
-        to_clean = False
 
         for old_seg in f.segments:
             # # Remove zero-length segments EXCEPT if they are defined for wup
             # if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound != WUP.get_wup():
             #     continue
-
             if next_seg is None:
                 next_seg = old_seg
                 continue
@@ -199,11 +203,10 @@ class EnergyFunction(Semiring):
             else:
                 new_segs.append(next_seg)
                 next_seg = old_seg
+
         if next_seg is not None:
             new_segs.append(next_seg)
-        f = EnergyFunction(new_segs)
-        # print(f"final is {f}")
-        return EnergyFunction.clean(f) if to_clean else f
+        return EnergyFunction(new_segs)
 
     def __add__(f1, f2):
         # print(f"{f1} + {f2}")
@@ -216,19 +219,11 @@ class EnergyFunction(Semiring):
 
         # Build a list of segments valid between each discontinuity
         # We use a dictionary as it is a bit more efficient
+        # TODO can we put this elsewhere? We've already tried but in __init__
         segment_at_disc = {'f1': {}, 'f2': {}}
         for d in discs:
             segment_at_disc['f1'][d] = f1.get_segment(d)
             segment_at_disc['f2'][d] = f2.get_segment(d)
-
-        # segment_at_disc = []
-        # segs1, segs2 = f1.segments, f2.segments
-        # seg_idx1, seg_idx2 = 0
-        # while seg_idx1 < len(segs1) and seg_idx2 < len(segs2):
-        #     seg1_end = segs1[seg_idx1].upperBound
-        #     seg2_end = segs2[seg_idx2].upperBound
-        #     if seg1_end < seg2_end:
-        #         segment_at_disc.append((
 
         for i in range(len(discs) - 1):
             lower = discs[i]
@@ -274,53 +269,65 @@ class EnergyFunction(Semiring):
                 return True
         return False
 
-    def __mul__(self, other):
+    def __mul__(f1, f2):
         # TODO clean this!!
         # TODO optimise this, especially with the segment_at_disc dict
         # (even though this will have less impact on performance)
-        wup = self.wup()
+        wup = f1.wup()
         new_segs = []
 
-        if self.is_zero or other.is_zero:
-            return self.__class__.zero(wup)
+        if f1.is_zero or f2.is_zero:
+            return f1.__class__.zero(wup)
 
-        for seg in self.segments:
-            if seg.is_zero:
-                new_segs.append(seg)
-                continue
+        # TODO do we need the segments for f1?
+        # do we actually need the segments?
+        seen = set()
+        discs = [d for d in f1.discontinuities + f2.discontinuities if d not in seen and not seen.add(d)]
+        discs.sort()
+        segment_at_disc = {'f1': {}, 'f2': {}}
+        for d in discs:
+            segment_at_disc['f1'][d] = f1.get_segment(d)
+            segment_at_disc['f2'][d] = f2.get_segment(d)
 
-            lower = seg.lowerBound
-            upper = seg.upperBound
-            im_lower = seg.evaluate(lower)
-            im_upper = seg.evaluate(upper)
-
-            # Case f is constant
-            if im_lower == im_upper:
-                next_seg = EnergySegment.const(lower,
-                                               upper,
-                                               other.get_segment(im_lower).pred,
-                                               other.evaluate(im_lower))
+        for seg in f1.segments:
+            for next_seg in cross(seg, f2, wup):
                 new_segs.append(next_seg)
-                continue
+            # if seg.is_zero:
+            #     new_segs.append(seg)
+            #     continue
 
-            # Case f is ascending
-            # For all segments of g, if the segment intersects with the image of f then apply this segment to the relevant part of the image
-            for other_seg in other.segments:
-                other_lower = other_seg.lowerBound
-                other_upper = other_seg.upperBound
-                if other_lower < im_upper and other_upper > im_lower:
-                    # We need to stay in the image
-                    corr_lower = max(im_lower, other_lower)
-                    corr_upper = min(im_upper, other_upper)
+            # lower = seg.lowerBound
+            # upper = seg.upperBound
+            # im_lower = seg.evaluate(lower)
+            # im_upper = seg.evaluate(upper)
 
-                    # Find the inverse by f
-                    inv_lower = int((corr_lower - seg.b) / seg.a)
-                    inv_upper = int((corr_upper - seg.b) / seg.a)
+            # # Case f is constant
+            # if im_lower == im_upper:
+            #     next_seg = EnergySegment.const(lower,
+            #                                    upper,
+            #                                    f2.get_segment(im_lower).pred,
+            #                                    f2.evaluate(im_lower))
+            #     new_segs.append(next_seg)
+            #     continue
 
-                    new_a = seg.a * other_seg.a
-                    new_b = other_seg.a * seg.b + other_seg.b
-                    next_seg = EnergySegment.incr(inv_lower, inv_upper, other_seg.pred, new_b) if new_a == 1 else EnergySegment.const(inv_lower, inv_upper, other_seg.pred, new_b)
-                    new_segs.append(next_seg)
+            # # Case f is ascending
+            # # For all segments of g, if the segment intersects with the image of f then apply this segment to the relevant part of the image
+            # for f2_seg in f2.segments:
+            #     f2_lower = f2_seg.lowerBound
+            #     f2_upper = f2_seg.upperBound
+            #     if f2_lower < im_upper and f2_upper > im_lower:
+            #         # We need to stay in the image
+            #         corr_lower = max(im_lower, f2_lower)
+            #         corr_upper = min(im_upper, f2_upper)
+
+            #         # Find the inverse by f
+            #         inv_lower = int((corr_lower - seg.b) / seg.a)
+            #         inv_upper = int((corr_upper - seg.b) / seg.a)
+
+            #         new_a = seg.a * f2_seg.a
+            #         new_b = f2_seg.a * seg.b + f2_seg.b
+            #         next_seg = EnergySegment.incr(inv_lower, inv_upper, f2_seg.pred, new_b) if new_a == 1 else EnergySegment.const(inv_lower, inv_upper, f2_seg.pred, new_b)
+            #         new_segs.append(next_seg)
 
         f = EnergyFunction(new_segs)
         return EnergyFunction.clean(f)
@@ -349,6 +356,48 @@ class EnergyFunction(Semiring):
             ]
         f = EnergyFunction(segs)
         return EnergyFunction.clean(f)
+
+
+## "Cross" intermediate operator
+# @param seg (EnergySegment) an energy segment
+# @param fun (EnergyFunction) a well-defined energy function
+# @param wup (int) the wup
+# @return a generator of energy segments that is the result of seg x fun
+def cross(seg: EnergySegment, fun: EnergyFunction, wup: int):
+    # print(f"doing {seg} x {fun}")
+    # seg is the null segment on I
+    if seg.a == 0 and seg.b == -1:
+        yield seg
+    # seg is a constant energy segment
+    elif seg.a == 0 and seg.b != -1:
+        yield EnergySegment.const(seg.lowerBound,
+                                  seg.upperBound,
+                                  seg.pred,
+                                  fun.evaluate(seg.b))
+    # seg is an increasing energy segment
+    else:
+        def f_inverse(x):
+            return x - seg.b
+
+        im_f = seg.image
+        # the (d_i) for i in [1,n+1]
+        the_ds = [seg.evaluate(seg.lowerBound)] + [disc for disc in fun.discontinuities if disc > im_f[0] and disc < im_f[1]]
+        the_ds.append(seg.evaluate(seg.upperBound))
+        n = len(the_ds) - 1
+
+        # Build the xi_i for i in [1,n]
+        for i in range(n):
+            left_disc = the_ds[i]
+            right_disc = the_ds[i+1]
+            # print(f"this is from {left_disc} to {right_disc}")
+            # We don't actually need the restriction, only the equation of the underlying segment
+            r_i = fun.get_segment(left_disc)
+            s = EnergySegment(f_inverse(left_disc),
+                              f_inverse(right_disc),
+                              r_i.pred,
+                              r_i.a,
+                              r_i.b)
+            yield s
 
 
 ## Class for energy functions parametrized with a wup
