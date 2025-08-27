@@ -430,29 +430,3 @@ def cross(seg: EnergySegment, fun: EnergyFunction, wup: int):
                               r_i.a,
                               r_i.b)
             yield s
-
-
-## Class for energy functions parametrized with a wup
-def EnergyFunctionWup(q):
-    # TODO this would be more efficient if we could use pointers in python...
-    ZERO = EnergyFunction.zero(q)
-    ONE = EnergyFunction.one(q)
-
-    # TODO is this effective? are there hidden calculations?
-    class EnergyFunctionWup(EnergyFunction):
-        # We already define the null and identity to save some time
-        # TODO put this + setWup function in EnergyFunction
-        @override
-        def wup():
-            return None
-
-        def zero():
-            return ZERO
-
-        def one():
-            return ONE
-
-        def transition_to_sr(e, weight):
-            return EnergyFunction.transition_to_sr(q, e, weight)
-
-    return EnergyFunctionWup
