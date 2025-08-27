@@ -2,7 +2,7 @@ from typing import List
 from buechi import BuechiResult
 import BF1
 from BF1 import mod_BF_iter
-from energy import EnergyFunctionWup
+from energy import EnergyFunction
 
 import spot
 
@@ -741,7 +741,7 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
         ipy_utils.print_c(f"Examining color {str(col)}")
         sub_hoa = RemoveColor(hoa, col)
 
-        res = wf.FWhoa(sub_hoa, EnergyFunctionWup(wup), diag_is_above_one)
+        res = wf.FWhoa(sub_hoa, EnergyFunction, diag_is_above_one)
         # TODO return a BuechiResult and not the result matrix
         if res:
             return res

@@ -15,6 +15,7 @@ from array import array
 
 import WBA_solvers as solv
 from buechi import BuechiResult
+from energy import EnergyFunction
 import ipython_utils as ipy
 ipy_utils = ipy.IPythonUtils()
 
@@ -48,7 +49,9 @@ def OmegaEnergy(aut: "HOA automaton",
     else:
         hoa = aut
 
+    # TODO ???
     wup_t = wup
+    EnergyFunction.set_wup(wup_t)
     ipy_utils.set_display_mode(do_display)
     acc_cond = hoa.acc()
 
