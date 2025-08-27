@@ -29,7 +29,7 @@ class EnergySegment:
         str_b = '' if self.a and not self.b else str(self.b) if not self.a else f" + {self.b}"
         return f"{str_def} ; e_in |---> {str_a}{str_b}" + f" (from {self.pred})"
 
-    # TODO x < upper bound except when it's wup
+    # TODO energy domains class
     def is_in_domain(self, x):
         return x >= self.lowerBound and x <= self.upperBound
 
@@ -108,6 +108,7 @@ class EnergySegment:
 @dataclass
 ## Class for representing an energy function.
 class EnergyFunction(Semiring):
+    # TODO ZERO as class var?
     segments: List[EnergySegment]
 
     def __init__(self, segments):
@@ -139,16 +140,15 @@ class EnergyFunction(Semiring):
     @property
     def is_zero(self):
         # We can evaluate the segment in 0 since "normal" segments cannot get below 0
-        return len(self.segments) == 1 and self.segments[0].evaluate(0) == -1
+        return len(self.segments) == 1 and self.segments[0].is_zero
 
     ## Return the list of the points where the energy function is discontinuous.
     # In this context, "discontinuous" means that the previous energy segment and the next energy segment do not have the same equation or predecessor.
-    # TODO convert to class method
-    @property
-    def discontinuities(self):
+    @staticmethod
+    def discontinuities(f):
         # Assuming segments are ordered
         # IMPORTANT: Global lower and upper bounds are also considered as discontinuities!
-        final = [seg.lowerBound for seg in self.segments] + [self.segments[-1].upperBound]
+        final = [seg.lowerBound for seg in f.segments] + [f.segments[-1].upperBound]
         return final
 
     @property
@@ -173,7 +173,9 @@ class EnergyFunction(Semiring):
         for seg in self.segments:
             # We assume that if there is a discontinuity at x, the used segment will be the one that has maximal energy.
             # This means that a segment is only usable on [lowerBound, upperBound-1] unless it is the last segment (since there is no next segment to use)
-            if (x >= seg.lowerBound and x < seg.upperBound) or seg == self.segments[-1]:
+            lower = seg.lowerBound
+            upper = seg.upperBound
+            if (x >= lower and x < upper) or upper == self.wup():
                 return seg
 
     ## Return the value of this energy function at point x.
@@ -182,19 +184,16 @@ class EnergyFunction(Semiring):
         return self.get_segment(x).evaluate(x)
 
     ## Merge similar energy segments.
+    # TODO change the big condition in the if to use the diamond operation
     @staticmethod
     def clean(f):
         # TODO clean this!!
         new_segs = []
-        next_seg = None
+        # A function cannot have zero segments
+        next_seg = f.segments[0]
 
-        for old_seg in f.segments:
-            # # Remove zero-length segments EXCEPT if they are defined for wup
-            # if old_seg.lowerBound == old_seg.upperBound and old_seg.lowerBound != WUP.get_wup():
-            #     continue
-            if next_seg is None:
-                next_seg = old_seg
-                continue
+        for i in range(1, len(f.segments)):
+            old_seg = f.segments[i]
 
             # Merge segments with the same equation
             if old_seg.a == next_seg.a and old_seg.b == next_seg.b and old_seg.pred == next_seg.pred:
@@ -214,7 +213,7 @@ class EnergyFunction(Semiring):
 
         # The discontinuities of the max are the union of those of the 2 functions
         seen = set()
-        discs = [d for d in f1.discontinuities + f2.discontinuities if d not in seen and not seen.add(d)]
+        discs = [d for d in EnergyFunction.discontinuities(f1) + EnergyFunction.discontinuities(f2) if d not in seen and not seen.add(d)]
         discs.sort()
 
         # Build a list of segments valid between each discontinuity
@@ -271,7 +270,6 @@ class EnergyFunction(Semiring):
 
     def __mul__(f1, f2):
         # TODO clean this!!
-        # TODO optimise this, especially with the segment_at_disc dict
         # (even though this will have less impact on performance)
         wup = f1.wup()
         new_segs = []
@@ -279,10 +277,8 @@ class EnergyFunction(Semiring):
         if f1.is_zero or f2.is_zero:
             return f1.__class__.zero(wup)
 
-        # TODO do we need the segments for f1?
-        # do we actually need the segments?
         seen = set()
-        discs = [d for d in f1.discontinuities + f2.discontinuities if d not in seen and not seen.add(d)]
+        discs = [d for d in EnergyFunction.discontinuities(f1) + EnergyFunction.discontinuities(f2) if d not in seen and not seen.add(d)]
         discs.sort()
         segment_at_disc = {'f1': {}, 'f2': {}}
         for d in discs:
@@ -381,7 +377,7 @@ def cross(seg: EnergySegment, fun: EnergyFunction, wup: int):
 
         im_f = seg.image
         # the (d_i) for i in [1,n+1]
-        the_ds = [seg.evaluate(seg.lowerBound)] + [disc for disc in fun.discontinuities if disc > im_f[0] and disc < im_f[1]]
+        the_ds = [seg.evaluate(seg.lowerBound)] + [disc for disc in EnergyFunction.discontinuities(fun) if disc > im_f[0] and disc < im_f[1]]
         the_ds.append(seg.evaluate(seg.upperBound))
         n = len(the_ds) - 1
 
@@ -402,11 +398,14 @@ def cross(seg: EnergySegment, fun: EnergyFunction, wup: int):
 
 ## Class for energy functions parametrized with a wup
 def EnergyFunctionWup(q):
+    # TODO this would be more efficient if we could use pointers in python...
     ZERO = EnergyFunction.zero(q)
     ONE = EnergyFunction.one(q)
 
+    # TODO is this effective? are there hidden calculations?
     class EnergyFunctionWup(EnergyFunction):
         # We already define the null and identity to save some time
+        # TODO put this + setWup function in EnergyFunction?
         @override
         def wup():
             return q
@@ -421,12 +420,3 @@ def EnergyFunctionWup(q):
             return EnergyFunction.transition_to_sr(q, e, weight)
 
     return EnergyFunctionWup
-    # TODO remove this
-    return type(
-        "EnergyFuctionWup",
-        (EnergyFunction, ),
-        {"wup": wup,
-         "zero": lambda: EnergyFunction.zero(wup),
-         "one": lambda: EnergyFunction.one(wup),
-         "transition_to_sr": lambda e, weight: EnergyFunction.transition_to_sr(wup, e, weight)}
-    )
