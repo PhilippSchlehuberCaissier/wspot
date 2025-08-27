@@ -113,6 +113,7 @@ class EnergyFunction(Semiring):
     WUP: ClassVar[int]
 
     segments: List[EnergySegment]
+    length: int
 
     @staticmethod
     def set_wup(wup):
@@ -134,6 +135,7 @@ class EnergyFunction(Semiring):
         end = segments[-1].upperBound
 
         self.segments = segments
+        self.length = len(segments)
         if start > 0:
             self.segments.insert(0, EnergySegment.zero(0, start, None))
         if end < EnergyFunction.WUP:
@@ -157,7 +159,7 @@ class EnergyFunction(Semiring):
     @property
     def is_zero(self):
         # We can evaluate the segment in 0 since "normal" segments cannot get below 0
-        return len(self.segments) == 1 and self.segments[0].is_zero
+        return self.length == 1 and self.segments[0].is_zero
 
     ## Return the list of the points where the energy function is discontinuous.
     # In this context, "discontinuous" means that the previous energy segment and the next energy segment do not have the same equation or predecessor.
@@ -187,7 +189,7 @@ class EnergyFunction(Semiring):
         assert x >= 0 and x <= EnergyFunction.WUP
 
         # TODO store n directly in the function to have a constant access time?
-        a, b = 0, len(self.segments)
+        a, b = 0, self.length
         idx = int((a+b)/2)
 
         while True:
@@ -227,7 +229,7 @@ class EnergyFunction(Semiring):
         # A function cannot have zero segments
         next_seg = f.segments[0]
 
-        for i in range(1, len(f.segments)):
+        for i in range(1, f.length):
             old_seg = f.segments[i]
 
             # Merge segments with the same equation
