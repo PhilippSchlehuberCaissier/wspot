@@ -12,18 +12,21 @@ import cProfile
 
 import WBA_solvers as ws
 import WBA_FW as wf
-from energy import EnergyFunctionWup
+from energy import EnergyFunction
 
 
 # We will use the nested loops automata with an increasing number k of nested loops.
 loops = int(sys.argv[1])
 assert loops > 1
+WUP = 150
 
-subprocess.run(["python3", "stairs_builder.py", str(loops)])
-hoa = spot.automaton("../tests/stairs_auto.hoa")
+# subprocess.run(["python3", "nested_loops_builder.py", str(loops)])
+# hoa = spot.automaton("../tests/nested_loops_auto.hoa")
+hoa = spot.automaton("../tests/devil.hoa")
 # hoa = spot.automaton("../tests/many_iterations_co_buechi_flattened.hoa")
 
-ef_class = EnergyFunctionWup(loops)
+EnergyFunction.set_wup(WUP)
+ef_class = EnergyFunction
 M = wf.FWhoa(hoa, ef_class, lambda M, i, j: True)
 n = len(M[0])
 M_seg = [[len(f.segments) for f in li] for li in M]
