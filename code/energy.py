@@ -188,7 +188,6 @@ class EnergyFunction(Semiring):
     def get_segment(self, x):
         assert x >= 0 and x <= EnergyFunction.WUP
 
-        # TODO store n directly in the function to have a constant access time?
         a, b = 0, self.length
         idx = int((a+b)/2)
 
@@ -206,7 +205,6 @@ class EnergyFunction(Semiring):
                 return seg
             idx = int((a+b)/2)
 
-        # TODO dichotomy?
         # for seg in self.segments:
         #     # We assume that if there is a discontinuity at x, the used segment will be the one that has maximal energy.
         #     # This means that a segment is only usable on [lowerBound, upperBound-1] unless it is the last segment (since there is no next segment to use)

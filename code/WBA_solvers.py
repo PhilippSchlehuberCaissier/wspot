@@ -737,7 +737,8 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
                 # TODO return BuechiResult
                 return True
 
-    for col in range(hoa.acc().num_sets()):
+    ncolors = hoa.acc().num_sets()
+    for col in range(ncolors):
         ipy_utils.print_c(f"Examining color {str(col)}")
         sub_hoa = RemoveColor(hoa, col)
 
@@ -797,7 +798,7 @@ def RabinEnergy(hoa: "Rabin automaton",
     return BuechiResult()
 
 
-## Solve an ɷ-regular energy game in an automaton with an acceptance condition of t.
+## Solve an ɷ-regular energy game in an automaton with an acceptance condition of t using the Floyd-Warshall algorithm.
 #
 # @param hoa (HOA automaton): automaton as twa_graph
 # @param s0 (int): initial state
@@ -810,14 +811,15 @@ def TrueEnergy(hoa: "automaton",
                c0: int
                ) -> BuechiResult:
     # Algorithm: promote every edge to back edge and run BuechiEnergy on the new automaton
-    buchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
-    buchi_hoa.copy_named_properties_of(hoa)
-    buchi_hoa.set_buchi()
+    return CoBuechi_FW_new(hoa, s0, wup, c0)
+    # buchi_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
+    # buchi_hoa.copy_named_properties_of(hoa)
+    # buchi_hoa.set_buchi()
 
-    for e in buchi_hoa.edges():
-        e.acc = spot.mark_t({0})
+    # for e in buchi_hoa.edges():
+    #     e.acc = spot.mark_t({0})
 
-    return BuechiEnergy(buchi_hoa, s0, wup, c0, None, None)
+    # return BuechiEnergy(buchi_hoa, s0, wup, c0, None, None)
 
 
 ## Solve an ɷ-regular energy game in a Büchi automaton.
