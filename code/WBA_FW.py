@@ -40,8 +40,10 @@ def FWhoa(aut: "HOA automaton",
     for k in range(V):
         for i in range(V):
             for j in range(V):
+                # TODO debug module, too many prints
                 # print(f"Examining {i} to {j} via {k}")
                 M[i][j] = M[i][j] + (M[i][k] * M[k][j])
+                # print(f"New value is {M[i][j]}")
                 # TODO do we need to return something?
                 res = check(M, i, j)
                 if res:

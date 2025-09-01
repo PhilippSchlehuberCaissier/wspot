@@ -101,9 +101,6 @@ class EnergySegment:
         f = EnergyFunction(segs)
         return EnergyFunction.clean(f)
 
-    def __mul__(self, other):
-        pass
-
 
 @dataclass
 ## Class for representing an energy function.
@@ -231,7 +228,9 @@ class EnergyFunction(Semiring):
             old_seg = f.segments[i]
 
             # Merge segments with the same equation
-            if old_seg.a == next_seg.a and old_seg.b == next_seg.b and old_seg.pred == next_seg.pred:
+            # This order of evaluation allows us to use the power of lazy evaluation
+            # (more possible values for b)
+            if old_seg.b == next_seg.b and old_seg.pred == next_seg.pred and old_seg.a == next_seg.a:
                 next_seg.upperBound = old_seg.upperBound
                 # print(f"merging segments, new segment: {next_seg}")
             else:
@@ -427,6 +426,6 @@ def cross(seg: EnergySegment, fun: EnergyFunction, wup: int):
             s = EnergySegment(f_inverse(left_disc),
                               f_inverse(right_disc),
                               r_i.pred,
-                              r_i.a,
-                              r_i.b)
+                              r_i.a * seg.a,
+                              r_i.b + r_i.a * seg.b)
             yield s

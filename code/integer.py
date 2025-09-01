@@ -20,3 +20,7 @@ class Integer(Semiring):
 
     def __mul__(self, other):
         return self * other
+
+    @staticmethod
+    def transition_to_sr(e, weight):
+        return weight

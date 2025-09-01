@@ -17,7 +17,7 @@ from devilCircles import DevilBuilder
 ## Benchmark to assess the efficiency of our algorithms with automata of varying sizes.
 # We will use the nested loops automata with an increasing number k of nested loops.
 start = 3
-max_loops = 8
+max_loops = 5
 # builder = NestedLoopsBuilder(start)
 builder = DevilBuilder(start)
 wup = builder.wup
@@ -39,10 +39,9 @@ EnergyFunction.set_wup(wup)
 for k in range(start, max_loops + 1):
     builder.update(k)
     builder.build()
-    # subprocess.run(["python3", "nested_loops_builder.py", str(k)])
-    # subprocess.run(["python3", "stairs_builder.py", str(k)])
-    hoa = spot.automaton("../tests/nested_loops_auto.hoa")
+    # hoa = spot.automaton("../tests/nested_loops_auto.hoa")
     # hoa = spot.automaton("../tests/stairs_auto.hoa")
+    hoa = spot.automaton("../tests/devil.hoa")
 
     for i in range(len(solvers)):
         solver = solvers[i]
