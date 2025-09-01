@@ -307,7 +307,12 @@ def NaiveCoBuechi(hoa, s0, wup, c0):
     hoa.set_state_names([f"{i},{ei}" for i, ei in enumerate(en)])
 
     ipy_utils.highlight_c(hoa, pred, opt="tsbrg")
-    for col in range(hoa.acc().num_sets()):
+
+    ncolors = hoa.acc().num_sets()
+    if ncolors == 0:
+        ncolors = 1
+
+    for col in range(ncolors):
         ipy_utils.print_c(f"Building Büchi automaton for color {str(col)}")
         co_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
         co_hoa.copy_named_properties_of(hoa)
@@ -378,7 +383,11 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
     #         -8
     # if the wup is 5, even though it is a positive loop)
 
-    for col in range(hoa.acc().num_sets()):
+    colors = hoa.acc().num_sets()
+    if colors == 0:
+        colors = 1
+
+    for col in range(colors):
         ipy_utils.print_c(f"Examining color {str(col)}")
         sub_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
         sub_hoa.copy_named_properties_of(hoa)
@@ -531,7 +540,11 @@ def CoBuechiEnergy(hoa: "co-Büchi automaton",
     #         -8
     # if the wup is 5, even though it is a positive loop)
 
-    for col in range(hoa.acc().num_sets()):
+    ncolors = hoa.acc().num_sets()
+    if ncolors == 0:
+        ncolors = 1
+
+    for col in range(ncolors):
         ipy_utils.print_c(f"Examining color {str(col)}")
         sub_hoa = spot.make_twa_graph(hoa, spot.twa_prop_set.all())
         sub_hoa.copy_named_properties_of(hoa)
@@ -738,6 +751,8 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
                 return True
 
     ncolors = hoa.acc().num_sets()
+    if ncolors == 0:
+        ncolors = 1
     for col in range(ncolors):
         ipy_utils.print_c(f"Examining color {str(col)}")
         sub_hoa = RemoveColor(hoa, col)
@@ -745,7 +760,7 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
         res = wf.FWhoa(sub_hoa, EnergyFunction, diag_is_above_one)
         # TODO return a BuechiResult and not the result matrix
         if res:
-            return res
+            return True
 
     ipy_utils.print_c("There is no positive loop")
     return BuechiResult()
