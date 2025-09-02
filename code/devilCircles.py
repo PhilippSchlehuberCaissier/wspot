@@ -103,6 +103,7 @@ class DevilBuilder:
         self.NM = 2*k
         self.wup = maxStretchEnergy(k, self.NM)
         self.name = "circling"
+        self.output = "../tests/devil.hoa"
 
     def update(self, k):
         self.__init__(k)
@@ -116,10 +117,9 @@ class DevilBuilder:
 
         cstr_(aut, s[1], s[2], self.k, self.NM)
 
-        output = "../tests/devil.hoa"
-        print(f"Building circling automaton with circles of size {self.k} and increasing energy of {self.NM} at {output}")
+        print(f"Building circling automaton with circles of size {self.k} and increasing energy of {self.NM} at {self.output}")
         # Original automaton
-        with open(output, 'w') as f:
+        with open(self.output, 'w') as f:
             print(aut.to_str("hoa"), file=f)
 
         # autP = permuteAutWith(aut, ceil(time.time()))
