@@ -75,6 +75,9 @@ class EnergySegment:
 
     def __add__(self, other):
         # Restrictions should be done *before* using the add operator
+        if not isinstance(other, EnergySegment):
+            raise TypeError("Can only add energy segments to other energy segments")
+
         assert self.lowerBound == other.lowerBound and self.upperBound == other.upperBound
         segs = []
         if self.a == other.a:
@@ -403,7 +406,7 @@ def cross(seg: EnergySegment, fun: EnergyFunction, wup: int):
     elif seg.a == 0 and seg.b != -1:
         yield EnergySegment.const(seg.lowerBound,
                                   seg.upperBound,
-                                  seg.pred,
+                                  fun.get_segment(seg.b).pred,
                                   fun.evaluate(seg.b))
     # seg is an increasing energy segment
     else:
@@ -421,7 +424,7 @@ def cross(seg: EnergySegment, fun: EnergyFunction, wup: int):
             left_disc = the_ds[i]
             right_disc = the_ds[i+1]
             # print(f"this is from {left_disc} to {right_disc}")
-            # We don't actually need the restriction, only the equation of the underlying segment
+            # We don't actually need the restriction, only the equation of the underlying segment 
             r_i = fun.get_segment(left_disc)
             s = EnergySegment(f_inverse(left_disc),
                               f_inverse(right_disc),

@@ -474,6 +474,7 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
                             # Feasible loop
                             # TODO return a BuechiResult
                             ipy_utils.print_c("Found an accepting loop")
+                            print(f"There are {len(examined_loops)} loops for a total of {sum([len(loop) for loop in examined_loops])} states")
                             return True
                     ipy_utils.print_c("This loop has been entirely shifted, proceeding to next candidate loop")
 
@@ -492,6 +493,7 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
 
         ipy_utils.print_c(f"End processing ({current_state}, {current_energy})")
 
+    print(f"There are {len(examined_loops)} for a total of {sum([len(loop) for loop in examined_loops])} states")
     return BuechiResult()
 
 
@@ -760,7 +762,7 @@ def CoBuechi_FW_new(aut: "co-Büchi automaton",
         res = wf.FWhoa(sub_hoa, EnergyFunction, diag_is_above_one)
         # TODO return a BuechiResult and not the result matrix
         if res:
-            return True
+            return res
 
     ipy_utils.print_c("There is no positive loop")
     return BuechiResult()

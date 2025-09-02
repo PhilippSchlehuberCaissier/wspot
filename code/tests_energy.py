@@ -1,7 +1,7 @@
 import unittest as ut
 
 from integer import Integer
-from energy import EnergySegment, EnergyFunction
+from energy import EnergySegment, EnergyFunction, cross
 
 
 WUP = 100
@@ -31,6 +31,14 @@ class TestSemiring(ut.TestCase):
 
 class TestEnergy(ut.TestCase):
     ## oplus
+    # can't oplus None
+    def test_seg_oplus_none(self):
+        self.assertRaises(
+            TypeError,
+            f1.__add__,
+            None
+        )
+
     # energy segments on different domains cannot be oplussed
     def test_seg_oplus_no(self):
         self.assertRaises(
@@ -46,6 +54,13 @@ class TestEnergy(ut.TestCase):
             [f2bis]
         )
 
+    # oplus commutes
+    def test_seg_oplus_comm(self):
+        self.assertEqual(
+            f1 + f2,
+            f2 + f1
+        )
+
     # oplus on 2 energy segments with intersection
     def test_seg_oplus_intersect(self):
         self.assertEqual(
@@ -59,17 +74,29 @@ class TestEnergy(ut.TestCase):
     ## cross and otimes
     # cross needs an energy function as second argument
     def test_cross_no(self):
-        pass
+        self.assertRaises(
+            TypeError,
+            cross,
+            f1, f2
+        )
 
     # otimesing with the identity should not change the initial function
     def test_fun_otimes_id(self):
         self.assertEqual(
             F1 * Fone,
-            F1
+            EnergyFunction([
+                EnergySegment.const(0, 40, None, 60),
+                EnergySegment.const(40, WUP, None, WUP)
+            ])
         )
+
+    def test_fun_otimes_id2(self):
         self.assertEqual(
             F2 * Fone,
-            F2
+            EnergyFunction([
+                EnergySegment.zero(0, 50, None),
+                EnergySegment.incr(50, WUP, None, -50)
+            ])
         )
 
 

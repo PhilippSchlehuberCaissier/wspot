@@ -28,9 +28,13 @@ times_backtrack = []
 times_FW = []
 
 solvers = [
+    # naive
     ws.NaiveCoBuechi,
+    # cycles
     ws.LEGACY_CoBuechiEnergy,
+    # backtrack
     ws.CoBuechiEnergy,
+    # FW
     ws.CoBuechi_FW_new
 ]
 times = [[0 for _ in range(len(solvers))] for _ in range(start, max_loops + 1)]
@@ -50,6 +54,7 @@ for k in range(start, max_loops + 1):
         start_time = time.time()
         solver(hoa, 0, wup, 0)
         times[k-start][i] = time.time() - start_time
+        print(f"{solver.__name__} ...done")
 
 for s in times:
     print(s)
