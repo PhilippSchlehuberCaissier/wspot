@@ -16,7 +16,7 @@ from nested_loops_builder import NestedLoopsBuilder
 
 
 # We will use the nested loops automata with an increasing number k of nested loop.
-loops = 25
+loops = 11
 
 builder = NestedLoopsBuilder(loops)
 WUP = builder.wup
@@ -31,10 +31,12 @@ hoa = spot.automaton("../tests/nested_loops_auto.hoa")
 
 ef_class = EnergyFunction
 
+
 def valid(M, i, j):
     if i == j:
         if M[i][j].is_above_one:
             return True
+
 
 with cProfile.Profile() as cpr:
     cpr.disable()

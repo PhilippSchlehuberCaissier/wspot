@@ -22,15 +22,15 @@ class NestedLoopsBuilder:
         self.k = k
         self.wup = NESTED_LOOPS_WUP
         self.name = "nested loops"
+        self.output = "../tests/nested_loops_auto.hoa"
 
     def update(self, k):
         self.__init__(k)
 
     def build(self):
-        output = "../tests/nested_loops_auto.hoa"
 
-        print(f"Building nested loop automaton with {self.k} loops at {output}")
-        f = open(output, 'w')
+        print(f"Building nested loop automaton with {self.k} loops at {self.output}")
+        f = open(self.output, 'w')
 
         # Usual HOA headers
         print("HOA: v1", file=f)

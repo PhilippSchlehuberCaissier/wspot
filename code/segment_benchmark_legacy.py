@@ -13,6 +13,7 @@ import cProfile
 import WBA_solvers as ws
 import WBA_FW as wf
 from energy import EnergyFunction
+from nested_loops_builder import NestedLoopsBuilder
 
 
 # We will use the nested loops automata with an increasing number k of nested loops.
@@ -21,17 +22,26 @@ assert loops > 1
 WUP = 150
 
 # subprocess.run(["python3", "nested_loops_builder.py", str(loops)])
-# hoa = spot.automaton("../tests/nested_loops_auto.hoa")
-hoa = spot.automaton("../tests/devil.hoa")
+builder = NestedLoopsBuilder(loops)
+builder.build()
+hoa = spot.automaton(builder.output)
+# hoa = spot.automaton("../tests/devil.hoa")
 # hoa = spot.automaton("../tests/many_iterations_co_buechi_flattened.hoa")
 
-EnergyFunction.set_wup(WUP)
+EnergyFunction.set_wup(builder.wup)
 ef_class = EnergyFunction
-M = wf.FWhoa(hoa, ef_class, lambda M, i, j: True)
+
+
+def diag_is_above_one(M, i, j):
+    return i == j and M[i][j].is_above_one
+
+
+M = wf.FWhoa(hoa, ef_class, diag_is_above_one)
 n = len(M[0])
 M_seg = [[len(f.segments) for f in li] for li in M]
 
 print(f"Result matrix has {sum([sum(li) for li in M_seg])} energy segments")
+exit()
 
 fig, ax = plt.subplots()
 im = ax.imshow(M_seg)
@@ -46,4 +56,4 @@ for i in range(n):
 
 ax.set_title(f"Number of segments in energy functions in the FW matrix for {loops} loops")
 fig.tight_layout()
-plt.show()
+# plt.show()
