@@ -314,13 +314,13 @@ class EnergyFunction(Semiring):
         if f1.is_zero or f2.is_zero:
             return f1.__class__.zero()
 
-        seen = set()
-        discs = [d for d in EnergyFunction.discontinuities(f1) + EnergyFunction.discontinuities(f2) if d not in seen and not seen.add(d)]
-        discs.sort()
-        segment_at_disc = {'f1': {}, 'f2': {}}
-        for d in discs:
-            segment_at_disc['f1'][d] = f1.get_segment(d)
-            segment_at_disc['f2'][d] = f2.get_segment(d)
+        # seen = set()
+        # discs = [d for d in EnergyFunction.discontinuities(f1) + EnergyFunction.discontinuities(f2) if d not in seen and not seen.add(d)]
+        # discs.sort()
+        # segment_at_disc = {'f1': {}, 'f2': {}}
+        # for d in discs:
+        #     segment_at_disc['f1'][d] = f1.get_segment(d)
+        #     segment_at_disc['f2'][d] = f2.get_segment(d)
 
         for seg in f1.segments:
             for next_seg in cross(seg, f2, wup):
