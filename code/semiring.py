@@ -18,6 +18,7 @@ class Semiring:
         raise NotImplementedError
 
     ## Convert a transition in a weighted automaton into an element of this semiring.
+    # TODO we now call this a mutator
     @staticmethod
     def transition_to_sr(e, weight):
         raise NotImplementedError

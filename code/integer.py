@@ -6,7 +6,6 @@ from semiring import Semiring
 @dataclass
 class Integer(Semiring):
     @staticmethod
-    @property
     def zero():
         return 0
 
@@ -14,7 +13,6 @@ class Integer(Semiring):
         return self + other
 
     @staticmethod
-    @property
     def one():
         return 1
 
