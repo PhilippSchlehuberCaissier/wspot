@@ -404,9 +404,10 @@ def cross(seg: EnergySegment, fun: EnergyFunction, wup: int):
         yield seg
     # seg is a constant energy segment
     elif seg.a == 0 and seg.b != -1:
+        fun_pred = fun.get_segment(seg.b).pred
         yield EnergySegment.const(seg.lowerBound,
                                   seg.upperBound,
-                                  fun.get_segment(seg.b).pred,
+                                  fun_pred if fun_pred is not None else seg.pred,
                                   fun.evaluate(seg.b))
     # seg is an increasing energy segment
     else:
