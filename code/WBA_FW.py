@@ -47,7 +47,7 @@ def FWhoa(aut: "HOA automaton",
                 # TODO do we need to return something?
                 res = check(M, i, j)
                 if res:
-                    return M
+                    return res
 
     # for i in range(V):
     #     print(f"From {i}")

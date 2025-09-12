@@ -6,17 +6,22 @@ from memory_profiler import memory_usage
 import numpy as np
 import matplotlib.pyplot as plt
 
+from nested_loops_builder import NestedLoopsBuilder
+
 
 solvers = [ws.NaiveCoBuechi, ws.LEGACY_CoBuechiEnergy, ws.CoBuechiEnergy]#, ws.CoBuechi_FW_new]
 memory = [[] for _ in range(len(solvers))]
+loops = 92
+builder = NestedLoopsBuilder(loops)
 
 def to_benchmark(what):
-    subprocess.run(["python3", "nested_loops_builder.py", str(99)])
+    builder.build()
     this = "../tests/nested_loops_auto.hoa"
     hoa = spot.automaton(this)
 
     what(hoa, 0, 10, 0)
     del hoa
+    del this
     # ws.NaiveCoBuechi(hoa, 0, 10, 0)
     # ws.LEGACY_CoBuechiEnergy(hoa, 0, 10, 0)
     # ws.CoBuechiEnergy(hoa, 0, 10, 0)
@@ -36,7 +41,7 @@ for i in range(len(memory)):
 
 time = np.linspace(0, n * 0.2, n)
 plt.plot(time, np.transpose(memory))
-plt.legend(["naive", "cycle storage", "backtracking"], loc="upper right")
+plt.legend(["naive", "cycle storage", "backtracking"], loc="lower right")
 plt.title("Co-Büchi solving in the nested loops automaton")
 plt.xlabel("Execution time in s")
 plt.ylabel("Memory usage in MiB")
