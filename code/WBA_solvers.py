@@ -415,16 +415,18 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
     on_stack = [False for _ in range(n)]
 
     while succ != []:
-        (path, current_edge, (current_state, current_energy)) = succ.pop(0)
+        (path, current_edge, (current_state, current_energy)) = succ.pop()
         path_srcs = [e.src for e in path]
         ipy_utils.print_c(f"Now processing state {current_state} with inbound energy {current_energy}")
-        on_stack[current_state] = True
         ipy_utils.print_c([f"{e.src} > {e.dst}" for e in path])
 
         # Check if there's a loop
         # By definition of path, there won't be nested loops
         # Also by definition, the last element of path will close the loop
         loop_already_seen = False
+        if on_stack[current_state]:
+            pass
+            # print(f"hej {current_state}! ({path})")
         if len(path) != 0:
             closing_state = path[-1].dst
             # for start_index in range(-1, -len(path) - 1, -1):
@@ -485,6 +487,8 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
                         ipy_utils.print_c(f"There are {len(examined_loops)} loops for a total of {sum([len(loop) for loop in examined_loops])} states")
                         return True
                 ipy_utils.print_c("This loop has been entirely shifted, proceeding to next candidate loop")
+            else:
+                ipy_utils.print_c("No loops here!")
 
         # Continue dfs if no accepting loop was found earlier
         if (current_state, current_energy) not in discovered and not loop_already_seen:
@@ -498,6 +502,7 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
                 if next_energy >= 0:
                     ipy_utils.print_c(f"Pushing next state {e.dst} with target energy {next_energy} (reached from ({current_state}, {current_energy}))")
                     succ.append((path + [e], e, (e.dst, next_energy)))
+                    on_stack[e.dst] = True
 
         ipy_utils.print_c(f"End processing ({current_state}, {current_energy})")
 

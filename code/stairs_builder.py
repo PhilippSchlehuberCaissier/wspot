@@ -17,14 +17,15 @@ class StairsBuilder:
         self.k = k
         self.wup = k
         self.name = "stairs"
+        self.output = "../tests/stairs_auto.hoa"
+
 
     def update(self, k):
         self.__init__(k)
 
     def build(self):
-        output = "../tests/stairs_auto.hoa"
-        print(f"Building stair automaton with wup of {self.k} at {output}")
-        f = open(output, 'w')
+        print(f"Building stair automaton with wup of {self.k} at {self.output}")
+        f = open(self.output, 'w')
 
         # Usual HOA headers
         print("HOA: v1", file=f)
@@ -37,7 +38,7 @@ class StairsBuilder:
         print("--BODY--", file=f)
 
         # Initial state is always this
-        print("State: 0\n[t] 0 <-10> {{0}}\n[t] 1 <0>", file=f)
+        print("State: 0\n[t] 0 <-10> {0}\n[t] 1 <0>", file=f)
 
         # "Hub" state
         print("State: 1", file=f)

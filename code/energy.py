@@ -170,15 +170,6 @@ class EnergyFunction(Semiring):
         final = [seg.lowerBound for seg in f.segments] + [f.segments[-1].upperBound]
         return final
 
-    @property
-    def domain(self):
-        return (0, self.segments[-1].upperBound)
-
-    ## Return the wup for this energy function.
-    # In EnergyFunctionWup, this method is overriden to have an access to the wup that is constant in time
-    def wup(self):
-        return self.segments[-1].upperBound
-
     ## Return True if x is in the domain of this energy function (ie. [0, wup]).
     # Assuming every energy function is well-defined on [0, wup]
     def is_in_domain(self, x):
@@ -271,29 +262,6 @@ class EnergyFunction(Semiring):
             for seg in seg1 + seg2:
                 new_segs.append(seg)
 
-            # if seg1.a == seg2.a:
-            #     if seg1.b == seg2.b:
-            #         next_seg = seg1 if seg2.pred is None else seg2
-            #     else:
-            #         next_seg = seg1 if seg1.b > seg2.b else seg2
-            #     new_segs.append(next_seg.restriction(lower, upper))
-            # else:
-            #     # Segments might be intersecting
-            #     # Use the IVT (xor)
-            #     if (seg1.evaluate(lower) > seg2.evaluate(lower)) != (seg1.evaluate(upper) > seg2.evaluate(upper)):
-            #         # found by manipulating the functions' equations
-            #         # again, this only works if our weights are ints
-            #         # intersect is guaranteed to be in ]lower, upper[ with the initial condition
-            #         intersect = int((seg2.b - seg1.b) / (seg1.a - seg2.a))
-            #         first_on_top = seg1 if seg1.evaluate(lower) > seg2.evaluate(lower) else seg2
-            #         new_segs.append(first_on_top.restriction(lower, intersect))
-            #         second_on_top = seg2 if first_on_top == seg1 else seg1
-            #         new_segs.append(second_on_top.restriction(intersect, upper))
-            #     else:
-            #         # Segments do not intersect, we use upper because its image is guaranteed to be not equal (unless seg1 == seg2)
-            #         next_seg = seg1 if seg1.evaluate(upper) > seg2.evaluate(upper) else seg2
-            #         new_segs.append(next_seg.restriction(lower, upper))
-
         f = EnergyFunction(new_segs)
         return EnergyFunction.clean(f)
 
@@ -314,53 +282,9 @@ class EnergyFunction(Semiring):
         if f1.is_zero or f2.is_zero:
             return f1.__class__.zero()
 
-        # seen = set()
-        # discs = [d for d in EnergyFunction.discontinuities(f1) + EnergyFunction.discontinuities(f2) if d not in seen and not seen.add(d)]
-        # discs.sort()
-        # segment_at_disc = {'f1': {}, 'f2': {}}
-        # for d in discs:
-        #     segment_at_disc['f1'][d] = f1.get_segment(d)
-        #     segment_at_disc['f2'][d] = f2.get_segment(d)
-
         for seg in f1.segments:
             for next_seg in cross(seg, f2, wup):
                 new_segs.append(next_seg)
-            # if seg.is_zero:
-            #     new_segs.append(seg)
-            #     continue
-
-            # lower = seg.lowerBound
-            # upper = seg.upperBound
-            # im_lower = seg.evaluate(lower)
-            # im_upper = seg.evaluate(upper)
-
-            # # Case f is constant
-            # if im_lower == im_upper:
-            #     next_seg = EnergySegment.const(lower,
-            #                                    upper,
-            #                                    f2.get_segment(im_lower).pred,
-            #                                    f2.evaluate(im_lower))
-            #     new_segs.append(next_seg)
-            #     continue
-
-            # # Case f is ascending
-            # # For all segments of g, if the segment intersects with the image of f then apply this segment to the relevant part of the image
-            # for f2_seg in f2.segments:
-            #     f2_lower = f2_seg.lowerBound
-            #     f2_upper = f2_seg.upperBound
-            #     if f2_lower < im_upper and f2_upper > im_lower:
-            #         # We need to stay in the image
-            #         corr_lower = max(im_lower, f2_lower)
-            #         corr_upper = min(im_upper, f2_upper)
-
-            #         # Find the inverse by f
-            #         inv_lower = int((corr_lower - seg.b) / seg.a)
-            #         inv_upper = int((corr_upper - seg.b) / seg.a)
-
-            #         new_a = seg.a * f2_seg.a
-            #         new_b = f2_seg.a * seg.b + f2_seg.b
-            #         next_seg = EnergySegment.incr(inv_lower, inv_upper, f2_seg.pred, new_b) if new_a == 1 else EnergySegment.const(inv_lower, inv_upper, f2_seg.pred, new_b)
-            #         new_segs.append(next_seg)
 
         f = EnergyFunction(new_segs)
         return EnergyFunction.clean(f)
