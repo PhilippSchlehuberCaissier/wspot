@@ -1,19 +1,30 @@
 \doxysection{code.\+segment\+\_\+benchmark Namespace Reference}
 \hypertarget{namespacecode_1_1segment__benchmark}{}\label{namespacecode_1_1segment__benchmark}\index{code.segment\_benchmark@{code.segment\_benchmark}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a26cdee54bc0b4703faf5a01e3b9ce4ff}{valid}} (\mbox{\hyperlink{namespacecode_1_1segment__benchmark_ae876ee98d9c9287e932f19068fb6a4fa}{M}}, i, j)
+\end{DoxyCompactItemize}
 \doxysubsubsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
-int \mbox{\hyperlink{namespacecode_1_1segment__benchmark_a74e5e0ad4e756e135f4eb8c59b40ee8c}{loops}} = 10
+int \mbox{\hyperlink{namespacecode_1_1segment__benchmark_a74e5e0ad4e756e135f4eb8c59b40ee8c}{loops}} = 11
+\item 
+\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a506d1ae9f7ce7e992eb52d65f990c769}{builder}} = \mbox{\hyperlink{classcode_1_1nested__loops__builder_1_1NestedLoopsBuilder}{Nested\+Loops\+Builder}}(\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a74e5e0ad4e756e135f4eb8c59b40ee8c}{loops}})
+\item 
+\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a543f7be56ce5f32173a9b36306240047}{WUP}} = builder.\+wup
 \item 
 \mbox{\hyperlink{namespacecode_1_1segment__benchmark_aca0b8a47cbef7f901893612b2cd7da66}{hoa}} = spot.\+automaton("{}../tests/nested\+\_\+loops\+\_\+auto.\+hoa"{})
 \item 
-\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a8cae3aea588e014d3d8851c142f5f65c}{ef\+\_\+class}} = Energy\+Function\+Wup(100)
+\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a8cae3aea588e014d3d8851c142f5f65c}{ef\+\_\+class}} = \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction}{Energy\+Function}}
 \item 
-list \mbox{\hyperlink{namespacecode_1_1segment__benchmark_a7861dee4c4efe1376b6e06834775592d}{M}} = \mbox{[}$\,$\mbox{]}
+\mbox{\hyperlink{namespacecode_1_1segment__benchmark_ad410017376b4678bb72737d31631cb77}{stats}} = pstats.\+Stats(\textquotesingle{}restats\textquotesingle{})
 \item 
-\mbox{\hyperlink{namespacecode_1_1segment__benchmark_ae7c30d8c90238ff817d662ecef76a39f}{n}} = len(\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a7861dee4c4efe1376b6e06834775592d}{M}}\mbox{[}0\mbox{]})
+\mbox{\hyperlink{namespacecode_1_1segment__benchmark_ae876ee98d9c9287e932f19068fb6a4fa}{M}} = wf.\+FWhoa(\mbox{\hyperlink{namespacecode_1_1segment__benchmark_aca0b8a47cbef7f901893612b2cd7da66}{hoa}}, \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction}{Energy\+Function}}, lambda M, i, j\+: True)
 \item 
-list \mbox{\hyperlink{namespacecode_1_1segment__benchmark_aae79d71e32e5ea8afafe094856d3f83d}{M\+\_\+seg}} = \mbox{[}\mbox{[}len(f.\+segments) for f in li\mbox{]} for li in \mbox{\hyperlink{namespacecode_1_1segment__benchmark_a7861dee4c4efe1376b6e06834775592d}{M}}\mbox{]}
+\mbox{\hyperlink{namespacecode_1_1segment__benchmark_ae7c30d8c90238ff817d662ecef76a39f}{n}} = len(\mbox{\hyperlink{namespacecode_1_1segment__benchmark_ae876ee98d9c9287e932f19068fb6a4fa}{M}}\mbox{[}0\mbox{]})
+\item 
+list \mbox{\hyperlink{namespacecode_1_1segment__benchmark_aae79d71e32e5ea8afafe094856d3f83d}{M\+\_\+seg}} = \mbox{[}\mbox{[}len(f.\+segments) for f in li\mbox{]} for li in \mbox{\hyperlink{namespacecode_1_1segment__benchmark_ae876ee98d9c9287e932f19068fb6a4fa}{M}}\mbox{]}
 \item 
 \mbox{\hyperlink{namespacecode_1_1segment__benchmark_a9e17e2d4fa8ad58cb745c6e340baa322}{fig}}
 \item 
@@ -25,6 +36,15 @@ list \mbox{\hyperlink{namespacecode_1_1segment__benchmark_aae79d71e32e5ea8afafe0
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacecode_1_1segment__benchmark_a26cdee54bc0b4703faf5a01e3b9ce4ff}\label{namespacecode_1_1segment__benchmark_a26cdee54bc0b4703faf5a01e3b9ce4ff} 
+\index{code.segment\_benchmark@{code.segment\_benchmark}!valid@{valid}}
+\index{valid@{valid}!code.segment\_benchmark@{code.segment\_benchmark}}
+\doxysubsubsection{\texorpdfstring{valid()}{valid()}}
+{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+valid (\begin{DoxyParamCaption}\item[{}]{M,  }\item[{}]{i,  }\item[{}]{j }\end{DoxyParamCaption})}
+
+
+
 \doxysubsection{Variable Documentation}
 \Hypertarget{namespacecode_1_1segment__benchmark_a5447dfbef8b679349d2427afc1e301bc}\label{namespacecode_1_1segment__benchmark_a5447dfbef8b679349d2427afc1e301bc} 
 \index{code.segment\_benchmark@{code.segment\_benchmark}!ax@{ax}}
@@ -32,11 +52,17 @@ list \mbox{\hyperlink{namespacecode_1_1segment__benchmark_aae79d71e32e5ea8afafe0
 \doxysubsubsection{\texorpdfstring{ax}{ax}}
 {\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+ax}
 
+\Hypertarget{namespacecode_1_1segment__benchmark_a506d1ae9f7ce7e992eb52d65f990c769}\label{namespacecode_1_1segment__benchmark_a506d1ae9f7ce7e992eb52d65f990c769} 
+\index{code.segment\_benchmark@{code.segment\_benchmark}!builder@{builder}}
+\index{builder@{builder}!code.segment\_benchmark@{code.segment\_benchmark}}
+\doxysubsubsection{\texorpdfstring{builder}{builder}}
+{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+builder = \mbox{\hyperlink{classcode_1_1nested__loops__builder_1_1NestedLoopsBuilder}{Nested\+Loops\+Builder}}(\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a74e5e0ad4e756e135f4eb8c59b40ee8c}{loops}})}
+
 \Hypertarget{namespacecode_1_1segment__benchmark_a8cae3aea588e014d3d8851c142f5f65c}\label{namespacecode_1_1segment__benchmark_a8cae3aea588e014d3d8851c142f5f65c} 
 \index{code.segment\_benchmark@{code.segment\_benchmark}!ef\_class@{ef\_class}}
 \index{ef\_class@{ef\_class}!code.segment\_benchmark@{code.segment\_benchmark}}
 \doxysubsubsection{\texorpdfstring{ef\_class}{ef\_class}}
-{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+ef\+\_\+class = Energy\+Function\+Wup(100)}
+{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+ef\+\_\+class = \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction}{Energy\+Function}}}
 
 \Hypertarget{namespacecode_1_1segment__benchmark_a9e17e2d4fa8ad58cb745c6e340baa322}\label{namespacecode_1_1segment__benchmark_a9e17e2d4fa8ad58cb745c6e340baa322} 
 \index{code.segment\_benchmark@{code.segment\_benchmark}!fig@{fig}}
@@ -60,29 +86,41 @@ list \mbox{\hyperlink{namespacecode_1_1segment__benchmark_aae79d71e32e5ea8afafe0
 \index{code.segment\_benchmark@{code.segment\_benchmark}!loops@{loops}}
 \index{loops@{loops}!code.segment\_benchmark@{code.segment\_benchmark}}
 \doxysubsubsection{\texorpdfstring{loops}{loops}}
-{\footnotesize\ttfamily int code.\+segment\+\_\+benchmark.\+loops = 10}
+{\footnotesize\ttfamily int code.\+segment\+\_\+benchmark.\+loops = 11}
 
-\Hypertarget{namespacecode_1_1segment__benchmark_a7861dee4c4efe1376b6e06834775592d}\label{namespacecode_1_1segment__benchmark_a7861dee4c4efe1376b6e06834775592d} 
+\Hypertarget{namespacecode_1_1segment__benchmark_ae876ee98d9c9287e932f19068fb6a4fa}\label{namespacecode_1_1segment__benchmark_ae876ee98d9c9287e932f19068fb6a4fa} 
 \index{code.segment\_benchmark@{code.segment\_benchmark}!M@{M}}
 \index{M@{M}!code.segment\_benchmark@{code.segment\_benchmark}}
 \doxysubsubsection{\texorpdfstring{M}{M}}
-{\footnotesize\ttfamily list code.\+segment\+\_\+benchmark.\+M = \mbox{[}$\,$\mbox{]}}
+{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+M = wf.\+FWhoa(\mbox{\hyperlink{namespacecode_1_1segment__benchmark_aca0b8a47cbef7f901893612b2cd7da66}{hoa}}, \mbox{\hyperlink{classcode_1_1energy_1_1EnergyFunction}{Energy\+Function}}, lambda M, i, j\+: True)}
 
 \Hypertarget{namespacecode_1_1segment__benchmark_aae79d71e32e5ea8afafe094856d3f83d}\label{namespacecode_1_1segment__benchmark_aae79d71e32e5ea8afafe094856d3f83d} 
 \index{code.segment\_benchmark@{code.segment\_benchmark}!M\_seg@{M\_seg}}
 \index{M\_seg@{M\_seg}!code.segment\_benchmark@{code.segment\_benchmark}}
 \doxysubsubsection{\texorpdfstring{M\_seg}{M\_seg}}
-{\footnotesize\ttfamily list code.\+segment\+\_\+benchmark.\+M\+\_\+seg = \mbox{[}\mbox{[}len(f.\+segments) for f in li\mbox{]} for li in \mbox{\hyperlink{namespacecode_1_1segment__benchmark_a7861dee4c4efe1376b6e06834775592d}{M}}\mbox{]}}
+{\footnotesize\ttfamily list code.\+segment\+\_\+benchmark.\+M\+\_\+seg = \mbox{[}\mbox{[}len(f.\+segments) for f in li\mbox{]} for li in \mbox{\hyperlink{namespacecode_1_1segment__benchmark_ae876ee98d9c9287e932f19068fb6a4fa}{M}}\mbox{]}}
 
 \Hypertarget{namespacecode_1_1segment__benchmark_ae7c30d8c90238ff817d662ecef76a39f}\label{namespacecode_1_1segment__benchmark_ae7c30d8c90238ff817d662ecef76a39f} 
 \index{code.segment\_benchmark@{code.segment\_benchmark}!n@{n}}
 \index{n@{n}!code.segment\_benchmark@{code.segment\_benchmark}}
 \doxysubsubsection{\texorpdfstring{n}{n}}
-{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+n = len(\mbox{\hyperlink{namespacecode_1_1segment__benchmark_a7861dee4c4efe1376b6e06834775592d}{M}}\mbox{[}0\mbox{]})}
+{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+n = len(\mbox{\hyperlink{namespacecode_1_1segment__benchmark_ae876ee98d9c9287e932f19068fb6a4fa}{M}}\mbox{[}0\mbox{]})}
+
+\Hypertarget{namespacecode_1_1segment__benchmark_ad410017376b4678bb72737d31631cb77}\label{namespacecode_1_1segment__benchmark_ad410017376b4678bb72737d31631cb77} 
+\index{code.segment\_benchmark@{code.segment\_benchmark}!stats@{stats}}
+\index{stats@{stats}!code.segment\_benchmark@{code.segment\_benchmark}}
+\doxysubsubsection{\texorpdfstring{stats}{stats}}
+{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+stats = pstats.\+Stats(\textquotesingle{}restats\textquotesingle{})}
 
 \Hypertarget{namespacecode_1_1segment__benchmark_ae1f0760936827268390cd783a1962a65}\label{namespacecode_1_1segment__benchmark_ae1f0760936827268390cd783a1962a65} 
 \index{code.segment\_benchmark@{code.segment\_benchmark}!text@{text}}
 \index{text@{text}!code.segment\_benchmark@{code.segment\_benchmark}}
 \doxysubsubsection{\texorpdfstring{text}{text}}
 {\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+text = ax.\+text(j, i, \mbox{\hyperlink{namespacecode_1_1segment__benchmark_aae79d71e32e5ea8afafe094856d3f83d}{M\+\_\+seg}}\mbox{[}i\mbox{]}\mbox{[}j\mbox{]}, ha="{}center"{}, va="{}center"{}, color=\textquotesingle{}w\textquotesingle{})}
+
+\Hypertarget{namespacecode_1_1segment__benchmark_a543f7be56ce5f32173a9b36306240047}\label{namespacecode_1_1segment__benchmark_a543f7be56ce5f32173a9b36306240047} 
+\index{code.segment\_benchmark@{code.segment\_benchmark}!WUP@{WUP}}
+\index{WUP@{WUP}!code.segment\_benchmark@{code.segment\_benchmark}}
+\doxysubsubsection{\texorpdfstring{WUP}{WUP}}
+{\footnotesize\ttfamily code.\+segment\+\_\+benchmark.\+WUP = builder.\+wup}
 

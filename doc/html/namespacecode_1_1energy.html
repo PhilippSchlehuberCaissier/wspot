@@ -92,28 +92,53 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6c86876a425aa2927e2859de34f8374f" id="r_a6c86876a425aa2927e2859de34f8374f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecode_1_1energy.html#a6c86876a425aa2927e2859de34f8374f">EnergyFunctionWup</a> (q)</td></tr>
-<tr class="memdesc:a6c86876a425aa2927e2859de34f8374f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class for energy functions parametrized with a wup.  <br /></td></tr>
-<tr class="separator:a6c86876a425aa2927e2859de34f8374f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a585cd9b7390cc28a166a56cb0025e005" id="r_a585cd9b7390cc28a166a56cb0025e005"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecode_1_1energy.html#a585cd9b7390cc28a166a56cb0025e005">cross</a> (<a class="el" href="classcode_1_1energy_1_1EnergySegment.html">EnergySegment</a> seg, <a class="el" href="classcode_1_1energy_1_1EnergyFunction.html">EnergyFunction</a> fun, int wup)</td></tr>
+<tr class="memdesc:a585cd9b7390cc28a166a56cb0025e005"><td class="mdescLeft">&#160;</td><td class="mdescRight">"Cross" intermediate operator  <br /></td></tr>
+<tr class="separator:a585cd9b7390cc28a166a56cb0025e005"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a6c86876a425aa2927e2859de34f8374f" name="a6c86876a425aa2927e2859de34f8374f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c86876a425aa2927e2859de34f8374f">&#9670;&#160;</a></span>EnergyFunctionWup()</h2>
+<a id="a585cd9b7390cc28a166a56cb0025e005" name="a585cd9b7390cc28a166a56cb0025e005"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a585cd9b7390cc28a166a56cb0025e005">&#9670;&#160;</a></span>cross()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">code.energy.EnergyFunctionWup </td>
+          <td class="memname">code.energy.cross </td>
           <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>q</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classcode_1_1energy_1_1EnergySegment.html">EnergySegment</a>&#160;</td>
+          <td class="paramname"><em>seg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classcode_1_1energy_1_1EnergyFunction.html">EnergyFunction</a>&#160;</td>
+          <td class="paramname"><em>fun</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wup</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Class for energy functions parametrized with a wup. </p>
+<p>"Cross" intermediate operator </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seg</td><td>(EnergySegment) an energy segment </td></tr>
+    <tr><td class="paramname">fun</td><td>(EnergyFunction) a well-defined energy function </td></tr>
+    <tr><td class="paramname">wup</td><td>(int) the wup </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a generator of energy segments that is the result of seg x fun </dd></dl>
 
 </div>
 </div>

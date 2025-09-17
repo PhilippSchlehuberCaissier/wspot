@@ -1,0 +1,5 @@
+<map id="code.WBA_solvers.CoBuechi_FW_new" name="code.WBA_solvers.CoBuechi_FW_new">
+<area shape="rect" id="Node000001" title="Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton using Floyd&#45;Warshall on energy functions." alt="" coords="272,5,479,45"/>
+<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#a3ca3c117ff682c0a448fbeab74ea68c9" title="Solve an ɷ&#45;regular energy game in an automaton with an acceptance condition of t using the Floyd&#45;Wars..." alt="" coords="5,13,224,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="258,28,224,28,224,23,258,23"/>
+</map>

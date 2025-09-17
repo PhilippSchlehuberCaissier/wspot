@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['pathsegment_0',['pathSegment',['../classcode_1_1WBA__trace_1_1pathSegment.html',1,'code::WBA_trace']]],
-  ['process_1',['process',['../classcode_1_1simple__1CTA_1_1process.html',1,'code::simple_1CTA']]]
+  ['mod_5fbf_5fiter_0',['mod_BF_iter',['../classcode_1_1BF1_1_1mod__BF__iter.html',1,'code::BF1']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['semiring_0',['Semiring',['../classcode_1_1semiring_1_1Semiring.html',1,'code::semiring']]],
-  ['simple_5f1cta_1',['simple_1CTA',['../classcode_1_1simple__1CTA_1_1simple__1CTA.html',1,'code::simple_1CTA']]]
+  ['nestedloopsbuilder_0',['NestedLoopsBuilder',['../classcode_1_1nested__loops__builder_1_1NestedLoopsBuilder.html',1,'code::nested_loops_builder']]]
 ];

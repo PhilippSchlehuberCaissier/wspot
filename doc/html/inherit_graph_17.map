@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="157,5,246,31"/>
+<area shape="rect" id="Node000001" href="$classcode_1_1ipython__utils_1_1IPythonUtils.html" title="Singleton class to be called when printing information." alt="" coords="347,27,541,67"/>
+<area shape="poly" id="edge4_Node000000_Node000001" title=" " alt="" coords="260,22,347,33,346,38,259,28"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,63,56,88"/>
+<area shape="rect" id="Node000002" href="$classcode_1_1ipython__utils_1_1IPythonUtilsMeta.html" title="Class that implements the Singleton design pattern." alt="" coords="104,55,299,95"/>
+<area shape="poly" id="edge5_Node000003_Node000002" title=" " alt="" coords="70,73,104,73,104,78,70,78"/>
+<area shape="poly" id="edge6_Node000002_Node000001" title=" " alt="" coords="312,60,346,56,347,61,313,65"/>
+</map>

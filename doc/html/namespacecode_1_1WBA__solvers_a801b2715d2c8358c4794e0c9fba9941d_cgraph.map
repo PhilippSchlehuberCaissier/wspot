@@ -1,5 +1,5 @@
 <map id="code.WBA_solvers.LEGACY_CoBuechiEnergy" name="code.WBA_solvers.LEGACY_CoBuechiEnergy">
-<area shape="rect" id="Node000001" title="Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton (legacy algorithm)." alt="" coords="5,37,203,77"/>
+<area shape="rect" id="Node000001" title="Solve an ɷ&#45;regular energy game in a co&#45;Büchi automaton (cycle storage algorithm)." alt="" coords="5,37,203,77"/>
 <area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#a2e067f8ffd07ea704e15e3608f27cd30" title=" " alt="" coords="251,5,441,45"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="202,42,237,37,237,42,203,47"/>
 <area shape="rect" id="Node000003" href="$namespacecode_1_1WBA__solvers.html#ac118adeee57f36b16aaa2eb868a2f43f" title=" " alt="" coords="251,69,441,109"/>

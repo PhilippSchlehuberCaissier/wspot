@@ -24,7 +24,7 @@ int \mbox{\hyperlink{namespacecode_1_1WBA__solvers_ac6a413dee01605539abec851eacd
 \mbox{\hyperlink{namespacecode_1_1WBA__solvers_adec6e180d50af97ff152b77804e7bb32}{Naive\+Co\+Buechi}} (hoa, s0, wup, c0)
 \begin{DoxyCompactList}\small\item\em DEPRECATED Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton using a naive algorithm. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a801b2715d2c8358c4794e0c9fba9941d}{LEGACY\+\_\+\+Co\+Buechi\+Energy}} ("{}co-\/Büchi automaton"{} hoa, "{}state"{} s0, "{}weak upper bound"{} wup, "{}initial credit"{} c0)
-\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton (legacy algorithm). \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton (cycle storage algorithm). \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_ada5e085cd2a87aee65b240e03831d3fe}{Co\+Buechi\+Energy}} ("{}co-\/Büchi automaton"{} hoa, int s0, int wup, int c0)
 \begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a0e95b42269d6bd22a8c0fdbdbbc3d9c5}{Co\+Buechi\+\_\+\+FW\+\_\+new}} ("{}co-\/Büchi automaton"{} aut, int s0, int wup, int c0)
@@ -32,7 +32,7 @@ int \mbox{\hyperlink{namespacecode_1_1WBA__solvers_ac6a413dee01605539abec851eacd
 \mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a70176db7a3f7a35a191bc83ad862d59a}{Rabin\+Energy}} ("{}Rabin automaton"{} hoa, int p, int s0, int wup, int c0)
 \begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a Rabin automaton. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_a3ca3c117ff682c0a448fbeab74ea68c9}{True\+Energy}} ("{}automaton"{} hoa, int s0, int wup, int c0)
-\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in an automaton with an acceptance condition of t. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in an automaton with an acceptance condition of t using the Floyd-\/\+Warshall algorithm. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classcode_1_1buechi_1_1BuechiResult}{Buechi\+Result}} \mbox{\hyperlink{namespacecode_1_1WBA__solvers_ac8a0a8b668b4e84202a92f5291cc5142}{Buechi\+Energy}} (aut, int s0, int wup, int c0, "{}prefix energies array"{} en=None, "{}optimal predecessors array"{} pred=None)
 \begin{DoxyCompactList}\small\item\em Solve an ɷ-\/regular energy game in a Büchi automaton. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Variables}
@@ -78,7 +78,8 @@ Here is the call graph for this function\+:\nopagebreak
 \includegraphics[width=350pt]{namespacecode_1_1WBA__solvers_ac8a0a8b668b4e84202a92f5291cc5142_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -100,6 +101,14 @@ Here is the call graph for this function\+:\nopagebreak
 \begin{center}
 \leavevmode
 \includegraphics[width=350pt]{namespacecode_1_1WBA__solvers_a0e95b42269d6bd22a8c0fdbdbbc3d9c5_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{namespacecode_1_1WBA__solvers_a0e95b42269d6bd22a8c0fdbdbbc3d9c5_icgraph}
 \end{center}
 \end{figure}
 \Hypertarget{namespacecode_1_1WBA__solvers_ada5e085cd2a87aee65b240e03831d3fe}\label{namespacecode_1_1WBA__solvers_ada5e085cd2a87aee65b240e03831d3fe} 
@@ -163,7 +172,8 @@ Here is the call graph for this function\+:\nopagebreak
 \includegraphics[width=350pt]{namespacecode_1_1WBA__solvers_ad0bf8b753c3ba7d8617180a97c937925_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -182,7 +192,8 @@ Args:
 
 Returns: str
 \end{DoxyVerb}
- Here is the caller graph for this function\+:\nopagebreak
+ Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -202,7 +213,8 @@ Args:
 
 Returns: string representation
 \end{DoxyVerb}
- Here is the caller graph for this function\+:\nopagebreak
+ Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -231,7 +243,8 @@ Find the entering states of a WBA\textquotesingle{}s SCC.
 \begin{DoxyReturn}{Returns}
 A list of int containing all entering states by number 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -246,7 +259,7 @@ Here is the caller graph for this function\+:\nopagebreak
 
 
 
-Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton (legacy algorithm). 
+Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton (cycle storage algorithm). 
 
 
 \begin{DoxyParams}{Parameters}
@@ -262,7 +275,8 @@ Solve an ɷ-\/regular energy game in a co-\/\+Büchi automaton (legacy algorithm
 \begin{DoxyReturn}{Returns}
 True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -461,7 +475,8 @@ Remove a specified color (acceptance set) in an automaton.
 \begin{DoxyReturn}{Returns}
 a new automaton without transitions accepting col 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -476,7 +491,7 @@ Here is the caller graph for this function\+:\nopagebreak
 
 
 
-Solve an ɷ-\/regular energy game in an automaton with an acceptance condition of t. 
+Solve an ɷ-\/regular energy game in an automaton with an acceptance condition of t using the Floyd-\/\+Warshall algorithm. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -492,7 +507,8 @@ Solve an ɷ-\/regular energy game in an automaton with an acceptance condition o
 \begin{DoxyReturn}{Returns}
 True if there is a (wup, c0) accepting Büchi path in hoa, False otherwise. 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode

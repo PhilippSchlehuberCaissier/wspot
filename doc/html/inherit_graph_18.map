@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,80,103,105"/>
+<area shape="rect" id="Node000001" href="$classcode_1_1tests__energy_1_1TestAlgo.html" title="unittest class for testing solving algos" alt="" coords="165,5,363,31"/>
+<area shape="poly" id="edge7_Node000000_Node000001" title=" " alt="" coords="86,71,150,40,188,28,190,33,152,44,88,75"/>
+<area shape="rect" id="Node000002" href="$classcode_1_1tests__energy_1_1TestEnergy.html" title="unittest class for testing energy functions/segments" alt="" coords="157,55,371,80"/>
+<area shape="poly" id="edge8_Node000000_Node000002" title=" " alt="" coords="116,83,158,77,159,83,117,88"/>
+<area shape="rect" id="Node000003" href="$classcode_1_1tests__energy_1_1TestInteger.html" title="unittest class for testing the integer semiring We use this unittest class to check that add and mul ..." alt="" coords="157,104,371,129"/>
+<area shape="poly" id="edge9_Node000000_Node000003" title=" " alt="" coords="117,97,157,102,156,107,116,102"/>
+<area shape="rect" id="Node000004" href="$classcode_1_1tests__energy_1_1TestSemiring.html" title="unittest class for testing semiring&#45;related functions" alt="" coords="151,153,377,179"/>
+<area shape="poly" id="edge10_Node000000_Node000004" title=" " alt="" coords="90,110,152,138,195,151,193,156,150,143,88,115"/>
+</map>
