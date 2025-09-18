@@ -135,4 +135,4 @@ dmypy.json
 *auto.hoa
 
 # Doxygen (can be generated on the fly)
-docs/
+doc/

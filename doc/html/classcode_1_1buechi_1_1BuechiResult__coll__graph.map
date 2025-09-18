@@ -1,9 +1,0 @@
-<map id="code.buechi.BuechiResult" name="code.buechi.BuechiResult">
-<area shape="rect" id="Node000001" title=" " alt="" coords="9,167,199,192"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,56,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="37,44,49,91,70,141,91,165,87,168,66,144,43,92,32,45"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="80,5,128,31"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="107,44,107,166,101,166,101,44"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="189,5,235,31"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="215,45,208,94,199,121,185,144,168,159,149,169,146,164,165,155,181,141,194,118,203,93,210,44"/>
-</map>

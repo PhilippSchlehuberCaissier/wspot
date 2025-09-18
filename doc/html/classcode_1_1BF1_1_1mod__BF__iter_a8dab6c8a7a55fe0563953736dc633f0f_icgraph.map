@@ -1,7 +1,0 @@
-<map id="code.BF1.mod_BF_iter.pumpLoop_" name="code.BF1.mod_BF_iter.pumpLoop_">
-<area shape="rect" id="Node000001" title="Helper to pump the simple positive loop containing s." alt="" coords="567,5,775,45"/>
-<area shape="rect" id="Node000002" href="$classcode_1_1BF1_1_1mod__BF__iter.html#a0e9f94e8a96f436b55f49aa8b3120c79" title=" " alt="" coords="279,13,519,38"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="553,28,519,28,519,23,553,23"/>
-<area shape="rect" id="Node000003" href="$classcode_1_1BF1_1_1mod__BF__iter.html#a8883786513eb52c98e77dba469e5b6f3" title="Pump all (energy positive) loops of the current iteration." alt="" coords="5,13,231,38"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="265,28,231,28,231,23,265,23"/>
-</map>

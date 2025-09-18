@@ -1,8 +1,0 @@
-<map id="code.energy.EnergyFunction.evaluate" name="code.energy.EnergyFunction.evaluate">
-<area shape="rect" id="Node000001" title="Return the value of this energy function at point x." alt="" coords="276,45,541,70"/>
-<area shape="poly" id="edge2_Node000001_Node000001" title=" " alt="" coords="461,36,458,31,449,27,409,23,377,25,360,30,357,36,366,43,362,47,352,36,357,26,376,20,409,18,451,22,462,27,465,34"/>
-<area shape="rect" id="Node000002" href="$classcode_1_1energy_1_1EnergySegment.html#a2f9584d31b3f8321c1c862d82d85a501" title=" " alt="" coords="11,5,222,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="279,46,222,40,223,34,279,40"/>
-<area shape="rect" id="Node000003" href="$classcode_1_1energy_1_1EnergySegment.html#aaefb0a4d713d7c6a239119ace21938a6" title=" " alt="" coords="5,69,228,109"/>
-<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="279,74,229,80,228,74,279,69"/>
-</map>

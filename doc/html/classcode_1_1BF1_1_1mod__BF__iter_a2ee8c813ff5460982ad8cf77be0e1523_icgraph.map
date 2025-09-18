@@ -1,7 +1,0 @@
-<map id="code.BF1.mod_BF_iter.FindMaxEnergy_" name="code.BF1.mod_BF_iter.FindMaxEnergy_">
-<area shape="rect" id="Node000001" title="Computes for each state the maximal energy for which it can be reached from s0 with initial credit c0..." alt="" coords="252,37,451,77"/>
-<area shape="rect" id="Node000002" href="$classcode_1_1BF1_1_1mod__BF__iter.html#ab1c76556680b3c3a15e2e0ceccdb93cd" title=" " alt="" coords="5,5,204,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="238,45,204,41,205,36,239,40"/>
-<area shape="rect" id="Node000003" href="$classcode_1_1BF1_1_1mod__BF__iter.html#a4175028036bf37912954e78522a15e7c" title=" " alt="" coords="5,69,204,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="239,75,205,79,204,74,238,69"/>
-</map>

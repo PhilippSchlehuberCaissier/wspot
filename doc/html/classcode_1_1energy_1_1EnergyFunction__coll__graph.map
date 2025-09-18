@@ -1,9 +1,0 @@
-<map id="code.energy.EnergyFunction" name="code.energy.EnergyFunction">
-<area shape="rect" id="Node000001" title="Class for representing an energy function." alt="" coords="143,123,347,148"/>
-<area shape="rect" id="Node000002" href="$classcode_1_1semiring_1_1Semiring.html" title=" " alt="" coords="5,5,181,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,37,232,121,229,125,118,41"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="206,5,285,31"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="248,44,248,123,243,123,243,44"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="309,5,355,31"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="324,45,309,72,290,100,264,124,260,121,286,97,305,69,319,42"/>
-</map>

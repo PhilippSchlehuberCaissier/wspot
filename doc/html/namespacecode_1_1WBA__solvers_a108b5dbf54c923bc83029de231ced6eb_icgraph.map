@@ -1,6 +1,0 @@
-<map id="code.WBA_solvers.PrunePriority" name="code.WBA_solvers.PrunePriority">
-<area shape="rect" id="Node000001" title="Remove every transition with maximal priority in an automaton." alt="" coords="281,29,512,55"/>
-<area shape="rect" id="Node000002" href="$namespacecode_1_1WBA__solvers.html#a6eb4391ab22206de7f9c22294bde13c4" title="Solve an ɷ&#45;regular energy game in a parity automaton." alt="" coords="5,29,233,55"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="268,45,234,45,234,39,268,39"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="169,21,167,16,158,12,119,8,89,10,73,15,70,20,78,27,75,31,65,21,70,11,88,5,119,3,160,7,170,12,174,18"/>
-</map>

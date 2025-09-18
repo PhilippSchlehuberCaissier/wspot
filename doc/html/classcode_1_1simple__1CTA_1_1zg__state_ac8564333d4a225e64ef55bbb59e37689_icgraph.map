@@ -1,9 +1,0 @@
-<map id="code.simple_1CTA.zg_state.__init__" name="code.simple_1CTA.zg_state.__init__">
-<area shape="rect" id="Node000001" title=" " alt="" coords="319,55,479,95"/>
-<area shape="rect" id="Node000002" href="$classcode_1_1devilCircles_1_1DevilBuilder.html#a622e4d1e5ccd32ca2dbec37dbbc27bb6" title=" " alt="" coords="5,5,271,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="307,55,270,46,208,33,210,28,271,41,308,49"/>
-<area shape="rect" id="Node000003" href="$classcode_1_1nested__loops__builder_1_1NestedLoopsBuilder.html#a9f2d28db691efdebff035d526d370c51" title=" " alt="" coords="38,55,238,95"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="305,78,238,78,238,73,305,73"/>
-<area shape="rect" id="Node000004" href="$classcode_1_1stairs__builder_1_1StairsBuilder.html#aa2fad95151a434cc5ba946f42adfa28e" title=" " alt="" coords="45,119,231,159"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="306,101,271,110,223,122,221,117,270,105,305,96"/>
-</map>

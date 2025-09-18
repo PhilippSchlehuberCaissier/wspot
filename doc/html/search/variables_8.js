@@ -1,5 +1,0 @@
-var searchData=
-[
-  ['help_0',['help',['../namespacecode_1_1one__exec.html#ac86a9aafcf6868326eefa363fc539c7a',1,'code.one_exec.help'],['../namespacecode_1_1run__bench.html#a62e55df28d0c1de339c67d7f3224056a',1,'code.run_bench.help'],['../namespacecode_1_1to__weighted__twa.html#a8b8b727b474c3fe17b00cf4d741301b9',1,'code.to_weighted_twa.help']]],
-  ['hoa_1',['hoa',['../namespacecode_1_1algo__benchmark.html#a6da2c00fbec5aada2467a1a115a604c3',1,'code.algo_benchmark.hoa'],['../namespacecode_1_1loop__benchmark.html#a03edab23f43b70fa0174287dc315d412',1,'code.loop_benchmark.hoa'],['../namespacecode_1_1loop__benchmark2.html#a2dbaf36863fcf676fbc79e5ce0e90a68',1,'code.loop_benchmark2.hoa'],['../namespacecode_1_1memory__benchmark__legacy.html#ac65aaae5496bc3635c0346173fa73d82',1,'code.memory_benchmark_legacy.hoa'],['../namespacecode_1_1segment__benchmark.html#aca0b8a47cbef7f901893612b2cd7da66',1,'code.segment_benchmark.hoa'],['../namespacecode_1_1segment__benchmark__legacy.html#a6a84dcd36ad3f3765fa4cacebca9f40e',1,'code.segment_benchmark_legacy.hoa']]]
-];
