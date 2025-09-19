@@ -17,7 +17,7 @@ from devilCircles import DevilBuilder
 ## Benchmark to assess the efficiency of our algorithms with automata of varying sizes.
 # We will use the nested loops automata with an increasing number k of nested loops.
 start = 3
-max_loops = 13
+max_loops = 16
 # builder = StairsBuilder(start)
 # builder = AltNestedLoopsBuilder(start)
 builder = NestedLoopsBuilder(start)

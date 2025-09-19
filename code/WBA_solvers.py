@@ -389,122 +389,133 @@ def LEGACY_CoBuechiEnergy(hoa: "co-Büchi automaton",
         sub_hoa.copy_named_properties_of(hoa)
         sub_hoa.set_acceptance(spot.acc_cond("t"))
 
-    for i in range(sub_hoa.num_states()):
-        it = sub_hoa.out_iteraser(i)
-        while it:
-            e = it.current()
-            if e.acc.has(col):
-                it.erase()
-            else:
-                it.advance()
+        for i in range(sub_hoa.num_states()):
+            it = sub_hoa.out_iteraser(i)
+            while it:
+                e = it.current()
+                if e.acc.has(col):
+                    it.erase()
+                else:
+                    it.advance()
 
-    ipy_utils.display_c(sub_hoa)
-    ipy_utils.print_c("Finding potential loops in this automaton")
+        ipy_utils.display_c(sub_hoa)
+        ipy_utils.print_c("Finding potential loops in this automaton")
 
-    # TODO this might not work if there are jumps in state numbering
-    V = sub_hoa.num_states()
+        # TODO this might not work if there are jumps in state numbering
+        V = sub_hoa.num_states()
 
-    # "Stack" of states being processed
-    # Note that we push couples composed of the state and the energy attained
-    succ = [([], None, (s0, c0))]
-    # List of already seen couples
-    discovered = []
-    examined_loops = []
+        # "Stack" of states being processed
+        # Note that we push couples composed of the state and the energy attained
+        succ = [([], (s0, c0))]
+        # List of already seen couples
+        discovered = []
+        examined_loops = []
 
-    # TODO find a means of using on_stack since we don't have direct access to preds
-    on_stack = [False for _ in range(n)]
+        # TODO find a means of using on_stack since we don't have direct access to preds
+        # TODO dict instead (faster)
+        # on_stack = {k: False for k in range(n)}
 
-    while succ != []:
-        (path, current_edge, (current_state, current_energy)) = succ.pop()
-        path_srcs = [e.src for e in path]
-        ipy_utils.print_c(f"Now processing state {current_state} with inbound energy {current_energy}")
-        ipy_utils.print_c([f"{e.src} > {e.dst}" for e in path])
+        # Dictionary of edges by starting state
+        # This allows us to only do one traversal of the hoa's transitions
+        e_by_src = {k: [] for k in range(n)}
+        for e in sub_hoa.edges():
+            e_by_src[e.src].append(e)
 
-        # Check if there's a loop
-        # By definition of path, there won't be nested loops
-        # Also by definition, the last element of path will close the loop
-        loop_already_seen = False
-        if on_stack[current_state]:
-            pass
-            # print(f"hej {current_state}! ({path})")
-        if len(path) != 0:
-            closing_state = path[-1].dst
-            # for start_index in range(-1, -len(path) - 1, -1):
-            #     if path[start_index].src == closing_state:
-            if closing_state in path_srcs:
-                # Find maximal index by reversing the path_srcs first
-                # TODO can we directly use path_srcs instead?
-                start_index = len(path_srcs) - path_srcs[::-1].index(closing_state) - 1
-                ipy_utils.print_c(f"Loop from {closing_state} starts at idx {start_index}")
-                # We found a loop
-                # Check if the loop is energy-feasible
-                loop_edges = path[start_index:]
-                loop_length = len(loop_edges)
-                min_idx = min([edge.src for edge in loop_edges])
-                # Normalise the loop (min index at the start)
-                while loop_edges[0].src != min_idx:
-                    loop_edges.append(loop_edges.pop(0))
-                ipy_utils.print_c(f"Found normalised loop {[e.src for e in loop_edges]} from state {closing_state} (loop length: {len(loop_edges)} edges)")
+        while succ != []:
+            (path, (current_state, current_energy)) = succ.pop()
+            path_srcs = [e.src for e in path]
+            ipy_utils.print_c(f"Now processing state {current_state} with inbound energy {current_energy}")
+            ipy_utils.print_c([f"{e.src} > {e.dst}" for e in path])
 
-                # We won't process already examined loops
-                # We need to take into account shifted loops
-                # can't use sets here, edges are unhashable
-                for loop in examined_loops:
-                    if loop == loop_edges:
-                        ipy_utils.print_c("We know this is a negative loop")
-                        loop_already_seen = True
-                if loop_already_seen:
-                    continue
+            # Check if there's a loop
+            # By definition of path, there won't be nested loops
+            # Also by definition, the last element of path will close the loop
+            loop_already_seen = False
+            # temp = False
+            # if on_stack[current_state]:
+            #     # There is a loop
+            #     print(f"loop at {current_state}!")
+            #     # TODO ugly temp variable set to True when there is a loop
+            #     temp = True
+            # else:
+            #     on_stack[current_state] = True
 
-                examined_loops.append(loop_edges)
-                energy = en[closing_state]
-
-                # We need to rotate the loop loop_length times.
-                # See many_iterations_co_buechi_flattened.hoa,
-                #     co_buechi_shifted_loop.hoa
-                # for cases where this procedure is necessary to find a valid loop
-                # Also see lemma 4.4 in the paper
-                for _ in range(loop_length):
-                    # Idea: the loop is feasible if, starting from closing_state, the resulting energy (w.r.t. the WUP) is >= to the starting energy.
-                    for seg in range(loop_length):
-                        loop_segment = loop_edges[seg]
-                        energy = min(wup,
-                                     energy + spot.get_weight(sub_hoa, loop_segment)
-                                     )
-                    ipy_utils.print_c(f"Final energy is {energy} (initial was {en[closing_state]})")
-                    if energy < en[closing_state] or energy < 0:
-                        # Non-accepting loop (energy loss)
-                        ipy_utils.print_c("This is not an accepting loop")
-                        # Shift the loop
+            if len(path) != 0:
+                closing_state = path[-1].dst
+                if closing_state in path_srcs:
+                # if temp:
+                    # Find maximal index by reversing the path_srcs first
+                    # TODO can we directly use path_srcs instead?
+                    start_index = len(path_srcs) - path_srcs[::-1].index(closing_state) - 1
+                    ipy_utils.print_c(f"Loop from {closing_state} starts at idx {start_index}")
+                    # We found a loop
+                    # Check if the loop is energy-feasible
+                    loop_edges = path[start_index:]
+                    loop_length = len(loop_edges)
+                    min_idx = min([edge.src for edge in loop_edges])
+                    # Normalise the loop (min index at the start)
+                    while loop_edges[0].src != min_idx:
                         loop_edges.append(loop_edges.pop(0))
-                        closing_state = loop_edges[-1].dst
-                        ipy_utils.print_c(f"Shifting the loop, now starting at {closing_state}")
-                        energy = en[closing_state]
-                    else:
-                        # Feasible loop
-                        # TODO return a BuechiResult
-                        ipy_utils.print_c("Found an accepting loop")
-                        ipy_utils.print_c(f"There are {len(examined_loops)} loops for a total of {sum([len(loop) for loop in examined_loops])} states")
-                        return True
-                ipy_utils.print_c("This loop has been entirely shifted, proceeding to next candidate loop")
-            else:
-                ipy_utils.print_c("No loops here!")
+                    ipy_utils.print_c(f"Found normalised loop {[e.src for e in loop_edges]} from state {closing_state} (loop length: {len(loop_edges)} edges)")
 
-        # Continue dfs if no accepting loop was found earlier
-        if (current_state, current_energy) not in discovered and not loop_already_seen:
-            discovered.append((current_state, current_energy))
-            # Get successors and edges leading to them
-            # TODO this is suboptimal
-            for e in sub_hoa.edges():
-                if e.src != current_state:
-                    continue
-                next_energy = min(wup, current_energy + spot.get_weight(sub_hoa, e))
-                if next_energy >= 0:
-                    ipy_utils.print_c(f"Pushing next state {e.dst} with target energy {next_energy} (reached from ({current_state}, {current_energy}))")
-                    succ.append((path + [e], e, (e.dst, next_energy)))
-                    on_stack[e.dst] = True
+                    # We won't process already examined loops
+                    # We need to take into account shifted loops
+                    # can't use sets here, edges are unhashable
+                    for loop in examined_loops:
+                        if loop == loop_edges:
+                            ipy_utils.print_c("We know this is a negative loop")
+                            loop_already_seen = True
+                    if loop_already_seen:
+                        continue
 
-        ipy_utils.print_c(f"End processing ({current_state}, {current_energy})")
+                    examined_loops.append(loop_edges)
+                    energy = en[closing_state]
+
+                    # We need to rotate the loop loop_length times.
+                    # See many_iterations_co_buechi_flattened.hoa,
+                    #     co_buechi_shifted_loop.hoa
+                    # for cases where this procedure is necessary to find a valid loop
+                    # Also see lemma 4.4 in the paper
+                    for _ in range(loop_length):
+                        # Idea: the loop is feasible if, starting from closing_state, the resulting energy (w.r.t. the WUP) is >= to the starting energy.
+                        for seg in range(loop_length):
+                            loop_segment = loop_edges[seg]
+                            energy = min(wup,
+                                         energy + spot.get_weight(sub_hoa, loop_segment)
+                                         )
+                        ipy_utils.print_c(f"Final energy is {energy} (initial was {en[closing_state]})")
+                        if energy < en[closing_state] or energy < 0:
+                            # Non-accepting loop (energy loss)
+                            ipy_utils.print_c("This is not an accepting loop")
+                            # Shift the loop
+                            loop_edges.append(loop_edges.pop(0))
+                            closing_state = loop_edges[-1].dst
+                            ipy_utils.print_c(f"Shifting the loop, now starting at {closing_state}")
+                            energy = en[closing_state]
+                        else:
+                            # Feasible loop
+                            # TODO return a BuechiResult
+                            ipy_utils.print_c("Found an accepting loop")
+                            ipy_utils.print_c(f"There are {len(examined_loops)} loops for a total of {sum([len(loop) for loop in examined_loops])} states")
+                            return True
+                    ipy_utils.print_c("This loop has been entirely shifted, proceeding to next candidate loop")
+                else:
+                    ipy_utils.print_c("No loops here!")
+
+            # Continue dfs if no accepting loop was found earlier
+            if current_state not in discovered and not loop_already_seen:
+                discovered.append(current_state)
+                # Get successors and edges leading to them
+                # TODO this is suboptimal
+                for e in e_by_src[current_state]:
+                    next_energy = min(wup, current_energy + spot.get_weight(sub_hoa, e))
+                    if next_energy >= 0:
+                        ipy_utils.print_c(f"Pushing next state {e.dst} with target energy {next_energy} (reached from ({current_state}, {current_energy}))")
+                        path.append(e)
+                        succ.append((path, (e.dst, next_energy)))
+
+            ipy_utils.print_c(f"End processing ({current_state}, {current_energy})")
+            # TODO update the stack here
 
     ipy_utils.print_c(f"There are {len(examined_loops)} loops for a total of {sum([len(loop) for loop in examined_loops])} states")
     return BuechiResult()
