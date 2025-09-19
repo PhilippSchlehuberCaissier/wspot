@@ -61,11 +61,26 @@ class TestSemiring(ut.TestCase):
         )
 
 
-
 ## unittest class for testing the integer semiring
 # We use this unittest class to check that __add__ and __mul__ are behaving as intended
 class TestInteger(ut.TestCase):
-    pass
+    def test_int_oplus(self):
+        self.assertEqual(
+            Integer.__add__(Integer.one(), Integer(2)),
+            Integer(2)
+        )
+
+    def test_int_otimes(self):
+        self.assertEqual(
+            Integer.__mul__(Integer.zero(), Integer(2)),
+            Integer.zero()
+        )
+
+    def test_int_otimes_2(self):
+        self.assertEqual(
+            Integer.__mul__(Integer.zero(), Integer.zero()),
+            Integer.zero()
+        )
 
 
 ## unittest class for testing energy functions/segments
