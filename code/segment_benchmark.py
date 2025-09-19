@@ -12,13 +12,13 @@ import io
 import WBA_solvers as ws
 import WBA_FW as wf
 from energy import EnergyFunction
-from nested_loops_builder import NestedLoopsBuilder
+from nested_loops_builder import NestedLoopsBuilder, AltNestedLoopsBuilder
 
 
 # We will use the nested loops automata with an increasing number k of nested loop.
 loops = 11
 
-builder = NestedLoopsBuilder(loops)
+builder = AltNestedLoopsBuilder(loops)
 WUP = builder.wup
 EnergyFunction.set_wup(WUP)
 
