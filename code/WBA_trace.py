@@ -6,6 +6,7 @@ import spot
 
 from buechi import BuechiResult
 
+
 @dataclass
 class transition:
     g: spot.twa_graph  # Underlying graph
