@@ -133,7 +133,6 @@ dmypy.json
 
 # Automatically generated HOA automata
 *auto.hoa
-/tests/devil.hoa
 
 # Doxygen (can be generated on the fly)
 doc/

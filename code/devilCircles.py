@@ -103,7 +103,7 @@ class DevilBuilder:
         self.NM = 2*k
         self.wup = maxStretchEnergy(k, self.NM)
         self.name = "circling"
-        self.output = "../tests/devil.hoa"
+        self.output = "../tests/devil_auto.hoa"
 
     def update(self, k):
         self.__init__(k)
